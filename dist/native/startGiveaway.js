@@ -58,7 +58,9 @@ exports.default = new forgescript_1.NativeFunction({
             time,
             prize,
             winnersCount: winners || 1,
-            defineEmbedStrings: undefined
+            defineEmbedStrings(giveaway, host) {
+                return {};
+            }
         });
         return this.success(giveaway?.id);
     }
