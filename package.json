@@ -1,0 +1,27 @@
+{
+  "name": "forge.giveaways",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "docgen": "tsc && typedoc src/index.ts && node dist/docgen",
+    "commit": "npm run docgen && node dist/commit",
+    "test": "tsc && node dist/__tests__/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tryforge/ForgeGiveaways.git"
+  },
+  "keywords": [],
+  "author": "itsnicky.",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@tryforge/forgescript": "^2.3.0",
+    "discord.js": "^14.21.0",
+    "typedoc": "^0.26.11",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "discord-giveaways-super": "^1.1.1"
+  }
+}
