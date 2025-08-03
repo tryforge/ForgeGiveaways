@@ -27,15 +27,15 @@ export default new NativeFunction({
             pointerProperty: "guild"
         },
         {
-            name: "duration",
-            description: "The duration for this giveaway.",
+            name: "prize",
+            description: "The prize for this giveaway",
             rest: false,
             required: true,
             type: ArgType.String
         },
         {
-            name: "prize",
-            description: "The prize for this giveaway",
+            name: "duration",
+            description: "The duration for this giveaway.",
             rest: false,
             required: true,
             type: ArgType.String
@@ -49,7 +49,7 @@ export default new NativeFunction({
         }
     ],
     output: ArgType.Number,
-    async execute(ctx, [channel, host, time, prize, winners]) {
+    async execute(ctx, [channel, host, prize, time, winners]) {
         const client = ctx.client.getExtension(ForgeGiveaways, true)
 
         const giveaway = await client.giveawayManager?.start({
@@ -59,6 +59,7 @@ export default new NativeFunction({
             time,
             prize,
             winnersCount: winners || 1,
+            defineEmbedStrings: undefined
         })
 
         return this.success(giveaway?.id)

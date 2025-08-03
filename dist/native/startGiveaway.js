@@ -27,15 +27,15 @@ exports.default = new forgescript_1.NativeFunction({
             pointerProperty: "guild"
         },
         {
-            name: "duration",
-            description: "The duration for this giveaway.",
+            name: "prize",
+            description: "The prize for this giveaway",
             rest: false,
             required: true,
             type: forgescript_1.ArgType.String
         },
         {
-            name: "prize",
-            description: "The prize for this giveaway",
+            name: "duration",
+            description: "The duration for this giveaway.",
             rest: false,
             required: true,
             type: forgescript_1.ArgType.String
@@ -49,7 +49,7 @@ exports.default = new forgescript_1.NativeFunction({
         }
     ],
     output: forgescript_1.ArgType.Number,
-    async execute(ctx, [channel, host, time, prize, winners]) {
+    async execute(ctx, [channel, host, prize, time, winners]) {
         const client = ctx.client.getExtension(__1.ForgeGiveaways, true);
         const giveaway = await client.giveawayManager?.start({
             guildID: channel.guildId,
@@ -58,6 +58,7 @@ exports.default = new forgescript_1.NativeFunction({
             time,
             prize,
             winnersCount: winners || 1,
+            defineEmbedStrings: undefined
         });
         return this.success(giveaway?.id);
     }
