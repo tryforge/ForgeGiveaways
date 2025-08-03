@@ -41,3 +41,5 @@ export class ForgeGiveaways extends ForgeExtension {
         }
     }
 }
+
+export * from "./managers"

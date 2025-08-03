@@ -17,4 +17,5 @@ export declare class ForgeGiveaways extends ForgeExtension {
     constructor(options: IGiveawayOptions);
     init(client: ForgeClient): void;
 }
+export * from "./managers";
 //# sourceMappingURL=index.d.ts.map

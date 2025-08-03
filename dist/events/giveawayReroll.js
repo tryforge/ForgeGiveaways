@@ -5,6 +5,7 @@ const GiveawaysEventManager_1 = require("../managers/GiveawaysEventManager");
 const __1 = require("..");
 exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
     name: "giveawayReroll",
+    version: "1.0.0",
     description: "This event is fired when a giveaway was rerolled",
     listener: async function (gw) {
         const commands = this.getExtension(__1.ForgeGiveaways, true).commands?.get("giveawayReroll");
