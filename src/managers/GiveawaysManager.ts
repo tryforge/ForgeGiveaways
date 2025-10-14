@@ -1,5 +1,5 @@
 import { Compiler, Context, Interpreter } from "@tryforge/forgescript"
-import { Collection, Snowflake, SnowflakeUtil } from "discord.js"
+import { Collection, Snowflake, SnowflakeUtil, TextChannel } from "discord.js"
 import { ForgeGiveaways } from ".."
 
 export interface IGiveawayStartOptions {
@@ -41,14 +41,25 @@ export class GiveawaysManager {
         const result = await Interpreter.run({
             ...ctx.runtime,
             environment: { giveaway },
-            data: Compiler.compile(this.client.options.messages?.start),
-            doNotSend: false
+            data: Compiler.compile(this.client.options.messages?.start || `
+                $sendMessage[$env[giveaway;channelID];
+                    $title[🎉 GIVEAWAY 🎉]
+                    $description[**Prize:** $env[giveaway;prize]\n**Winners:** $env[giveaway;winnersCount]]
+                    $addField[Ends;<t:$env[giveaway;duration]:R>;true]
+                    $addField[Hosted by;<@$env[giveaway;hostID]>;true]
+                    $color[Green]
+                    $addActionRow
+                    $addButton[giveaway;Enter;Primary]
+                ;true]
+            `),
+            doNotSend: true,
         })
 
-        giveaway.messageID = result?.trim() || undefined
+        const res = result?.trim()
+        const chan = ctx.client.channels.cache.get(giveaway.channelID)
+        giveaway.messageID = (res && (chan as TextChannel)?.messages.cache.get(res) ? res : undefined)
 
         this.giveaways.set(id, giveaway)
-        console.log(this.giveaways)
         setTimeout(() => this.end(ctx, id), options.duration)
         return giveaway
     }
@@ -74,8 +85,15 @@ export class GiveawaysManager {
 
         await Interpreter.run({
             ...ctx.runtime,
-            data: Compiler.compile(this.client.options.messages?.end),
-            doNotSend: false,
+            environment: { giveaway },
+            data: Compiler.compile(this.client.options.messages?.end || `
+                $!editMessage[$env[giveaway;channelID];$env[giveaway;messageID];
+                    $fetchEmbeds[$env[giveaway;channelID];$env[giveaway;messageID]]
+                    $title[🎉 GIVEAWAY ENDED 🎉]
+                    $color[Red]
+                ]
+            `),
+            doNotSend: true,
         })
 
         return giveaway
@@ -91,8 +109,9 @@ export class GiveawaysManager {
 
         await Interpreter.run({
             ...ctx.runtime,
+            environment: { giveaway },
             data: Compiler.compile(this.client.options.messages?.reroll),
-            doNotSend: false,
+            doNotSend: true,
         })
 
         return giveaway

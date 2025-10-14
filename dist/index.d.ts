@@ -5,9 +5,9 @@ import { GiveawaysManager } from "./managers/GiveawaysManager";
 export interface IForgeGiveawaysOptions {
     events?: keyof IGiveawayEvents;
     messages?: {
-        start?: string;
-        end?: string;
-        reroll?: string;
+        start: string;
+        end: string;
+        reroll: string;
     };
 }
 export declare class ForgeGiveaways extends ForgeExtension {
