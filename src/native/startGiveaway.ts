@@ -1,6 +1,6 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
-import { ForgeGiveaways } from ".."
 import { BaseChannel, GuildBasedChannel } from "discord.js"
+import { ForgeGiveaways } from ".."
 
 export default new NativeFunction({
     name: "$startGiveaway",
@@ -38,32 +38,28 @@ export default new NativeFunction({
             description: "The duration for this giveaway.",
             rest: false,
             required: true,
-            type: ArgType.String
+            type: ArgType.Time
         },
         {
             name: "winners",
             description: "How many winners this giveaway will have",
             rest: false,
-            required: false,
             type: ArgType.Number
         }
     ],
-    output: ArgType.Number,
-    async execute(ctx, [channel, host, prize, time, winners]) {
+    output: ArgType.String,
+    async execute(ctx, [channel, host, prize, duration, winners]) {
         const client = ctx.client.getExtension(ForgeGiveaways, true)
 
-        const giveaway = await client.giveawayManager?.start({
+        const giveaway = await client.giveawaysManager.start(ctx, {
             guildID: (channel as GuildBasedChannel).guildId,
             channelID: channel.id,
-            hostMemberID: host.id,
-            time,
+            hostID: host.id,
+            duration,
             prize,
-            winnersCount: winners || 1,
-            defineEmbedStrings(giveaway, host) {
-                return {}
-            }
+            winnersCount: winners || 1
         })
 
-        return this.success(giveaway?.id)
+        return this.success(giveaway.id)
     }
 })

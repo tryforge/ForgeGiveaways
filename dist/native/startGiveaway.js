@@ -38,31 +38,27 @@ exports.default = new forgescript_1.NativeFunction({
             description: "The duration for this giveaway.",
             rest: false,
             required: true,
-            type: forgescript_1.ArgType.String
+            type: forgescript_1.ArgType.Time
         },
         {
             name: "winners",
             description: "How many winners this giveaway will have",
             rest: false,
-            required: false,
             type: forgescript_1.ArgType.Number
         }
     ],
-    output: forgescript_1.ArgType.Number,
-    async execute(ctx, [channel, host, prize, time, winners]) {
+    output: forgescript_1.ArgType.String,
+    async execute(ctx, [channel, host, prize, duration, winners]) {
         const client = ctx.client.getExtension(__1.ForgeGiveaways, true);
-        const giveaway = await client.giveawayManager?.start({
+        const giveaway = await client.giveawaysManager.start(ctx, {
             guildID: channel.guildId,
             channelID: channel.id,
-            hostMemberID: host.id,
-            time,
+            hostID: host.id,
+            duration,
             prize,
-            winnersCount: winners || 1,
-            defineEmbedStrings(giveaway, host) {
-                return {};
-            }
+            winnersCount: winners || 1
         });
-        return this.success(giveaway?.id);
+        return this.success(giveaway.id);
     }
 });
 //# sourceMappingURL=startGiveaway.js.map

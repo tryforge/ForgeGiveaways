@@ -26,12 +26,11 @@ declare const _default: NativeFunction<[{
     description: string;
     rest: false;
     required: true;
-    type: ArgType.String;
+    type: ArgType.Time;
 }, {
     name: string;
     description: string;
     rest: false;
-    required: false;
     type: ArgType.Number;
 }], true>;
 export default _default;

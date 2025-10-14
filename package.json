@@ -16,12 +16,13 @@
   "author": "itsnicky.",
   "license": "GPL-3.0",
   "devDependencies": {
-    "@tryforge/forgescript": "^2.3.0",
-    "discord.js": "^14.21.0",
+    "@tryforge/forgescript": "^2.5.0",
+    "discord.js": "^14.23.2",
     "typedoc": "^0.26.11",
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "discord-giveaways-super": "^1.1.1"
+    "@tryforge/forge.db": "^2.1.1",
+    "better-sqlite3": "^11.10.0"
   }
 }

@@ -6,7 +6,7 @@ const __1 = require("..");
 class GiveawaysEventHandler extends forgescript_1.BaseEventHandler {
     register(client) {
         //@ts-ignore
-        client.getExtension(__1.ForgeGiveaways, true).giveawayManager.on(this.name, this.listener.bind(client));
+        client.getExtension(__1.ForgeGiveaways, true).giveawaysManager.on(this.name, this.listener.bind(client));
     }
 }
 exports.GiveawaysEventHandler = GiveawaysEventHandler;

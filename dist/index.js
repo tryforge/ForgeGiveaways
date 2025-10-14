@@ -17,29 +17,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ForgeGiveaways = void 0;
 const forgescript_1 = require("@tryforge/forgescript");
 const GiveawaysCommandManager_1 = require("./managers/GiveawaysCommandManager");
-const discord_giveaways_super_1 = require("discord-giveaways-super");
+const GiveawaysManager_1 = require("./managers/GiveawaysManager");
 class ForgeGiveaways extends forgescript_1.ForgeExtension {
     options;
     name = "ForgeGiveaways";
     description = "";
     version = require("../package.json").version;
+    giveawaysManager = new GiveawaysManager_1.GiveawaysManager(this);
     commands;
-    giveawayManager;
-    #path;
     constructor(options) {
         super();
         this.options = options;
         this.commands = null;
-        this.giveawayManager = null;
-        this.#path = options.path;
     }
     init(client) {
-        this.giveawayManager = new discord_giveaways_super_1.Giveaways(client, {
-            connection: {
-                path: this.#path,
-            },
-            database: discord_giveaways_super_1.DatabaseType.JSON
-        });
         this.commands = new GiveawaysCommandManager_1.GiveawaysCommandManager(client);
         forgescript_1.EventManager.load("ForgeGiveawaysEvents", __dirname + "/events");
         this.load(__dirname + "/native");

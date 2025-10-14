@@ -1,20 +1,23 @@
 import { ForgeClient, ForgeExtension } from "@tryforge/forgescript";
-import { GiveawaysEvents } from "./managers/GiveawaysEventManager";
+import { IGiveawayEvents } from "./managers/GiveawaysEventManager";
 import { GiveawaysCommandManager } from "./managers/GiveawaysCommandManager";
-import { DatabaseType, Giveaways } from "discord-giveaways-super";
-export interface IGiveawayOptions {
-    path: `${string}.json`;
-    events?: keyof GiveawaysEvents;
+import { GiveawaysManager } from "./managers/GiveawaysManager";
+export interface IForgeGiveawaysOptions {
+    events?: keyof IGiveawayEvents;
+    messages?: {
+        start: string;
+        end: string;
+        reroll: string;
+    };
 }
 export declare class ForgeGiveaways extends ForgeExtension {
-    #private;
-    readonly options: IGiveawayOptions;
+    readonly options: IForgeGiveawaysOptions;
     name: string;
     description: string;
     version: any;
+    readonly giveawaysManager: GiveawaysManager;
     commands: GiveawaysCommandManager | null;
-    giveawayManager: Giveaways<DatabaseType.JSON, `${string}.json`> | null;
-    constructor(options: IGiveawayOptions);
+    constructor(options: IForgeGiveawaysOptions);
     init(client: ForgeClient): void;
 }
 export * from "./managers";

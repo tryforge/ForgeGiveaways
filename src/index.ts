@@ -1,11 +1,15 @@
 import { EventManager, ForgeClient, ForgeExtension } from "@tryforge/forgescript"
-import { GiveawaysEvents } from "./managers/GiveawaysEventManager"
+import { IGiveawayEvents } from "./managers/GiveawaysEventManager"
 import { GiveawaysCommandManager } from "./managers/GiveawaysCommandManager"
-import { DatabaseType, Giveaways } from "discord-giveaways-super"
+import { GiveawaysManager } from "./managers/GiveawaysManager"
 
-export interface IGiveawayOptions {
-    path: `${string}.json`,
-    events?: keyof GiveawaysEvents
+export interface IForgeGiveawaysOptions {
+    events?: keyof IGiveawayEvents
+    messages?: {
+        start: string
+        end: string
+        reroll: string
+    }
 }
 
 export class ForgeGiveaways extends ForgeExtension {
@@ -13,24 +17,15 @@ export class ForgeGiveaways extends ForgeExtension {
     description = ""
     version = require("../package.json").version
 
+    public readonly giveawaysManager = new GiveawaysManager(this)
     commands: GiveawaysCommandManager | null
-    giveawayManager: Giveaways<DatabaseType.JSON, `${string}.json`> | null
-    #path: `${string}.json`
 
-    public constructor (public readonly options: IGiveawayOptions) {
+    public constructor (public readonly options: IForgeGiveawaysOptions) {
         super()
         this.commands = null
-        this.giveawayManager = null
-        this.#path = options.path
     }
 
     public init (client: ForgeClient) {
-        this.giveawayManager = new Giveaways(client, {
-            connection: {
-                path: this.#path,
-            },
-            database: DatabaseType.JSON
-        })
         this.commands = new GiveawaysCommandManager(client)
 
         EventManager.load("ForgeGiveawaysEvents", __dirname + "/events")

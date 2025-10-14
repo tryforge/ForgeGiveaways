@@ -1,6 +1,6 @@
 import { BaseCommandManager } from "@tryforge/forgescript"
-import { GiveawaysEvents } from "./GiveawaysEventManager"
+import { IGiveawayEvents } from "./GiveawaysEventManager"
 
-export class GiveawaysCommandManager extends BaseCommandManager<keyof GiveawaysEvents> {
+export class GiveawaysCommandManager extends BaseCommandManager<keyof IGiveawayEvents> {
     handlerName = "ForgeGiveawaysEvents"
 }
