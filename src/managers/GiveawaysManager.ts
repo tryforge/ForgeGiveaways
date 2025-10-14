@@ -18,7 +18,7 @@ export interface IGiveawayStartOptions {
 
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake
-    messageID: Snowflake
+    messageID?: Snowflake
     entries: Snowflake[]
     winners: Snowflake[]
 }
@@ -31,21 +31,25 @@ export class GiveawaysManager {
     public async start(ctx: Context, options: IGiveawayStartOptions) {
         const id = SnowflakeUtil.generate().toString()
 
-        await Interpreter.run({
+        const giveaway = {
+            ...options,
+            id,
+            entries: [],
+            winners: []
+        } as IGiveaway
+
+        ctx.setEnvironmentKey("giveaway", giveaway)
+
+        const result = await Interpreter.run({
             ...ctx.runtime,
             data: Compiler.compile(this.client.options.messages?.start),
             doNotSend: false
         })
 
-        const giveaway = {
-            ...options,
-            id,
-            messageID: "",
-            entries: [],
-            winners: []
-        } as IGiveaway
+        giveaway.messageID = result || undefined
 
         this.giveaways.set(id, giveaway)
+        console.log(this.giveaways)
         setTimeout(() => this.end(ctx, id), options.duration)
         return giveaway
     }

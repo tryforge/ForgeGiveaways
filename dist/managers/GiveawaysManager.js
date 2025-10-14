@@ -11,19 +11,21 @@ class GiveawaysManager {
     }
     async start(ctx, options) {
         const id = discord_js_1.SnowflakeUtil.generate().toString();
-        await forgescript_1.Interpreter.run({
+        const giveaway = {
+            ...options,
+            id,
+            entries: [],
+            winners: []
+        };
+        ctx.setEnvironmentKey("giveaway", giveaway);
+        const result = await forgescript_1.Interpreter.run({
             ...ctx.runtime,
             data: forgescript_1.Compiler.compile(this.client.options.messages?.start),
             doNotSend: false
         });
-        const giveaway = {
-            ...options,
-            id,
-            messageID: "",
-            entries: [],
-            winners: []
-        };
+        giveaway.messageID = result || undefined;
         this.giveaways.set(id, giveaway);
+        console.log(this.giveaways);
         setTimeout(() => this.end(ctx, id), options.duration);
         return giveaway;
     }

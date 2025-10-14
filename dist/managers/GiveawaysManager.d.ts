@@ -16,7 +16,7 @@ export interface IGiveawayStartOptions {
 }
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake;
-    messageID: Snowflake;
+    messageID?: Snowflake;
     entries: Snowflake[];
     winners: Snowflake[];
 }
