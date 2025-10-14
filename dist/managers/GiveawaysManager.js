@@ -17,13 +17,13 @@ class GiveawaysManager {
             entries: [],
             winners: []
         };
-        ctx.setEnvironmentKey("giveaway", giveaway);
         const result = await forgescript_1.Interpreter.run({
             ...ctx.runtime,
+            environment: { giveaway },
             data: forgescript_1.Compiler.compile(this.client.options.messages?.start),
             doNotSend: false
         });
-        giveaway.messageID = result || undefined;
+        giveaway.messageID = result?.trim() || undefined;
         this.giveaways.set(id, giveaway);
         console.log(this.giveaways);
         setTimeout(() => this.end(ctx, id), options.duration);

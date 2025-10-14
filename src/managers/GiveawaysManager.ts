@@ -38,15 +38,14 @@ export class GiveawaysManager {
             winners: []
         } as IGiveaway
 
-        ctx.setEnvironmentKey("giveaway", giveaway)
-
         const result = await Interpreter.run({
             ...ctx.runtime,
+            environment: { giveaway },
             data: Compiler.compile(this.client.options.messages?.start),
             doNotSend: false
         })
 
-        giveaway.messageID = result || undefined
+        giveaway.messageID = result?.trim() || undefined
 
         this.giveaways.set(id, giveaway)
         console.log(this.giveaways)
