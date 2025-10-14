@@ -20,8 +20,5 @@ export interface IGiveawayEvents {
 }
 
 export class GiveawaysEventHandler<T extends keyof IGiveawayEvents> extends BaseEventHandler<IGiveawayEvents, T> {
-    register(client: ForgeClient): void {
-        //@ts-ignore
-        client.getExtension(ForgeGiveaways, true).giveawaysManager.on(this.name, this.listener.bind(client))
-    }
+    register(client: ForgeClient): void {}
 }
