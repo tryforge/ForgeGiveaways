@@ -1,5 +1,5 @@
 import defineProperties from "../functions/defineProperties"
-import { Giveaway } from "../managers/Giveaway"
+import { Giveaway } from "../structures/Giveaway"
 
 export enum GiveawayProperty {
     id = "id",

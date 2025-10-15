@@ -1,15 +1,16 @@
 import { BaseEventHandler, ForgeClient } from "@tryforge/forgescript"
-import { ForgeGiveaways, Giveaway } from ".."
+import { Giveaway } from "../structures"
+import { ForgeGiveaways } from ".."
 
 export interface IGiveawayEvents {
     giveawayStart: [
         {
-            data: Giveaway | null
+            newData: Giveaway | null
         }
     ]
     giveawayEnd: [
         {
-            data: Giveaway | null
+            newData: Giveaway | null
         }
     ]
     giveawayEdit: [

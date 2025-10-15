@@ -1,4 +1,4 @@
-import { Giveaway } from "../managers/Giveaway";
+import { Giveaway } from "../structures/Giveaway";
 export declare enum GiveawayProperty {
     id = "id",
     prize = "prize",

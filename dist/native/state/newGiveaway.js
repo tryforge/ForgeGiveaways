@@ -4,6 +4,7 @@ const forgescript_1 = require("@tryforge/forgescript");
 const giveaway_1 = require("../../properties/giveaway");
 exports.default = new forgescript_1.NativeFunction({
     name: "$newGiveaway",
+    version: "1.0.0",
     description: "Retrieves new data from an event whose context was a giveaway instance",
     unwrap: true,
     brackets: false,
@@ -25,6 +26,7 @@ exports.default = new forgescript_1.NativeFunction({
     ],
     output: forgescript_1.ArgType.Unknown,
     execute(ctx, [prop, sep]) {
+        console.log(`Extras: ${ctx.runtime.extras}`, `Obj: ${ctx.obj}`);
         const giveaway = ctx.runtime.extras;
         if (!giveaway || prop)
             return this.success(giveaway_1.GiveawayProperties[prop](giveaway.newData, sep));

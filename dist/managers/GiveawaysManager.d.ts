@@ -3,7 +3,7 @@ import { Snowflake } from "discord.js";
 import { ForgeGiveaways, IGiveawayEvents } from "..";
 import { TypedEmitter } from "tiny-typed-emitter";
 import { TransformEvents } from "@tryforge/forge.db";
-import { Giveaway } from "./Giveaway";
+import { Giveaway } from "../structures/Giveaway";
 export interface IGiveawayStartOptions {
     prize: string;
     duration: number;

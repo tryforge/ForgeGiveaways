@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GiveawaysManager = void 0;
 const forgescript_1 = require("@tryforge/forgescript");
 const discord_js_1 = require("discord.js");
-const Giveaway_1 = require("./Giveaway");
+const Giveaway_1 = require("../structures/Giveaway");
 class GiveawaysManager {
     client;
     emitter;
@@ -39,7 +39,7 @@ class GiveawaysManager {
         const res = result?.trim();
         const chan = ctx.client.channels.cache.get(giveaway.channelID);
         giveaway.messageID = (res && chan?.messages.cache.get(res) ? res : undefined);
-        this.emitter.emit("giveawayStart", { data: giveaway });
+        this.emitter.emit("giveawayStart", { newData: giveaway });
         this.giveaways.set(giveaway.id, giveaway);
         setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration);
         return giveaway;
@@ -78,7 +78,7 @@ class GiveawaysManager {
             `),
             doNotSend: true,
         });
-        this.emitter.emit("giveawayEnd", { data: giveaway });
+        this.emitter.emit("giveawayEnd", { newData: giveaway });
         return giveaway;
     }
     /**

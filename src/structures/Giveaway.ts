@@ -1,5 +1,5 @@
 import { Snowflake, SnowflakeUtil } from "discord.js"
-import { IGiveawayStartOptions } from "./GiveawaysManager"
+import { IGiveawayStartOptions } from "../managers/GiveawaysManager"
 
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake

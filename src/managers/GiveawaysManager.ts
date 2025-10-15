@@ -3,7 +3,7 @@ import { Collection, Snowflake, TextChannel } from "discord.js"
 import { ForgeGiveaways, IGiveawayEvents } from ".."
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
-import { Giveaway } from "./Giveaway"
+import { Giveaway } from "../structures/Giveaway"
 
 export interface IGiveawayStartOptions {
     prize: string
@@ -57,7 +57,7 @@ export class GiveawaysManager {
         const chan = ctx.client.channels.cache.get(giveaway.channelID)
         giveaway.messageID = (res && (chan as TextChannel)?.messages.cache.get(res) ? res : undefined)
 
-        this.emitter.emit("giveawayStart", { data: giveaway })
+        this.emitter.emit("giveawayStart", { newData: giveaway })
         this.giveaways.set(giveaway.id, giveaway)
         setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration)
 
@@ -102,7 +102,7 @@ export class GiveawaysManager {
             doNotSend: true,
         })
 
-        this.emitter.emit("giveawayEnd", { data: giveaway })
+        this.emitter.emit("giveawayEnd", { newData: giveaway })
 
         return giveaway
     }
