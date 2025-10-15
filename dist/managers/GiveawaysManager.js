@@ -5,10 +5,18 @@ const forgescript_1 = require("@tryforge/forgescript");
 const discord_js_1 = require("discord.js");
 class GiveawaysManager {
     client;
+    emitter;
     giveaways = new discord_js_1.Collection();
-    constructor(client) {
+    constructor(client, emitter) {
         this.client = client;
+        this.emitter = emitter;
     }
+    /**
+     *
+     * @param ctx The current context.
+     * @param options The start options for the giveaway.
+     * @returns
+     */
     async start(ctx, options) {
         const id = discord_js_1.SnowflakeUtil.generate().toString();
         const giveaway = {
@@ -20,11 +28,11 @@ class GiveawaysManager {
         const result = await forgescript_1.Interpreter.run({
             ...ctx.runtime,
             environment: { giveaway },
-            data: forgescript_1.Compiler.compile(this.client.options.messages?.start || `
+            data: forgescript_1.Compiler.compile(this.client.options?.messages?.start || `
                 $sendMessage[$env[giveaway;channelID];
                     $title[🎉 GIVEAWAY 🎉]
                     $description[**Prize:** $env[giveaway;prize]\n**Winners:** $env[giveaway;winnersCount]]
-                    $addField[Ends;<t:$env[giveaway;duration]:R>;true]
+                    $addField[Ends;<t:$floor[$math[$getTimestamp+$env[giveaway;duration]]]:R>;true]
                     $addField[Hosted by;<@$env[giveaway;hostID]>;true]
                     $color[Green]
                     $addActionRow
@@ -36,10 +44,17 @@ class GiveawaysManager {
         const res = result?.trim();
         const chan = ctx.client.channels.cache.get(giveaway.channelID);
         giveaway.messageID = (res && chan?.messages.cache.get(res) ? res : undefined);
+        this.emitter.emit("giveawayStart", { data: giveaway });
         this.giveaways.set(id, giveaway);
         setTimeout(() => this.end(ctx, id), options.duration);
         return giveaway;
     }
+    /**
+     *
+     * @param ctx The current context.
+     * @param id The id of the giveaway to end.
+     * @returns
+     */
     async end(ctx, id) {
         const giveaway = this.giveaways.get(id);
         if (!giveaway)
@@ -59,7 +74,7 @@ class GiveawaysManager {
         await forgescript_1.Interpreter.run({
             ...ctx.runtime,
             environment: { giveaway },
-            data: forgescript_1.Compiler.compile(this.client.options.messages?.end || `
+            data: forgescript_1.Compiler.compile(this.client.options?.messages?.end || `
                 $!editMessage[$env[giveaway;channelID];$env[giveaway;messageID];
                     $fetchEmbeds[$env[giveaway;channelID];$env[giveaway;messageID]]
                     $title[🎉 GIVEAWAY ENDED 🎉]
@@ -68,21 +83,30 @@ class GiveawaysManager {
             `),
             doNotSend: true,
         });
+        this.emitter.emit("giveawayEnd", { data: giveaway });
         return giveaway;
     }
+    /**
+     * Rerolls an existing giveaway.
+     * @param ctx The current context.
+     * @param id The id of the giveaway to reroll.
+     * @returns
+     */
     async reroll(ctx, id) {
         const giveaway = this.giveaways.get(id);
         if (!giveaway)
             return null;
+        const oldGiveaway = giveaway;
         const eligibleEntries = giveaway.entries.filter(e => !giveaway.winners.includes(e));
         const newWinners = this.pickWinners(eligibleEntries, giveaway.winnersCount);
         giveaway.winners = newWinners;
         await forgescript_1.Interpreter.run({
             ...ctx.runtime,
             environment: { giveaway },
-            data: forgescript_1.Compiler.compile(this.client.options.messages?.reroll),
+            data: forgescript_1.Compiler.compile(this.client.options?.messages?.reroll),
             doNotSend: true,
         });
+        this.emitter.emit("giveawayReroll", { newData: giveaway, oldData: oldGiveaway });
         return giveaway;
     }
     addEntry(id, userID) {

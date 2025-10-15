@@ -2,6 +2,8 @@ import { EventManager, ForgeClient, ForgeExtension } from "@tryforge/forgescript
 import { IGiveawayEvents } from "./managers/GiveawaysEventManager"
 import { GiveawaysCommandManager } from "./managers/GiveawaysCommandManager"
 import { GiveawaysManager } from "./managers/GiveawaysManager"
+import { TypedEmitter } from "tiny-typed-emitter"
+import { TransformEvents } from "@tryforge/forge.db"
 
 export interface IForgeGiveawaysOptions {
     events?: keyof IGiveawayEvents
@@ -17,10 +19,12 @@ export class ForgeGiveaways extends ForgeExtension {
     description = ""
     version = require("../package.json").version
 
-    public readonly giveawaysManager = new GiveawaysManager(this)
+    public emitter = new TypedEmitter<TransformEvents<IGiveawayEvents>>()
+
+    public readonly giveawaysManager = new GiveawaysManager(this, this.emitter)
     commands: GiveawaysCommandManager | null
 
-    public constructor (public readonly options: IForgeGiveawaysOptions) {
+    public constructor (public readonly options?: IForgeGiveawaysOptions) {
         super()
         this.commands = null
     }
@@ -31,7 +35,7 @@ export class ForgeGiveaways extends ForgeExtension {
         EventManager.load("ForgeGiveawaysEvents", __dirname + "/events")
         this.load(__dirname + "/native")
 
-        if (this.options.events?.length) {
+        if (this.options?.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
         }
     }

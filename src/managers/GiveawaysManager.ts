@@ -1,6 +1,8 @@
 import { Compiler, Context, Interpreter } from "@tryforge/forgescript"
 import { Collection, Snowflake, SnowflakeUtil, TextChannel } from "discord.js"
-import { ForgeGiveaways } from ".."
+import { ForgeGiveaways, IGiveawayEvents } from ".."
+import { TypedEmitter } from "tiny-typed-emitter"
+import { TransformEvents } from "@tryforge/forge.db"
 
 export interface IGiveawayStartOptions {
     prize: string
@@ -26,8 +28,17 @@ export interface IGiveaway extends IGiveawayStartOptions {
 export class GiveawaysManager {
     private readonly giveaways = new Collection<Snowflake, IGiveaway>()
 
-    public constructor(private readonly client: ForgeGiveaways) {}
+    public constructor(
+        private readonly client: ForgeGiveaways,
+        private emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>
+    ) {}
 
+    /**
+     * 
+     * @param ctx The current context.
+     * @param options The start options for the giveaway.
+     * @returns 
+     */
     public async start(ctx: Context, options: IGiveawayStartOptions) {
         const id = SnowflakeUtil.generate().toString()
 
@@ -41,11 +52,11 @@ export class GiveawaysManager {
         const result = await Interpreter.run({
             ...ctx.runtime,
             environment: { giveaway },
-            data: Compiler.compile(this.client.options.messages?.start || `
+            data: Compiler.compile(this.client.options?.messages?.start || `
                 $sendMessage[$env[giveaway;channelID];
                     $title[🎉 GIVEAWAY 🎉]
                     $description[**Prize:** $env[giveaway;prize]\n**Winners:** $env[giveaway;winnersCount]]
-                    $addField[Ends;<t:$env[giveaway;duration]:R>;true]
+                    $addField[Ends;<t:$floor[$math[$getTimestamp+$env[giveaway;duration]]]:R>;true]
                     $addField[Hosted by;<@$env[giveaway;hostID]>;true]
                     $color[Green]
                     $addActionRow
@@ -59,11 +70,19 @@ export class GiveawaysManager {
         const chan = ctx.client.channels.cache.get(giveaway.channelID)
         giveaway.messageID = (res && (chan as TextChannel)?.messages.cache.get(res) ? res : undefined)
 
+        this.emitter.emit("giveawayStart", { data: giveaway })
+
         this.giveaways.set(id, giveaway)
         setTimeout(() => this.end(ctx, id), options.duration)
         return giveaway
     }
 
+    /**
+     * 
+     * @param ctx The current context.
+     * @param id The id of the giveaway to end.
+     * @returns 
+     */
     public async end(ctx: Context, id: Snowflake) {
         const giveaway = this.giveaways.get(id)
         if (!giveaway) return null
@@ -86,7 +105,7 @@ export class GiveawaysManager {
         await Interpreter.run({
             ...ctx.runtime,
             environment: { giveaway },
-            data: Compiler.compile(this.client.options.messages?.end || `
+            data: Compiler.compile(this.client.options?.messages?.end || `
                 $!editMessage[$env[giveaway;channelID];$env[giveaway;messageID];
                     $fetchEmbeds[$env[giveaway;channelID];$env[giveaway;messageID]]
                     $title[🎉 GIVEAWAY ENDED 🎉]
@@ -96,12 +115,21 @@ export class GiveawaysManager {
             doNotSend: true,
         })
 
+        this.emitter.emit("giveawayEnd", { data: giveaway })
+
         return giveaway
     }
 
+    /**
+     * Rerolls an existing giveaway.
+     * @param ctx The current context.
+     * @param id The id of the giveaway to reroll.
+     * @returns 
+     */
     public async reroll(ctx: Context, id: Snowflake) {
         const giveaway = this.giveaways.get(id)
         if (!giveaway) return null
+        const oldGiveaway = giveaway
 
         const eligibleEntries = giveaway.entries.filter(e => !giveaway.winners.includes(e))
         const newWinners = this.pickWinners(eligibleEntries, giveaway.winnersCount)
@@ -110,9 +138,11 @@ export class GiveawaysManager {
         await Interpreter.run({
             ...ctx.runtime,
             environment: { giveaway },
-            data: Compiler.compile(this.client.options.messages?.reroll),
+            data: Compiler.compile(this.client.options?.messages?.reroll),
             doNotSend: true,
         })
+
+        this.emitter.emit("giveawayReroll", { newData: giveaway, oldData: oldGiveaway })
 
         return giveaway
     }
