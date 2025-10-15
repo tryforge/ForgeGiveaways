@@ -1,8 +1,9 @@
 import { Compiler, Context, Interpreter } from "@tryforge/forgescript"
-import { Collection, Snowflake, SnowflakeUtil, TextChannel } from "discord.js"
+import { Collection, Snowflake, TextChannel } from "discord.js"
 import { ForgeGiveaways, IGiveawayEvents } from ".."
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
+import { Giveaway } from "./Giveaway"
 
 export interface IGiveawayStartOptions {
     prize: string
@@ -18,15 +19,8 @@ export interface IGiveawayStartOptions {
     }
 }
 
-export interface IGiveaway extends IGiveawayStartOptions {
-    id: Snowflake
-    messageID?: Snowflake
-    entries: Snowflake[]
-    winners: Snowflake[]
-}
-
 export class GiveawaysManager {
-    private readonly giveaways = new Collection<Snowflake, IGiveaway>()
+    private readonly giveaways = new Collection<Snowflake, Giveaway>()
 
     public constructor(
         private readonly client: ForgeGiveaways,
@@ -40,14 +34,7 @@ export class GiveawaysManager {
      * @returns 
      */
     public async start(ctx: Context, options: IGiveawayStartOptions) {
-        const id = SnowflakeUtil.generate().toString()
-
-        const giveaway = {
-            ...options,
-            id,
-            entries: [],
-            winners: []
-        } as IGiveaway
+        const giveaway = new Giveaway(options)
 
         const result = await Interpreter.run({
             ...ctx.runtime,
@@ -71,9 +58,9 @@ export class GiveawaysManager {
         giveaway.messageID = (res && (chan as TextChannel)?.messages.cache.get(res) ? res : undefined)
 
         this.emitter.emit("giveawayStart", { data: giveaway })
+        this.giveaways.set(giveaway.id, giveaway)
+        setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration)
 
-        this.giveaways.set(id, giveaway)
-        setTimeout(() => this.end(ctx, id), options.duration)
         return giveaway
     }
 
@@ -92,8 +79,8 @@ export class GiveawaysManager {
             if (!member) return false
 
             const { requirements } = giveaway
-            const hasRequiredRoles = requirements?.requiredRoles?.every(x => member.roles.cache.has(x)) ?? true
-            const noRestrictedRoles = requirements?.restrictedRoles?.every(x => !member.roles.cache.has(x)) ?? true
+            const hasRequiredRoles = requirements?.requiredRoles?.every((x) => member.roles.cache.has(x)) ?? true
+            const noRestrictedRoles = requirements?.restrictedRoles?.every((x) => !member.roles.cache.has(x)) ?? true
             const notRestrictedMember = !requirements?.restrictedMembers?.includes(member.id)
 
             return hasRequiredRoles && noRestrictedRoles && notRestrictedMember
@@ -131,7 +118,7 @@ export class GiveawaysManager {
         if (!giveaway) return null
         const oldGiveaway = giveaway
 
-        const eligibleEntries = giveaway.entries.filter(e => !giveaway.winners.includes(e))
+        const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e))
         const newWinners = this.pickWinners(eligibleEntries, giveaway.winnersCount)
         giveaway.winners = newWinners
 
@@ -145,25 +132,6 @@ export class GiveawaysManager {
         this.emitter.emit("giveawayReroll", { newData: giveaway, oldData: oldGiveaway })
 
         return giveaway
-    }
-
-    public addEntry(id: Snowflake, userID: Snowflake) {
-        const giveaway = this.giveaways.get(id)
-        if (!giveaway || giveaway.entries.includes(userID)) return false
-
-        giveaway.entries.push(userID)
-        return true
-    }
-
-    public removeEntry(id: Snowflake, userID: Snowflake) {
-        const giveaway = this.giveaways.get(id)
-        if (!giveaway) return false
-
-        const index = giveaway.entries.indexOf(userID)
-        if (index === -1) return false
-
-        giveaway.entries.splice(index, 1)
-        return true
     }
 
     private pickWinners(entries: Snowflake[], amount: number) {

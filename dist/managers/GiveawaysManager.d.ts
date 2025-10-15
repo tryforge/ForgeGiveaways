@@ -3,6 +3,7 @@ import { Snowflake } from "discord.js";
 import { ForgeGiveaways, IGiveawayEvents } from "..";
 import { TypedEmitter } from "tiny-typed-emitter";
 import { TransformEvents } from "@tryforge/forge.db";
+import { Giveaway } from "./Giveaway";
 export interface IGiveawayStartOptions {
     prize: string;
     duration: number;
@@ -16,12 +17,6 @@ export interface IGiveawayStartOptions {
         restrictedMembers?: Snowflake[];
     };
 }
-export interface IGiveaway extends IGiveawayStartOptions {
-    id: Snowflake;
-    messageID?: Snowflake;
-    entries: Snowflake[];
-    winners: Snowflake[];
-}
 export declare class GiveawaysManager {
     private readonly client;
     private emitter;
@@ -33,23 +28,21 @@ export declare class GiveawaysManager {
      * @param options The start options for the giveaway.
      * @returns
      */
-    start(ctx: Context, options: IGiveawayStartOptions): Promise<IGiveaway>;
+    start(ctx: Context, options: IGiveawayStartOptions): Promise<Giveaway>;
     /**
      *
      * @param ctx The current context.
      * @param id The id of the giveaway to end.
      * @returns
      */
-    end(ctx: Context, id: Snowflake): Promise<IGiveaway | null>;
+    end(ctx: Context, id: Snowflake): Promise<Giveaway | null>;
     /**
      * Rerolls an existing giveaway.
      * @param ctx The current context.
      * @param id The id of the giveaway to reroll.
      * @returns
      */
-    reroll(ctx: Context, id: Snowflake): Promise<IGiveaway | null>;
-    addEntry(id: Snowflake, userID: Snowflake): boolean;
-    removeEntry(id: Snowflake, userID: Snowflake): boolean;
+    reroll(ctx: Context, id: Snowflake): Promise<Giveaway | null>;
     private pickWinners;
 }
 //# sourceMappingURL=GiveawaysManager.d.ts.map

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GiveawaysManager = void 0;
 const forgescript_1 = require("@tryforge/forgescript");
 const discord_js_1 = require("discord.js");
+const Giveaway_1 = require("./Giveaway");
 class GiveawaysManager {
     client;
     emitter;
@@ -18,13 +19,7 @@ class GiveawaysManager {
      * @returns
      */
     async start(ctx, options) {
-        const id = discord_js_1.SnowflakeUtil.generate().toString();
-        const giveaway = {
-            ...options,
-            id,
-            entries: [],
-            winners: []
-        };
+        const giveaway = new Giveaway_1.Giveaway(options);
         const result = await forgescript_1.Interpreter.run({
             ...ctx.runtime,
             environment: { giveaway },
@@ -45,8 +40,8 @@ class GiveawaysManager {
         const chan = ctx.client.channels.cache.get(giveaway.channelID);
         giveaway.messageID = (res && chan?.messages.cache.get(res) ? res : undefined);
         this.emitter.emit("giveawayStart", { data: giveaway });
-        this.giveaways.set(id, giveaway);
-        setTimeout(() => this.end(ctx, id), options.duration);
+        this.giveaways.set(giveaway.id, giveaway);
+        setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration);
         return giveaway;
     }
     /**
@@ -64,8 +59,8 @@ class GiveawaysManager {
             if (!member)
                 return false;
             const { requirements } = giveaway;
-            const hasRequiredRoles = requirements?.requiredRoles?.every(x => member.roles.cache.has(x)) ?? true;
-            const noRestrictedRoles = requirements?.restrictedRoles?.every(x => !member.roles.cache.has(x)) ?? true;
+            const hasRequiredRoles = requirements?.requiredRoles?.every((x) => member.roles.cache.has(x)) ?? true;
+            const noRestrictedRoles = requirements?.restrictedRoles?.every((x) => !member.roles.cache.has(x)) ?? true;
             const notRestrictedMember = !requirements?.restrictedMembers?.includes(member.id);
             return hasRequiredRoles && noRestrictedRoles && notRestrictedMember;
         });
@@ -97,7 +92,7 @@ class GiveawaysManager {
         if (!giveaway)
             return null;
         const oldGiveaway = giveaway;
-        const eligibleEntries = giveaway.entries.filter(e => !giveaway.winners.includes(e));
+        const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e));
         const newWinners = this.pickWinners(eligibleEntries, giveaway.winnersCount);
         giveaway.winners = newWinners;
         await forgescript_1.Interpreter.run({
@@ -108,23 +103,6 @@ class GiveawaysManager {
         });
         this.emitter.emit("giveawayReroll", { newData: giveaway, oldData: oldGiveaway });
         return giveaway;
-    }
-    addEntry(id, userID) {
-        const giveaway = this.giveaways.get(id);
-        if (!giveaway || giveaway.entries.includes(userID))
-            return false;
-        giveaway.entries.push(userID);
-        return true;
-    }
-    removeEntry(id, userID) {
-        const giveaway = this.giveaways.get(id);
-        if (!giveaway)
-            return false;
-        const index = giveaway.entries.indexOf(userID);
-        if (index === -1)
-            return false;
-        giveaway.entries.splice(index, 1);
-        return true;
     }
     pickWinners(entries, amount) {
         const shuffled = entries.sort(() => Math.random() - 0.5);
