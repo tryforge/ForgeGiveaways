@@ -26,7 +26,7 @@ exports.default = new forgescript_1.NativeFunction({
     ],
     output: forgescript_1.ArgType.Unknown,
     execute(ctx, [prop, sep]) {
-        console.log(`Extras: ${ctx.runtime.extras}`, `Obj: ${ctx.obj}`);
+        console.log(`Extras: ${JSON.stringify(ctx.runtime.extras, undefined, 4)}`, `Obj: ${JSON.stringify(ctx.obj, undefined, 4)}`);
         const giveaway = ctx.runtime.extras;
         if (!giveaway || prop)
             return this.success(giveaway_1.GiveawayProperties[prop](giveaway.newData, sep));
