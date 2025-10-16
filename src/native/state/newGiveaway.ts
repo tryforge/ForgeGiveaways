@@ -26,8 +26,7 @@ export default new NativeFunction({
     ],
     output: ArgType.Unknown,
     execute(ctx: Context, [prop, sep]) {
-        console.log(`Extras: ${JSON.stringify(ctx.runtime.extras, undefined, 4)}`, `Obj: ${JSON.stringify(ctx.obj, undefined, 4)}`)
-        const giveaway = ctx.runtime.extras as { newData: Giveaway }
+        const giveaway = ctx.runtime.obj as { newData: Giveaway }
         if (!giveaway || prop) return this.success(GiveawayProperties[prop](giveaway.newData, sep))
         return this.successJSON(giveaway.newData)
     }

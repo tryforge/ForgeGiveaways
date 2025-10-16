@@ -16,7 +16,6 @@ exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
                     command,
                     client: this,
                     data: command.compiled.code,
-                    extras: gw
                 });
             }
         }

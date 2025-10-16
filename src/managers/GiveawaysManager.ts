@@ -43,7 +43,7 @@ export class GiveawaysManager {
                 $sendMessage[$env[giveaway;channelID];
                     $title[🎉 GIVEAWAY 🎉]
                     $description[**Prize:** $env[giveaway;prize]\n**Winners:** $env[giveaway;winnersCount]]
-                    $addField[Ends;<t:$floor[$math[$getTimestamp+$env[giveaway;duration]]]:R>;true]
+                    $addField[Ends;<t:$floor[$math[($getTimestamp+$env[giveaway;duration])/1000]]:R>;true]
                     $addField[Hosted by;<@$env[giveaway;hostID]>;true]
                     $color[Green]
                     $addActionRow
