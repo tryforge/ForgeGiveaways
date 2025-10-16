@@ -3,7 +3,7 @@ import { Snowflake } from "discord.js";
 import { ForgeGiveaways, IGiveawayEvents } from "..";
 import { TypedEmitter } from "tiny-typed-emitter";
 import { TransformEvents } from "@tryforge/forge.db";
-import { Giveaway } from "../structures/Giveaway";
+import { Giveaway } from "../structures";
 export interface IGiveawayStartOptions {
     prize: string;
     duration: number;
@@ -23,14 +23,19 @@ export declare class GiveawaysManager {
     private readonly giveaways;
     constructor(client: ForgeGiveaways, emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>);
     /**
-     *
+     * Gets an existing giveaway.
+     * @param id The id of the giveaway to get.
+     */
+    get(id: Snowflake): Giveaway | undefined;
+    /**
+     * Starts a new giveaway on a guild.
      * @param ctx The current context.
      * @param options The start options for the giveaway.
      * @returns
      */
     start(ctx: Context, options: IGiveawayStartOptions): Promise<Giveaway>;
     /**
-     *
+     * Ends an existing giveaway.
      * @param ctx The current context.
      * @param id The id of the giveaway to end.
      * @returns

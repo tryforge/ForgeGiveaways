@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GiveawaysManager = void 0;
 const forgescript_1 = require("@tryforge/forgescript");
 const discord_js_1 = require("discord.js");
-const Giveaway_1 = require("../structures/Giveaway");
+const structures_1 = require("../structures");
 class GiveawaysManager {
     client;
     emitter;
@@ -13,13 +13,20 @@ class GiveawaysManager {
         this.emitter = emitter;
     }
     /**
-     *
+     * Gets an existing giveaway.
+     * @param id The id of the giveaway to get.
+     */
+    get(id) {
+        return this.giveaways.get(id);
+    }
+    /**
+     * Starts a new giveaway on a guild.
      * @param ctx The current context.
      * @param options The start options for the giveaway.
      * @returns
      */
     async start(ctx, options) {
-        const giveaway = new Giveaway_1.Giveaway(options);
+        const giveaway = new structures_1.Giveaway(options);
         const result = await forgescript_1.Interpreter.run({
             ...ctx.runtime,
             environment: { giveaway },
@@ -45,7 +52,7 @@ class GiveawaysManager {
         return giveaway;
     }
     /**
-     *
+     * Ends an existing giveaway.
      * @param ctx The current context.
      * @param id The id of the giveaway to end.
      * @returns

@@ -3,7 +3,7 @@ import { Collection, Snowflake, TextChannel } from "discord.js"
 import { ForgeGiveaways, IGiveawayEvents } from ".."
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
-import { Giveaway } from "../structures/Giveaway"
+import { Giveaway } from "../structures"
 
 export interface IGiveawayStartOptions {
     prize: string
@@ -28,7 +28,15 @@ export class GiveawaysManager {
     ) {}
 
     /**
-     * 
+     * Gets an existing giveaway.
+     * @param id The id of the giveaway to get.
+     */
+    public get(id: Snowflake) {
+        return this.giveaways.get(id)
+    }
+
+    /**
+     * Starts a new giveaway on a guild.
      * @param ctx The current context.
      * @param options The start options for the giveaway.
      * @returns 
@@ -65,7 +73,7 @@ export class GiveawaysManager {
     }
 
     /**
-     * 
+     * Ends an existing giveaway.
      * @param ctx The current context.
      * @param id The id of the giveaway to end.
      * @returns 
