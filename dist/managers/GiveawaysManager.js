@@ -15,9 +15,17 @@ class GiveawaysManager {
     /**
      * Gets an existing giveaway.
      * @param id The id of the giveaway to get.
+     * @returns
      */
     get(id) {
         return this.giveaways.get(id);
+    }
+    /**
+     * Gets all existing giveaways.
+     * @returns
+     */
+    getAll() {
+        return this.giveaways;
     }
     /**
      * Starts a new giveaway on a guild.
@@ -27,25 +35,34 @@ class GiveawaysManager {
      */
     async start(ctx, options) {
         const giveaway = new structures_1.Giveaway(options);
-        const result = await forgescript_1.Interpreter.run({
-            ...ctx.runtime,
-            environment: { giveaway },
-            data: forgescript_1.Compiler.compile(this.client.options?.messages?.start || `
-                $sendMessage[$env[giveaway;channelID];
-                    $title[🎉 GIVEAWAY 🎉]
-                    $description[**Prize:** $env[giveaway;prize]\n**Winners:** $env[giveaway;winnersCount]]
-                    $addField[Ends;<t:$floor[$math[($getTimestamp+$env[giveaway;duration])/1000]]:R>;true]
-                    $addField[Hosted by;<@$env[giveaway;hostID]>;true]
-                    $color[Green]
-                    $addActionRow
-                    $addButton[giveaway;Enter;Primary]
-                ;true]
-            `),
-            doNotSend: true,
-        });
-        const res = result?.trim();
         const chan = ctx.client.channels.cache.get(giveaway.channelID);
-        giveaway.messageID = (res && chan?.messages.cache.get(res) ? res : undefined);
+        if (this.client.options?.messages?.start) {
+            const result = await forgescript_1.Interpreter.run({
+                ...ctx.runtime,
+                environment: { giveaway },
+                data: forgescript_1.Compiler.compile(this.client.options?.messages?.start),
+                doNotSend: true,
+            });
+            const res = result?.trim();
+            giveaway.messageID = (res && chan?.messages.cache.get(res) ? res : undefined);
+        }
+        else {
+            const embed = new discord_js_1.EmbedBuilder()
+                .setTitle("🎉 GIVEAWAY 🎉")
+                .setDescription(`**Prize:** ${giveaway.prize}\n**Winners:** ${giveaway.winnersCount}`)
+                .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(Date.now() + giveaway.duration, "R")}` }, { name: "Hosted by", value: `<@${giveaway.hostID}>` })
+                .setColor("Green");
+            const comps = new discord_js_1.ActionRowBuilder()
+                .addComponents(new discord_js_1.ButtonBuilder()
+                .setCustomId(`giveaway-${giveaway.id}`)
+                .setLabel("Entry")
+                .setStyle(discord_js_1.ButtonStyle.Primary));
+            const msg = await chan?.send({
+                embeds: [embed],
+                components: [comps.toJSON()]
+            });
+            giveaway.messageID = msg?.id;
+        }
         this.emitter.emit("giveawayStart", giveaway);
         this.giveaways.set(giveaway.id, giveaway);
         setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration);
@@ -58,8 +75,8 @@ class GiveawaysManager {
      * @returns
      */
     async end(ctx, id) {
-        const giveaway = this.giveaways.get(id);
-        if (!giveaway)
+        const giveaway = this.get(id);
+        if (!giveaway || giveaway.hasEnded())
             return null;
         const eligibleEntries = giveaway.entries.filter(entry => {
             const member = ctx.guild?.members.cache.get(entry);
@@ -95,8 +112,8 @@ class GiveawaysManager {
      * @returns
      */
     async reroll(ctx, id) {
-        const giveaway = this.giveaways.get(id);
-        if (!giveaway)
+        const giveaway = this.get(id);
+        if (!giveaway || !giveaway.hasEnded())
             return null;
         const oldGiveaway = giveaway;
         const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e));

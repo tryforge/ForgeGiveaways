@@ -8,6 +8,7 @@ const getGiveaway_1 = __importDefault(require("../functions/getGiveaway"));
 const array_1 = __importDefault(require("../functions/array"));
 exports.default = new forgescript_1.NativeFunction({
     name: "$giveawayEntries",
+    version: "1.0.0",
     description: "Returns the entries of a giveaway",
     unwrap: true,
     brackets: false,

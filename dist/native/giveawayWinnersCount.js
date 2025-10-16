@@ -7,6 +7,7 @@ const forgescript_1 = require("@tryforge/forgescript");
 const getGiveaway_1 = __importDefault(require("../functions/getGiveaway"));
 exports.default = new forgescript_1.NativeFunction({
     name: "$giveawayWinnersCount",
+    version: "1.0.0",
     description: "Returns the winners count of a giveaway",
     unwrap: true,
     brackets: false,

@@ -4,6 +4,7 @@ const forgescript_1 = require("@tryforge/forgescript");
 const giveaway_1 = require("../../properties/giveaway");
 exports.default = new forgescript_1.NativeFunction({
     name: "$oldGiveaway",
+    version: "1.0.0",
     description: "Retrieves old data from an event whose context was a giveaway instance",
     unwrap: true,
     brackets: false,

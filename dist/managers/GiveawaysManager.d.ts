@@ -1,5 +1,5 @@
 import { Context } from "@tryforge/forgescript";
-import { Snowflake } from "discord.js";
+import { Collection, Snowflake } from "discord.js";
 import { ForgeGiveaways, IGiveawayEvents } from "..";
 import { TypedEmitter } from "tiny-typed-emitter";
 import { TransformEvents } from "@tryforge/forge.db";
@@ -25,8 +25,14 @@ export declare class GiveawaysManager {
     /**
      * Gets an existing giveaway.
      * @param id The id of the giveaway to get.
+     * @returns
      */
     get(id: Snowflake): Giveaway | undefined;
+    /**
+     * Gets all existing giveaways.
+     * @returns
+     */
+    getAll(): Collection<string, Giveaway>;
     /**
      * Starts a new giveaway on a guild.
      * @param ctx The current context.

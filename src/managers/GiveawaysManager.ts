@@ -1,5 +1,5 @@
 import { Compiler, Context, Interpreter } from "@tryforge/forgescript"
-import { Collection, Snowflake, TextChannel } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection, EmbedBuilder, Snowflake, TextChannel, time } from "discord.js"
 import { ForgeGiveaways, IGiveawayEvents } from ".."
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
@@ -30,9 +30,18 @@ export class GiveawaysManager {
     /**
      * Gets an existing giveaway.
      * @param id The id of the giveaway to get.
+     * @returns 
      */
     public get(id: Snowflake) {
         return this.giveaways.get(id)
+    }
+
+    /**
+     * Gets all existing giveaways.
+     * @returns 
+     */
+    public getAll() {
+        return this.giveaways
     }
 
     /**
@@ -43,27 +52,42 @@ export class GiveawaysManager {
      */
     public async start(ctx: Context, options: IGiveawayStartOptions) {
         const giveaway = new Giveaway(options)
+        const chan = ctx.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
 
-        const result = await Interpreter.run({
-            ...ctx.runtime,
-            environment: { giveaway },
-            data: Compiler.compile(this.client.options?.messages?.start || `
-                $sendMessage[$env[giveaway;channelID];
-                    $title[🎉 GIVEAWAY 🎉]
-                    $description[**Prize:** $env[giveaway;prize]\n**Winners:** $env[giveaway;winnersCount]]
-                    $addField[Ends;<t:$floor[$math[($getTimestamp+$env[giveaway;duration])/1000]]:R>;true]
-                    $addField[Hosted by;<@$env[giveaway;hostID]>;true]
-                    $color[Green]
-                    $addActionRow
-                    $addButton[giveaway;Enter;Primary]
-                ;true]
-            `),
-            doNotSend: true,
-        })
+        if (this.client.options?.messages?.start) {
+            const result = await Interpreter.run({
+                ...ctx.runtime,
+                environment: { giveaway },
+                data: Compiler.compile(this.client.options?.messages?.start),
+                doNotSend: true,
+            })
 
-        const res = result?.trim()
-        const chan = ctx.client.channels.cache.get(giveaway.channelID)
-        giveaway.messageID = (res && (chan as TextChannel)?.messages.cache.get(res) ? res : undefined)
+            const res = result?.trim()
+            giveaway.messageID = (res && chan?.messages.cache.get(res) ? res : undefined)
+        } else {
+            const embed = new EmbedBuilder()
+                .setTitle("🎉 GIVEAWAY 🎉")
+                .setDescription(`**Prize:** ${giveaway.prize}\n**Winners:** ${giveaway.winnersCount}`)
+                .setFields(
+                    { name: "Ends", value: `${time(Date.now() + giveaway.duration, "R")}` },
+                    { name: "Hosted by", value: `<@${giveaway.hostID}>` },
+                )
+                .setColor("Green")
+
+            const comps = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(`giveaway-${giveaway.id}`)
+                        .setLabel("Entry")
+                        .setStyle(ButtonStyle.Primary)
+                )
+
+            const msg = await chan?.send({
+                embeds: [embed],
+                components: [comps.toJSON()]
+            })
+            giveaway.messageID = msg?.id
+        }
 
         this.emitter.emit("giveawayStart", giveaway)
         this.giveaways.set(giveaway.id, giveaway)
@@ -79,8 +103,8 @@ export class GiveawaysManager {
      * @returns 
      */
     public async end(ctx: Context, id: Snowflake) {
-        const giveaway = this.giveaways.get(id)
-        if (!giveaway) return null
+        const giveaway = this.get(id)
+        if (!giveaway || giveaway.hasEnded()) return null
 
         const eligibleEntries = giveaway.entries.filter(entry => {
             const member = ctx.guild?.members.cache.get(entry)
@@ -122,8 +146,8 @@ export class GiveawaysManager {
      * @returns 
      */
     public async reroll(ctx: Context, id: Snowflake) {
-        const giveaway = this.giveaways.get(id)
-        if (!giveaway) return null
+        const giveaway = this.get(id)
+        if (!giveaway || !giveaway.hasEnded()) return null
         const oldGiveaway = giveaway
 
         const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e))

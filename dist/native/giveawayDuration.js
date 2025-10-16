@@ -7,6 +7,7 @@ const forgescript_1 = require("@tryforge/forgescript");
 const getGiveaway_1 = __importDefault(require("../functions/getGiveaway"));
 exports.default = new forgescript_1.NativeFunction({
     name: "$giveawayDuration",
+    version: "1.0.0",
     description: "Returns the duration of a giveaway in ms",
     unwrap: true,
     brackets: false,

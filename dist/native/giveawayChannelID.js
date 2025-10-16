@@ -7,6 +7,7 @@ const forgescript_1 = require("@tryforge/forgescript");
 const getGiveaway_1 = __importDefault(require("../functions/getGiveaway"));
 exports.default = new forgescript_1.NativeFunction({
     name: "$giveawayChannelID",
+    version: "1.0.0",
     description: "Returns the channel id of a giveaway",
     unwrap: true,
     brackets: false,
