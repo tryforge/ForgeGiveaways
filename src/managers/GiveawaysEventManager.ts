@@ -3,28 +3,10 @@ import { Giveaway } from "../structures"
 import { ForgeGiveaways } from ".."
 
 export interface IGiveawayEvents {
-    giveawayStart: [
-        {
-            newData: Giveaway | null
-        }
-    ]
-    giveawayEnd: [
-        {
-            newData: Giveaway | null
-        }
-    ]
-    giveawayEdit: [
-        {
-            newData: Giveaway | null
-            oldData: Giveaway | null
-        }
-    ]
-    giveawayReroll: [
-        {
-            newData: Giveaway | null
-            oldData: Giveaway | null
-        }
-    ]
+    giveawayStart: [Giveaway]
+    giveawayEnd: [Giveaway]
+    giveawayEdit: [Giveaway, Giveaway]
+    giveawayReroll: [Giveaway, Giveaway]
 }
 
 export class GiveawaysEventHandler<T extends keyof IGiveawayEvents> extends BaseEventHandler<IGiveawayEvents, T> {

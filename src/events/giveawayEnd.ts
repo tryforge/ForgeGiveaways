@@ -1,6 +1,7 @@
 import { Interpreter } from "@tryforge/forgescript"
 import { GiveawaysEventHandler } from "../managers/GiveawaysEventManager"
 import { ForgeGiveaways } from ".."
+import { Context } from "../structures"
 
 export default new GiveawaysEventHandler({
     name: "giveawayEnd",
@@ -11,14 +12,20 @@ export default new GiveawaysEventHandler({
 
         if (commands?.length) {
             for (const command of commands) {
-                Interpreter.run({
+                const ctx = new Context({
                     obj: gw,
                     command,
                     client: this,
+                    states: {
+                        giveaway: {
+                            new: gw,
+                        }
+                    },
                     data: command.compiled.code,
                 })
+
+                Interpreter.run(ctx)
             }
         }
-
     },
 })

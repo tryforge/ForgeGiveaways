@@ -39,7 +39,7 @@ class GiveawaysManager {
         const res = result?.trim();
         const chan = ctx.client.channels.cache.get(giveaway.channelID);
         giveaway.messageID = (res && chan?.messages.cache.get(res) ? res : undefined);
-        this.emitter.emit("giveawayStart", { newData: giveaway });
+        this.emitter.emit("giveawayStart", giveaway);
         this.giveaways.set(giveaway.id, giveaway);
         setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration);
         return giveaway;
@@ -78,7 +78,7 @@ class GiveawaysManager {
             `),
             doNotSend: true,
         });
-        this.emitter.emit("giveawayEnd", { newData: giveaway });
+        this.emitter.emit("giveawayEnd", giveaway);
         return giveaway;
     }
     /**
@@ -101,7 +101,7 @@ class GiveawaysManager {
             data: forgescript_1.Compiler.compile(this.client.options?.messages?.reroll),
             doNotSend: true,
         });
-        this.emitter.emit("giveawayReroll", { newData: giveaway, oldData: oldGiveaway });
+        this.emitter.emit("giveawayReroll", giveaway, oldGiveaway);
         return giveaway;
     }
     pickWinners(entries, amount) {

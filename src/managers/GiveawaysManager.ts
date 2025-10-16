@@ -57,7 +57,7 @@ export class GiveawaysManager {
         const chan = ctx.client.channels.cache.get(giveaway.channelID)
         giveaway.messageID = (res && (chan as TextChannel)?.messages.cache.get(res) ? res : undefined)
 
-        this.emitter.emit("giveawayStart", { newData: giveaway })
+        this.emitter.emit("giveawayStart", giveaway)
         this.giveaways.set(giveaway.id, giveaway)
         setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration)
 
@@ -102,7 +102,7 @@ export class GiveawaysManager {
             doNotSend: true,
         })
 
-        this.emitter.emit("giveawayEnd", { newData: giveaway })
+        this.emitter.emit("giveawayEnd", giveaway)
 
         return giveaway
     }
@@ -129,7 +129,7 @@ export class GiveawaysManager {
             doNotSend: true,
         })
 
-        this.emitter.emit("giveawayReroll", { newData: giveaway, oldData: oldGiveaway })
+        this.emitter.emit("giveawayReroll", giveaway, oldGiveaway)
 
         return giveaway
     }

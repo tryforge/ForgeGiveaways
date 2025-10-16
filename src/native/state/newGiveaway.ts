@@ -1,6 +1,5 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
 import { GiveawayProperties, GiveawayProperty } from "../../properties/giveaway"
-import { Giveaway } from "../../structures"
 
 export default new NativeFunction({
     name: "$newGiveaway",
@@ -26,8 +25,8 @@ export default new NativeFunction({
     ],
     output: ArgType.Unknown,
     execute(ctx, [prop, sep]) {
-        const giveaway = ctx.runtime.obj as { newData: Giveaway }
-        if (!giveaway || prop) return this.success(GiveawayProperties[prop](giveaway.newData, sep))
-        return this.successJSON(giveaway.newData)
+        const giveaway = ctx.extendedStates?.giveaway?.new
+        if (!giveaway || prop) return this.success(GiveawayProperties[prop](giveaway, sep))
+        return this.successJSON(giveaway)
     }
 })

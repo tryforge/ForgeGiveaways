@@ -26,10 +26,10 @@ exports.default = new forgescript_1.NativeFunction({
     ],
     output: forgescript_1.ArgType.Unknown,
     execute(ctx, [prop, sep]) {
-        const giveaway = ctx.runtime.obj;
+        const giveaway = ctx.extendedStates?.giveaway?.new;
         if (!giveaway || prop)
-            return this.success(giveaway_1.GiveawayProperties[prop](giveaway.newData, sep));
-        return this.successJSON(giveaway.newData);
+            return this.success(giveaway_1.GiveawayProperties[prop](giveaway, sep));
+        return this.successJSON(giveaway);
     }
 });
 //# sourceMappingURL=newGiveaway.js.map
