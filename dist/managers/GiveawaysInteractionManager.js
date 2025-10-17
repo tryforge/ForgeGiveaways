@@ -21,16 +21,20 @@ class GiveawaysInteractionManager {
             const member = interaction.member;
             if (!(member instanceof discord_js_1.GuildMember && giveaway.canEnter(member)))
                 return;
-            if (giveaway.hasEntered(member.id)) {
-                const newGiveaway = giveaway.removeEntry(member.id);
-                if (newGiveaway)
-                    client.emitter.emit("giveawayEntryRemove", newGiveaway, giveaway);
+            const oldGiveaway = giveaway;
+            const entered = giveaway.hasEntered(member.id);
+            if (entered) {
+                giveaway.removeEntry(member.id);
+                client.emitter.emit("giveawayEntryRemove", giveaway, oldGiveaway);
             }
             else {
-                const newGiveaway = giveaway.addEntry(member.id);
-                if (newGiveaway)
-                    client.emitter.emit("giveawayEntryAdd", newGiveaway, giveaway);
+                giveaway.addEntry(member.id);
+                client.emitter.emit("giveawayEntryAdd", giveaway, oldGiveaway);
             }
+            interaction.reply({
+                content: `You have successfully ${entered ? "left" : "entered"} the giveaway.`,
+                flags: discord_js_1.MessageFlags.Ephemeral,
+            });
         });
     }
 }

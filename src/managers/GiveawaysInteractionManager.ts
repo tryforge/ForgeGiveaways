@@ -1,5 +1,5 @@
 import { ForgeClient } from "@tryforge/forgescript"
-import { GuildMember } from "discord.js"
+import { GuildMember, MessageFlags } from "discord.js"
 import { ForgeGiveaways } from ".."
 
 export class GiveawaysInteractionManager {
@@ -19,13 +19,21 @@ export class GiveawaysInteractionManager {
             const member = interaction.member
             if (!(member instanceof GuildMember && giveaway.canEnter(member))) return
 
-            if (giveaway.hasEntered(member.id)) {
-                const newGiveaway = giveaway.removeEntry(member.id)
-                if (newGiveaway) client.emitter.emit("giveawayEntryRemove", newGiveaway, giveaway)
+            const oldGiveaway = giveaway
+            const entered = giveaway.hasEntered(member.id)
+
+            if (entered) {
+                giveaway.removeEntry(member.id)
+                client.emitter.emit("giveawayEntryRemove", giveaway, oldGiveaway)
             } else {
-                const newGiveaway = giveaway.addEntry(member.id)
-                if (newGiveaway) client.emitter.emit("giveawayEntryAdd", newGiveaway, giveaway)
+                giveaway.addEntry(member.id)
+                client.emitter.emit("giveawayEntryAdd", giveaway, oldGiveaway)
             }
+
+            interaction.reply({
+                content: `You have successfully ${entered ? "left" : "entered"} the giveaway.`,
+                flags: MessageFlags.Ephemeral,
+            })
         })
     }
 }
