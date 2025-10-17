@@ -18,7 +18,7 @@ export default new NativeFunction({
     ],
     output: ArgType.Message,
     execute(ctx, [id]) {
-        const giveaway = getGiveaway(ctx, id)
+        const giveaway = getGiveaway(ctx, id) ?? ctx.giveaway
         return this.success(giveaway?.messageID)
     }
 })

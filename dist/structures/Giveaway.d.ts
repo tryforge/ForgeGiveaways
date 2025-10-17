@@ -25,6 +25,10 @@ export declare class Giveaway implements IGiveaway {
      */
     winnersCount: number;
     /**
+     * Returns whether this giveaway has ended.
+     */
+    hasEnded: boolean;
+    /**
      * The id of the host for this giveaway.
      */
     hostID: Snowflake;
@@ -44,10 +48,6 @@ export declare class Giveaway implements IGiveaway {
      * The randomly selected winners of this giveaway.
      */
     winners: Snowflake[];
-    /**
-     * Returns whether this giveaway has ended.
-     */
-    hasEnded: boolean;
     /**
      * The requirements all participants have to meet for entering this giveaway.
      */

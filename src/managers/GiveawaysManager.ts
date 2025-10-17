@@ -3,7 +3,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection, EmbedBuilder,
 import { ForgeGiveaways, IGiveawayEvents } from ".."
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
-import { Giveaway } from "../structures"
+import { Giveaway, IGiveawayRequirements } from "../structures"
 
 export interface IGiveawayStartOptions {
     prize: string
@@ -12,11 +12,7 @@ export interface IGiveawayStartOptions {
     hostID: Snowflake
     guildID: Snowflake
     channelID: Snowflake
-    requirements?: {
-        requiredRoles?: Snowflake[]
-        restrictedRoles?: Snowflake[]
-        restrictedMembers?: Snowflake[]
-    }
+    requirements?: IGiveawayRequirements
 }
 
 export class GiveawaysManager {

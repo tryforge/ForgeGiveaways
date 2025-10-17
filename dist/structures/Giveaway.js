@@ -1,8 +1,18 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Giveaway = void 0;
 const discord_js_1 = require("discord.js");
-class Giveaway {
+const typeorm_1 = require("typeorm");
+let Giveaway = class Giveaway {
     /**
      * The id of this giveaway.
      */
@@ -19,6 +29,10 @@ class Giveaway {
      * The max amount of winners for this giveaway.
      */
     winnersCount;
+    /**
+     * Returns whether this giveaway has ended.
+     */
+    hasEnded;
     /**
      * The id of the host for this giveaway.
      */
@@ -39,10 +53,6 @@ class Giveaway {
      * The randomly selected winners of this giveaway.
      */
     winners;
-    /**
-     * Returns whether this giveaway has ended.
-     */
-    hasEnded;
     /**
      * The requirements all participants have to meet for entering this giveaway.
      */
@@ -115,6 +125,58 @@ class Giveaway {
     clone() {
         return structuredClone(this);
     }
-}
+};
 exports.Giveaway = Giveaway;
+__decorate([
+    (0, typeorm_1.PrimaryColumn)(),
+    __metadata("design:type", String)
+], Giveaway.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Giveaway.prototype, "prize", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Giveaway.prototype, "duration", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Giveaway.prototype, "winnersCount", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Boolean)
+], Giveaway.prototype, "hasEnded", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Giveaway.prototype, "hostID", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Giveaway.prototype, "guildID", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Giveaway.prototype, "channelID", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Array)
+], Giveaway.prototype, "entries", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Array)
+], Giveaway.prototype, "winners", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Object)
+], Giveaway.prototype, "requirements", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Giveaway.prototype, "messageID", void 0);
+exports.Giveaway = Giveaway = __decorate([
+    (0, typeorm_1.Entity)(),
+    __metadata("design:paramtypes", [Object])
+], Giveaway);
 //# sourceMappingURL=Giveaway.js.map

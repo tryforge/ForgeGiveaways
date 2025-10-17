@@ -25,7 +25,7 @@ export default new NativeFunction({
     ],
     output: array<ArgType.Member>(),
     execute(ctx, [id, sep]) {
-        const giveaway = getGiveaway(ctx, id)
+        const giveaway = getGiveaway(ctx, id) ?? ctx.giveaway
         return this.success(giveaway?.requirements?.restrictedMembers?.join(sep ?? ", "))
     }
 })

@@ -1,5 +1,6 @@
 import { GuildMember, Snowflake, SnowflakeUtil } from "discord.js"
 import { IGiveawayStartOptions } from "../managers/GiveawaysManager"
+import { Column, Entity, PrimaryColumn } from "typeorm"
 
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake
@@ -9,65 +10,78 @@ export interface IGiveaway extends IGiveawayStartOptions {
     winners: Snowflake[]
 }
 
+@Entity()
 export class Giveaway implements IGiveaway {
     /**
      * The id of this giveaway.
      */
+    @PrimaryColumn()
     public id: Snowflake
 
     /**
      * The prize of this giveaway.
      */
+    @Column()
     public prize: string
 
     /**
      * The duration of the giveaway in ms.
      */
+    @Column()
     public duration: number
 
     /**
      * The max amount of winners for this giveaway.
      */
+    @Column()
     public winnersCount: number
+
+    /**
+     * Returns whether this giveaway has ended.
+     */
+    @Column()
+    public hasEnded: boolean
 
     /**
      * The id of the host for this giveaway.
      */
+    @Column()
     public hostID: Snowflake
 
     /**
      * The id of the guild this giveaway has been created on.
      */
+    @Column()
     public guildID: Snowflake
 
     /**
      * The id of the channel this giveaway has been created in.
      */
+    @Column()
     public channelID: Snowflake
 
     /**
      * The user entries for this giveaway.
      */
+    @Column()
     public entries: Snowflake[]
 
     /**
      * The randomly selected winners of this giveaway.
      */
+    @Column()
     public winners: Snowflake[]
-
-    /**
-     * Returns whether this giveaway has ended.
-     */
-    public hasEnded: boolean
 
     /**
      * The requirements all participants have to meet for entering this giveaway.
      */
+    @Column()
     public requirements?: IGiveawayStartOptions["requirements"]
 
     /**
      * The id of the message this giveaway is associated with.
      */
+    @Column()
     public messageID?: Snowflake
 
     constructor(options: IGiveawayStartOptions & { id?: Snowflake }) {

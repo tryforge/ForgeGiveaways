@@ -22,7 +22,7 @@ exports.default = new forgescript_1.NativeFunction({
     ],
     output: forgescript_1.ArgType.Channel,
     execute(ctx, [id]) {
-        const giveaway = (0, getGiveaway_1.default)(ctx, id);
+        const giveaway = (0, getGiveaway_1.default)(ctx, id) ?? ctx.giveaway;
         return this.success(giveaway?.channelID);
     }
 });

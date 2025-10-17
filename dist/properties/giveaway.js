@@ -11,6 +11,7 @@ var GiveawayProperty;
     GiveawayProperty["prize"] = "prize";
     GiveawayProperty["duration"] = "duration";
     GiveawayProperty["winnersCount"] = "winnersCount";
+    GiveawayProperty["hasEnded"] = "hasEnded";
     GiveawayProperty["hostID"] = "hostID";
     GiveawayProperty["guildID"] = "guildID";
     GiveawayProperty["channelID"] = "channelID";
@@ -26,6 +27,7 @@ exports.GiveawayProperties = (0, defineProperties_1.default)({
     prize: (i) => i?.prize,
     duration: (i) => i?.duration,
     winnersCount: (i) => i?.winnersCount,
+    hasEnded: (i) => i?.hasEnded,
     hostID: (i) => i?.hostID,
     guildID: (i) => i?.guildID,
     channelID: (i) => i?.channelID,

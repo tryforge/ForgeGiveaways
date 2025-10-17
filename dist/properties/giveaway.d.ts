@@ -4,6 +4,7 @@ export declare enum GiveawayProperty {
     prize = "prize",
     duration = "duration",
     winnersCount = "winnersCount",
+    hasEnded = "hasEnded",
     hostID = "hostID",
     guildID = "guildID",
     channelID = "channelID",

@@ -1,1 +1,1 @@
-{"GiveawayProperty":["id","prize","duration","winnersCount","hostID","guildID","channelID","messageID","entries","winners","requiredRoles","restrictedRoles","restrictedMembers"]}
+{"GiveawayProperty":["id","prize","duration","winnersCount","hasEnded","hostID","guildID","channelID","messageID","entries","winners","requiredRoles","restrictedRoles","restrictedMembers"]}

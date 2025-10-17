@@ -57,7 +57,8 @@ export default new NativeFunction({
             hostID: host.id,
             duration,
             prize,
-            winnersCount: winners || 1
+            winnersCount: winners || 1,
+            requirements: ctx.requirements
         })
 
         return this.success(giveaway.id)
