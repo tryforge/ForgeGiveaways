@@ -110,6 +110,13 @@ class Giveaway {
         const notRestrictedMember = !req.restrictedMembers?.includes(member.id);
         return hasRequiredRoles && noRestrictedRoles && notRestrictedMember;
     }
+    /**
+     * Clones this giveaway.
+     * @returns
+     */
+    clone() {
+        return structuredClone(this);
+    }
 }
 exports.Giveaway = Giveaway;
 //# sourceMappingURL=Giveaway.js.map

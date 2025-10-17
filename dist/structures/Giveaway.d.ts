@@ -83,5 +83,10 @@ export declare class Giveaway implements IGiveaway {
      * @returns
      */
     canEnter(member: GuildMember): boolean;
+    /**
+     * Clones this giveaway.
+     * @returns
+     */
+    clone(): this;
 }
 //# sourceMappingURL=Giveaway.d.ts.map

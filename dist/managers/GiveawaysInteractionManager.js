@@ -21,7 +21,7 @@ class GiveawaysInteractionManager {
             const member = interaction.member;
             if (!(member instanceof discord_js_1.GuildMember && giveaway.canEnter(member)))
                 return;
-            const oldGiveaway = giveaway;
+            const oldGiveaway = giveaway.clone();
             const entered = giveaway.hasEntered(member.id);
             if (entered) {
                 giveaway.removeEntry(member.id);

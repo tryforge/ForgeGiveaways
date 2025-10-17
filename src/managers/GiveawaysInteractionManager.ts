@@ -19,7 +19,7 @@ export class GiveawaysInteractionManager {
             const member = interaction.member
             if (!(member instanceof GuildMember && giveaway.canEnter(member))) return
 
-            const oldGiveaway = giveaway
+            const oldGiveaway = giveaway.clone()
             const entered = giveaway.hasEntered(member.id)
 
             if (entered) {

@@ -141,7 +141,7 @@ export class GiveawaysManager {
     public async reroll(ctx: Context, id: Snowflake) {
         const giveaway = this.get(id)
         if (!giveaway || !giveaway.hasEnded()) return null
-        const oldGiveaway = giveaway
+        const oldGiveaway = giveaway.clone()
 
         const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e))
         const newWinners = this._pickWinners(eligibleEntries, giveaway.winnersCount)

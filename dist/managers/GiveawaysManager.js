@@ -110,7 +110,7 @@ class GiveawaysManager {
         const giveaway = this.get(id);
         if (!giveaway || !giveaway.hasEnded())
             return null;
-        const oldGiveaway = giveaway;
+        const oldGiveaway = giveaway.clone();
         const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e));
         const newWinners = this._pickWinners(eligibleEntries, giveaway.winnersCount);
         giveaway.winners = newWinners;

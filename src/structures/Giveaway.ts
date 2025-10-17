@@ -129,4 +129,12 @@ export class Giveaway implements IGiveaway {
         const notRestrictedMember = !req.restrictedMembers?.includes(member.id)
         return hasRequiredRoles && noRestrictedRoles && notRestrictedMember
     }
+
+    /**
+     * Clones this giveaway.
+     * @returns
+     */
+    public clone() {
+        return structuredClone(this)
+    }
 }
