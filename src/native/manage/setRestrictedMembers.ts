@@ -16,6 +16,7 @@ export default new NativeFunction({
         },
     ],
     execute(ctx, [members]) {
+        ctx.requirements ??= {}
         ctx.requirements.restrictedMembers = members.map((x) => x.id)
         return this.success()
     }

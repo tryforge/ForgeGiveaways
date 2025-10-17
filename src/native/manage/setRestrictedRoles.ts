@@ -16,6 +16,7 @@ export default new NativeFunction({
         },
     ],
     execute(ctx, [roles]) {
+        ctx.requirements ??= {}
         ctx.requirements.restrictedRoles = roles
         return this.success()
     }

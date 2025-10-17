@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
 exports.default = new forgescript_1.NativeFunction({
     name: "$setRequiredRoles",
+    version: "1.0.0",
     description: "Sets the required roles for current giveaway",
     unwrap: true,
     brackets: true,
@@ -16,6 +17,7 @@ exports.default = new forgescript_1.NativeFunction({
         },
     ],
     execute(ctx, [roles]) {
+        ctx.requirements ??= {};
         ctx.requirements.requiredRoles = roles;
         return this.success();
     }

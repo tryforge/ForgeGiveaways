@@ -23,7 +23,7 @@ declare module "@tryforge/forgescript" {
     interface Context {
         giveaway?: Giveaway | null;
         extendedStates?: ExtendedStates;
-        requirements: Partial<IGiveawayRequirements>;
+        requirements?: Partial<IGiveawayRequirements>;
     }
 }
 //# sourceMappingURL=Context.d.ts.map
