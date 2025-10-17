@@ -154,7 +154,7 @@ export class GiveawaysManager {
             doNotSend: true,
         })
 
-        this.emitter.emit("giveawayReroll", giveaway, oldGiveaway)
+        this.emitter.emit("giveawayReroll", oldGiveaway, giveaway)
 
         return giveaway
     }

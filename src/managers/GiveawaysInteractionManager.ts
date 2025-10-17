@@ -24,10 +24,10 @@ export class GiveawaysInteractionManager {
 
             if (entered) {
                 giveaway.removeEntry(member.id)
-                client.emitter.emit("giveawayEntryRemove", giveaway, oldGiveaway)
+                client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway)
             } else {
                 giveaway.addEntry(member.id)
-                client.emitter.emit("giveawayEntryAdd", giveaway, oldGiveaway)
+                client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway)
             }
 
             interaction.reply({

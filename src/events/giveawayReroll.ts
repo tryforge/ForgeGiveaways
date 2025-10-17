@@ -7,7 +7,7 @@ export default new GiveawaysEventHandler({
     name: "giveawayReroll",
     version: "1.0.0",
     description: "This event is fired when a giveaway was rerolled",
-    listener: async function(newer, old) {
+    listener: async function(old, newer) {
         const commands = this.getExtension(ForgeGiveaways, true).commands?.get("giveawayReroll")
 
         if (commands?.length) {

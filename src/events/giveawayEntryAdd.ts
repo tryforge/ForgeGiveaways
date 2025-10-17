@@ -7,7 +7,7 @@ export default new GiveawaysEventHandler({
     name: "giveawayEntryAdd",
     version: "1.0.0",
     description: "This event is fired when a giveaway entry is added",
-    listener: async function(newer, old) {
+    listener: async function(old, newer) {
         const commands = this.getExtension(ForgeGiveaways, true).commands?.get("giveawayEntryAdd")
 
         if (commands?.length) {

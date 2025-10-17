@@ -120,7 +120,7 @@ class GiveawaysManager {
             data: forgescript_1.Compiler.compile(this.client.options?.messages?.reroll),
             doNotSend: true,
         });
-        this.emitter.emit("giveawayReroll", giveaway, oldGiveaway);
+        this.emitter.emit("giveawayReroll", oldGiveaway, giveaway);
         return giveaway;
     }
     _pickWinners(entries, amount) {
