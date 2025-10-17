@@ -60,7 +60,7 @@ class GiveawaysManager {
             const msg = await chan?.send({
                 embeds: [embed],
                 components: [comps.toJSON()]
-            });
+            }).catch(ctx.noop);
             giveaway.messageID = msg?.id;
         }
         this.emitter.emit("giveawayStart", giveaway);
@@ -86,18 +86,37 @@ class GiveawaysManager {
         });
         const winners = this._pickWinners(eligibleEntries, giveaway.winnersCount);
         giveaway.winners = winners;
-        await forgescript_1.Interpreter.run({
-            ...ctx.runtime,
-            environment: { giveaway },
-            data: forgescript_1.Compiler.compile(this.client.options?.messages?.end || `
-                $!editMessage[$env[giveaway;channelID];$env[giveaway;messageID];
-                    $fetchEmbeds[$env[giveaway;channelID];$env[giveaway;messageID]]
-                    $title[🎉 GIVEAWAY ENDED 🎉]
-                    $color[Red]
-                ]
-            `),
-            doNotSend: true,
-        });
+        if (this.client.options?.messages?.end) {
+            await forgescript_1.Interpreter.run({
+                ...ctx.runtime,
+                environment: { giveaway },
+                data: forgescript_1.Compiler.compile(this.client.options?.messages?.end),
+                doNotSend: true,
+            });
+        }
+        else {
+            const chan = ctx.client.channels.cache.get(giveaway.channelID);
+            const msg = giveaway.messageID ? await chan?.messages.fetch(giveaway.messageID).catch(ctx.noop) : undefined;
+            if (msg) {
+                const oldEmbed = msg.embeds[0];
+                const embed = discord_js_1.EmbedBuilder.from(oldEmbed)
+                    .setTitle("🎉 GIVEAWAY ENDED 🎉")
+                    .spliceFields(0, 1, { name: "Ended", value: oldEmbed.fields[0].value, inline: true })
+                    .setColor("Red");
+                msg.edit({
+                    embeds: [embed]
+                }).catch(ctx.noop);
+                const plural = winners.length > 1 ? "s" : "";
+                msg.reply({
+                    content: winners.length === 0
+                        ? "😢 No winners for this giveaway!"
+                        : `🎉 Congratulations to the winner${plural} of **${giveaway.prize}**!\n🏆 **Winner${plural}:** ${winners.map((id) => `<@${id}>`).join(", ")}`,
+                    allowedMentions: {
+                        repliedUser: false
+                    }
+                }).catch(ctx.noop);
+            }
+        }
         this.emitter.emit("giveawayEnd", giveaway);
         return giveaway;
     }

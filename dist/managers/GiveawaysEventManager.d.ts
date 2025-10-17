@@ -1,6 +1,7 @@
 import { BaseEventHandler, ForgeClient } from "@tryforge/forgescript";
 import { Giveaway } from "../structures";
 export interface IGiveawayEvents {
+    databaseConnect: [];
     giveawayStart: [Giveaway];
     giveawayEnd: [Giveaway];
     giveawayEdit: [Giveaway, Giveaway];

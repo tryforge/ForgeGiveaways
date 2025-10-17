@@ -3,6 +3,7 @@ import { Giveaway } from "../structures"
 import { ForgeGiveaways } from ".."
 
 export interface IGiveawayEvents {
+    databaseConnect: []
     giveawayStart: [Giveaway]
     giveawayEnd: [Giveaway]
     giveawayEdit: [Giveaway, Giveaway]
