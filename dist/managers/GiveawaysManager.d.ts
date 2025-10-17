@@ -1,5 +1,5 @@
-import { Context } from "@tryforge/forgescript";
 import { Collection, Snowflake } from "discord.js";
+import { Context } from "@tryforge/forgescript";
 import { ForgeGiveaways, IGiveawayEvents } from "..";
 import { TypedEmitter } from "tiny-typed-emitter";
 import { TransformEvents } from "@tryforge/forge.db";

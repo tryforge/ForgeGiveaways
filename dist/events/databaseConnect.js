@@ -6,6 +6,7 @@ const __1 = require("..");
 const structures_1 = require("../structures");
 exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
     name: "databaseConnect",
+    version: "1.0.0",
     description: "This event is fired when the database has connected",
     listener: async function () {
         const commands = this.getExtension(__1.ForgeGiveaways, true).commands?.get("databaseConnect");

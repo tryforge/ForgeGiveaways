@@ -1,5 +1,5 @@
-import { Compiler, Context, Interpreter } from "@tryforge/forgescript"
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection, EmbedBuilder, Snowflake, TextChannel, time } from "discord.js"
+import { Compiler, Context, Interpreter } from "@tryforge/forgescript"
 import { ForgeGiveaways, IGiveawayEvents } from ".."
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
@@ -131,16 +131,18 @@ export class GiveawaysManager {
                     .setColor("Red")
 
                 msg.edit({
-                    embeds: [embed]
+                    embeds: [embed],
+                    components: []
                 }).catch(ctx.noop)
 
                 const plural = winners.length > 1 ? "s" : ""
                 msg.reply({
                     content: winners.length === 0
                         ? "😢 No winners for this giveaway!"
-                        : `🎉 Congratulations to the winner${plural} of **${giveaway.prize}**!\n🏆 **Winner${plural}:** ${winners.map((id) => `<@${id}>`).join(", ")}`,
+                        : `🎉 Congratulations to the winner${plural} of **${giveaway.prize}**!\n> 🏆 **Winner${plural}:** ${winners.map((id) => `<@${id}>`).join(", ")}`,
                     allowedMentions: {
-                        repliedUser: false
+                        repliedUser: false,
+                        parse: ["users"]
                     }
                 }).catch(ctx.noop)
             }

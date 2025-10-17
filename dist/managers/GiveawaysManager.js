@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GiveawaysManager = void 0;
-const forgescript_1 = require("@tryforge/forgescript");
 const discord_js_1 = require("discord.js");
+const forgescript_1 = require("@tryforge/forgescript");
 const structures_1 = require("../structures");
 class GiveawaysManager {
     client;
@@ -104,15 +104,17 @@ class GiveawaysManager {
                     .spliceFields(0, 1, { name: "Ended", value: oldEmbed.fields[0].value, inline: true })
                     .setColor("Red");
                 msg.edit({
-                    embeds: [embed]
+                    embeds: [embed],
+                    components: []
                 }).catch(ctx.noop);
                 const plural = winners.length > 1 ? "s" : "";
                 msg.reply({
                     content: winners.length === 0
                         ? "😢 No winners for this giveaway!"
-                        : `🎉 Congratulations to the winner${plural} of **${giveaway.prize}**!\n🏆 **Winner${plural}:** ${winners.map((id) => `<@${id}>`).join(", ")}`,
+                        : `🎉 Congratulations to the winner${plural} of **${giveaway.prize}**!\n> 🏆 **Winner${plural}:** ${winners.map((id) => `<@${id}>`).join(", ")}`,
                     allowedMentions: {
-                        repliedUser: false
+                        repliedUser: false,
+                        parse: ["users"]
                     }
                 }).catch(ctx.noop);
             }
