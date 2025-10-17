@@ -17,6 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ForgeGiveaways = void 0;
 const forgescript_1 = require("@tryforge/forgescript");
 const GiveawaysCommandManager_1 = require("./managers/GiveawaysCommandManager");
+const GiveawaysInteractionManager_1 = require("./managers/GiveawaysInteractionManager");
 const GiveawaysManager_1 = require("./managers/GiveawaysManager");
 const tiny_typed_emitter_1 = require("tiny-typed-emitter");
 class ForgeGiveaways extends forgescript_1.ForgeExtension {
@@ -36,6 +37,7 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
         this.commands = new GiveawaysCommandManager_1.GiveawaysCommandManager(client);
         forgescript_1.EventManager.load("ForgeGiveawaysEvents", __dirname + "/events");
         this.load(__dirname + "/native");
+        new GiveawaysInteractionManager_1.GiveawaysInteractionManager(client);
         if (this.options?.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
         }

@@ -69,15 +69,15 @@ export class GiveawaysManager {
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`**Prize:** ${giveaway.prize}\n**Winners:** ${giveaway.winnersCount}`)
                 .setFields(
-                    { name: "Ends", value: `${time(Date.now() + giveaway.duration, "R")}` },
-                    { name: "Hosted by", value: `<@${giveaway.hostID}>` },
+                    { name: "Ends", value: `${time(new Date(Date.now() + giveaway.duration), "R")}`, inline: true },
+                    { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true },
                 )
                 .setColor("Green")
 
             const comps = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
-                        .setCustomId(`giveaway-${giveaway.id}`)
+                        .setCustomId(`giveawayEntry-${giveaway.id}`)
                         .setLabel("Entry")
                         .setStyle(ButtonStyle.Primary)
                 )
@@ -106,19 +106,12 @@ export class GiveawaysManager {
         const giveaway = this.get(id)
         if (!giveaway || giveaway.hasEnded()) return null
 
-        const eligibleEntries = giveaway.entries.filter(entry => {
-            const member = ctx.guild?.members.cache.get(entry)
-            if (!member) return false
-
-            const { requirements } = giveaway
-            const hasRequiredRoles = requirements?.requiredRoles?.every((x) => member.roles.cache.has(x)) ?? true
-            const noRestrictedRoles = requirements?.restrictedRoles?.every((x) => !member.roles.cache.has(x)) ?? true
-            const notRestrictedMember = !requirements?.restrictedMembers?.includes(member.id)
-
-            return hasRequiredRoles && noRestrictedRoles && notRestrictedMember
+        const guild = ctx.client.guilds.cache.get(giveaway.guildID)
+        const eligibleEntries = giveaway.entries.filter((e) => {
+            const member = guild?.members.cache.get(e)
+            return member && giveaway.canEnter(member)
         })
-
-        const winners = this.pickWinners(eligibleEntries, giveaway.winnersCount)
+        const winners = this._pickWinners(eligibleEntries, giveaway.winnersCount)
         giveaway.winners = winners
 
         await Interpreter.run({
@@ -151,7 +144,7 @@ export class GiveawaysManager {
         const oldGiveaway = giveaway
 
         const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e))
-        const newWinners = this.pickWinners(eligibleEntries, giveaway.winnersCount)
+        const newWinners = this._pickWinners(eligibleEntries, giveaway.winnersCount)
         giveaway.winners = newWinners
 
         await Interpreter.run({
@@ -166,7 +159,7 @@ export class GiveawaysManager {
         return giveaway
     }
 
-    private pickWinners(entries: Snowflake[], amount: number) {
+    private _pickWinners(entries: Snowflake[], amount: number) {
         const shuffled = entries.sort(() => Math.random() - 0.5)
         return shuffled.slice(0, amount)
     }

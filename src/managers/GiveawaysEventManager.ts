@@ -7,6 +7,8 @@ export interface IGiveawayEvents {
     giveawayEnd: [Giveaway]
     giveawayEdit: [Giveaway, Giveaway]
     giveawayReroll: [Giveaway, Giveaway]
+    giveawayEntryAdd: [Giveaway, Giveaway]
+    giveawayEntryRemove: [Giveaway, Giveaway]
 }
 
 export class GiveawaysEventHandler<T extends keyof IGiveawayEvents> extends BaseEventHandler<IGiveawayEvents, T> {

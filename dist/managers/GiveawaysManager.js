@@ -50,11 +50,11 @@ class GiveawaysManager {
             const embed = new discord_js_1.EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`**Prize:** ${giveaway.prize}\n**Winners:** ${giveaway.winnersCount}`)
-                .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(Date.now() + giveaway.duration, "R")}` }, { name: "Hosted by", value: `<@${giveaway.hostID}>` })
+                .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(new Date(Date.now() + giveaway.duration), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
                 .setColor("Green");
             const comps = new discord_js_1.ActionRowBuilder()
                 .addComponents(new discord_js_1.ButtonBuilder()
-                .setCustomId(`giveaway-${giveaway.id}`)
+                .setCustomId(`giveawayEntry-${giveaway.id}`)
                 .setLabel("Entry")
                 .setStyle(discord_js_1.ButtonStyle.Primary));
             const msg = await chan?.send({
@@ -78,17 +78,12 @@ class GiveawaysManager {
         const giveaway = this.get(id);
         if (!giveaway || giveaway.hasEnded())
             return null;
-        const eligibleEntries = giveaway.entries.filter(entry => {
-            const member = ctx.guild?.members.cache.get(entry);
-            if (!member)
-                return false;
-            const { requirements } = giveaway;
-            const hasRequiredRoles = requirements?.requiredRoles?.every((x) => member.roles.cache.has(x)) ?? true;
-            const noRestrictedRoles = requirements?.restrictedRoles?.every((x) => !member.roles.cache.has(x)) ?? true;
-            const notRestrictedMember = !requirements?.restrictedMembers?.includes(member.id);
-            return hasRequiredRoles && noRestrictedRoles && notRestrictedMember;
+        const guild = ctx.client.guilds.cache.get(giveaway.guildID);
+        const eligibleEntries = giveaway.entries.filter((e) => {
+            const member = guild?.members.cache.get(e);
+            return member && giveaway.canEnter(member);
         });
-        const winners = this.pickWinners(eligibleEntries, giveaway.winnersCount);
+        const winners = this._pickWinners(eligibleEntries, giveaway.winnersCount);
         giveaway.winners = winners;
         await forgescript_1.Interpreter.run({
             ...ctx.runtime,
@@ -117,7 +112,7 @@ class GiveawaysManager {
             return null;
         const oldGiveaway = giveaway;
         const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e));
-        const newWinners = this.pickWinners(eligibleEntries, giveaway.winnersCount);
+        const newWinners = this._pickWinners(eligibleEntries, giveaway.winnersCount);
         giveaway.winners = newWinners;
         await forgescript_1.Interpreter.run({
             ...ctx.runtime,
@@ -128,7 +123,7 @@ class GiveawaysManager {
         this.emitter.emit("giveawayReroll", giveaway, oldGiveaway);
         return giveaway;
     }
-    pickWinners(entries, amount) {
+    _pickWinners(entries, amount) {
         const shuffled = entries.sort(() => Math.random() - 0.5);
         return shuffled.slice(0, amount);
     }
