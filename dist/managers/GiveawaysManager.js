@@ -76,8 +76,9 @@ class GiveawaysManager {
      */
     async end(ctx, id) {
         const giveaway = this.get(id);
-        if (!giveaway || giveaway.hasEnded())
+        if (!giveaway || giveaway.hasEnded)
             return null;
+        giveaway.hasEnded = true;
         const guild = ctx.client.guilds.cache.get(giveaway.guildID);
         const eligibleEntries = giveaway.entries.filter((e) => {
             const member = guild?.members.cache.get(e);
@@ -108,7 +109,7 @@ class GiveawaysManager {
      */
     async reroll(ctx, id) {
         const giveaway = this.get(id);
-        if (!giveaway || !giveaway.hasEnded())
+        if (!giveaway || !giveaway.hasEnded)
             return null;
         const oldGiveaway = giveaway.clone();
         const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e));

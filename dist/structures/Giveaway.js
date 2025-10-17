@@ -40,6 +40,10 @@ class Giveaway {
      */
     winners;
     /**
+     * Returns whether this giveaway has ended.
+     */
+    hasEnded;
+    /**
      * The requirements all participants have to meet for entering this giveaway.
      */
     requirements;
@@ -56,15 +60,9 @@ class Giveaway {
         this.guildID = options.guildID;
         this.channelID = options.channelID;
         this.requirements = options.requirements;
+        this.hasEnded = false;
         this.entries = [];
         this.winners = [];
-    }
-    /**
-     * Returns whether this giveaway has ended.
-     * @returns
-     */
-    hasEnded() {
-        return (Date.now() > discord_js_1.SnowflakeUtil.timestampFrom(this.id) + this.duration);
     }
     /**
      * Returns whether a user has entered this giveaway.

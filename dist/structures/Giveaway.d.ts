@@ -2,6 +2,7 @@ import { GuildMember, Snowflake } from "discord.js";
 import { IGiveawayStartOptions } from "../managers/GiveawaysManager";
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake;
+    hasEnded: boolean;
     messageID?: Snowflake;
     entries: Snowflake[];
     winners: Snowflake[];
@@ -44,6 +45,10 @@ export declare class Giveaway implements IGiveaway {
      */
     winners: Snowflake[];
     /**
+     * Returns whether this giveaway has ended.
+     */
+    hasEnded: boolean;
+    /**
      * The requirements all participants have to meet for entering this giveaway.
      */
     requirements?: IGiveawayStartOptions["requirements"];
@@ -54,11 +59,6 @@ export declare class Giveaway implements IGiveaway {
     constructor(options: IGiveawayStartOptions & {
         id?: Snowflake;
     });
-    /**
-     * Returns whether this giveaway has ended.
-     * @returns
-     */
-    hasEnded(): boolean;
     /**
      * Returns whether a user has entered this giveaway.
      * @param userID The user to check for.

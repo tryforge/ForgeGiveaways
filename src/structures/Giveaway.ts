@@ -3,6 +3,7 @@ import { IGiveawayStartOptions } from "../managers/GiveawaysManager"
 
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake
+    hasEnded: boolean
     messageID?: Snowflake
     entries: Snowflake[]
     winners: Snowflake[]
@@ -55,6 +56,11 @@ export class Giveaway implements IGiveaway {
     public winners: Snowflake[]
 
     /**
+     * Returns whether this giveaway has ended.
+     */
+    public hasEnded: boolean
+
+    /**
      * The requirements all participants have to meet for entering this giveaway.
      */
     public requirements?: IGiveawayStartOptions["requirements"]
@@ -73,16 +79,9 @@ export class Giveaway implements IGiveaway {
         this.guildID = options.guildID
         this.channelID = options.channelID
         this.requirements = options.requirements
+        this.hasEnded = false
         this.entries = []
         this.winners = []
-    }
-
-    /**
-     * Returns whether this giveaway has ended.
-     * @returns 
-     */
-    public hasEnded() {
-        return (Date.now() > SnowflakeUtil.timestampFrom(this.id) + this.duration)
     }
 
     /**

@@ -104,7 +104,8 @@ export class GiveawaysManager {
      */
     public async end(ctx: Context, id: Snowflake) {
         const giveaway = this.get(id)
-        if (!giveaway || giveaway.hasEnded()) return null
+        if (!giveaway || giveaway.hasEnded) return null
+        giveaway.hasEnded = true
 
         const guild = ctx.client.guilds.cache.get(giveaway.guildID)
         const eligibleEntries = giveaway.entries.filter((e) => {
@@ -140,7 +141,7 @@ export class GiveawaysManager {
      */
     public async reroll(ctx: Context, id: Snowflake) {
         const giveaway = this.get(id)
-        if (!giveaway || !giveaway.hasEnded()) return null
+        if (!giveaway || !giveaway.hasEnded) return null
         const oldGiveaway = giveaway.clone()
 
         const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e))
