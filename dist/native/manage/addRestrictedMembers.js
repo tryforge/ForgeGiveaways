@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
 exports.default = new forgescript_1.NativeFunction({
-    name: "$setRestrictedMembers",
+    name: "$addRestrictedMembers",
     version: "1.0.0",
-    description: "Sets the restricted members for current giveaway",
+    description: "Adds restricted members to the current giveaway",
+    aliases: ["$addRestrictedMember"],
     unwrap: true,
     brackets: true,
     args: [
@@ -18,8 +19,11 @@ exports.default = new forgescript_1.NativeFunction({
     ],
     execute(ctx, [members]) {
         ctx.requirements ??= {};
-        ctx.requirements.restrictedMembers = members.map((x) => x.id);
+        const set = new Set(ctx.requirements.restrictedMembers);
+        for (const member of members)
+            set.add(member.id);
+        ctx.requirements.restrictedMembers = [...set];
         return this.success();
     }
 });
-//# sourceMappingURL=setRestrictedMembers.js.map
+//# sourceMappingURL=addRestrictedMembers.js.map

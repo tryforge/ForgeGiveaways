@@ -1,9 +1,10 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
 
 export default new NativeFunction({
-    name: "$setRestrictedMembers",
+    name: "$addRestrictedMembers",
     version: "1.0.0",
-    description: "Sets the restricted members for current giveaway",
+    description: "Adds restricted members to the current giveaway",
+    aliases: ["$addRestrictedMember"],
     unwrap: true,
     brackets: true,
     args: [
@@ -17,7 +18,11 @@ export default new NativeFunction({
     ],
     execute(ctx, [members]) {
         ctx.requirements ??= {}
-        ctx.requirements.restrictedMembers = members.map((x) => x.id)
+
+        const set = new Set(ctx.requirements.restrictedMembers)
+        for (const member of members) set.add(member.id)
+
+        ctx.requirements.restrictedMembers = [...set]
         return this.success()
     }
 })

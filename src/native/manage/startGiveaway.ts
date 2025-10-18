@@ -61,6 +61,6 @@ export default new NativeFunction({
             requirements: ctx.requirements
         })
 
-        return this.success(giveaway.id)
+        return this.success(giveaway?.id)
     }
 })

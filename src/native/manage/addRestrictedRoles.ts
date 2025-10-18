@@ -1,9 +1,10 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
 
 export default new NativeFunction({
-    name: "$setRestrictedRoles",
+    name: "$addRestrictedRoles",
     version: "1.0.0",
-    description: "Sets the restricted roles for current giveaway",
+    description: "Adds restricted roles to the current giveaway",
+    aliases: ["$addRestrictedRole"],
     unwrap: true,
     brackets: true,
     args: [
@@ -17,7 +18,11 @@ export default new NativeFunction({
     ],
     execute(ctx, [roles]) {
         ctx.requirements ??= {}
-        ctx.requirements.restrictedRoles = roles
+        
+        const set = new Set(ctx.requirements.restrictedRoles)
+        for (const role of roles) set.add(role)
+
+        ctx.requirements.restrictedRoles = [...set]
         return this.success()
     }
 })

@@ -5,7 +5,7 @@ const managers_1 = require("../managers");
 const Giveaway_1 = require("./Giveaway");
 class Database extends managers_1.GiveawaysDatabaseManager {
     emitter;
-    database = "giveaway.db";
+    database = "giveaways.db";
     entityManager = {
         sqlite: [Giveaway_1.Giveaway],
         mongodb: [Giveaway_1.MongoGiveaway],

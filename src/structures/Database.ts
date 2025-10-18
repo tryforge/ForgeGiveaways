@@ -8,7 +8,7 @@ import { Giveaway, MongoGiveaway } from "./Giveaway"
 export type AnyGiveaway = typeof Giveaway | typeof MongoGiveaway
 
 export class Database extends GiveawaysDatabaseManager {
-    public database = "giveaway.db"
+    public database = "giveaways.db"
 
     public entityManager = {
         sqlite: [Giveaway],

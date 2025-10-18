@@ -4,6 +4,7 @@ import { TypedEmitter } from "tiny-typed-emitter";
 import { TransformEvents } from "@tryforge/forge.db";
 export interface IForgeGiveawaysOptions {
     events?: keyof IGiveawayEvents;
+    useDefault?: boolean;
     messages?: {
         start: string;
         end: string;
@@ -11,7 +12,7 @@ export interface IForgeGiveawaysOptions {
     };
 }
 export declare class ForgeGiveaways extends ForgeExtension {
-    readonly options?: IForgeGiveawaysOptions | undefined;
+    readonly options: IForgeGiveawaysOptions;
     name: string;
     description: string;
     version: any;
@@ -19,7 +20,7 @@ export declare class ForgeGiveaways extends ForgeExtension {
     emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>;
     readonly giveawaysManager: GiveawaysManager;
     commands: GiveawaysCommandManager | null;
-    constructor(options?: IForgeGiveawaysOptions | undefined);
+    constructor(options?: IForgeGiveawaysOptions);
     init(client: ForgeClient): Promise<void>;
 }
 //# sourceMappingURL=index.d.ts.map

@@ -4,6 +4,7 @@ exports.GiveawaysManager = void 0;
 const discord_js_1 = require("discord.js");
 const forgescript_1 = require("@tryforge/forgescript");
 const structures_1 = require("../structures");
+const error_1 = require("../functions/error");
 class GiveawaysManager {
     client;
     emitter;
@@ -21,17 +22,7 @@ class GiveawaysManager {
     async start(ctx, options) {
         const giveaway = new structures_1.Giveaway(options);
         const chan = ctx.client.channels.cache.get(giveaway.channelID);
-        if (this.client.options?.messages?.start) {
-            const result = await forgescript_1.Interpreter.run({
-                ...ctx.runtime,
-                environment: { giveaway },
-                data: forgescript_1.Compiler.compile(this.client.options?.messages?.start),
-                doNotSend: true,
-            });
-            const res = result?.trim();
-            giveaway.messageID = (res && chan?.messages.cache.get(res) ? res : undefined);
-        }
-        else {
+        if (this.client.options.useDefault) {
             const embed = new discord_js_1.EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`**Prize:** ${giveaway.prize}\n**Winners:** ${giveaway.winnersCount}`)
@@ -46,7 +37,11 @@ class GiveawaysManager {
                 embeds: [embed],
                 components: [comps.toJSON()]
             }).catch(ctx.noop);
-            giveaway.messageID = msg?.id;
+            if (!msg) {
+                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
+                return;
+            }
+            giveaway.messageID = msg.id;
         }
         await structures_1.Database.set(giveaway).catch(ctx.noop);
         this.emitter.emit("giveawayStart", giveaway);

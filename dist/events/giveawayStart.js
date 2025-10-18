@@ -2,14 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
 const GiveawaysEventManager_1 = require("../managers/GiveawaysEventManager");
-const __1 = require("..");
+const error_1 = require("../functions/error");
 const structures_1 = require("../structures");
+const __1 = require("..");
 exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
     name: "giveawayStart",
     version: "1.0.0",
     description: "This event is fired when a giveaway started",
     listener: async function (gw) {
-        const commands = this.getExtension(__1.ForgeGiveaways, true).commands?.get("giveawayStart");
+        const client = this.getExtension(__1.ForgeGiveaways, true);
+        const commands = client.commands?.get("giveawayStart");
         if (commands?.length) {
             for (const command of commands) {
                 const ctx = new structures_1.Context({
@@ -23,7 +25,19 @@ exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
                     },
                     data: command.compiled.code,
                 });
-                forgescript_1.Interpreter.run(ctx);
+                const result = await forgescript_1.Interpreter.run(ctx);
+                if (client.options.useDefault === false) {
+                    const res = result?.trim();
+                    const chan = this.channels.cache.get(gw.channelID);
+                    const msg = res ? chan?.messages.cache.get(res) : undefined;
+                    if (!res || !msg) {
+                        (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, gw.id);
+                        await structures_1.Database.delete(gw.id);
+                        continue;
+                    }
+                    gw.messageID = msg.id;
+                    await structures_1.Database.set(gw);
+                }
             }
         }
     },

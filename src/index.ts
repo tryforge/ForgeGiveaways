@@ -6,6 +6,7 @@ import { Database } from "./structures"
 
 export interface IForgeGiveawaysOptions {
     events?: keyof IGiveawayEvents
+    useDefault?: boolean
     messages?: {
         start: string
         end: string
@@ -24,9 +25,10 @@ export class ForgeGiveaways extends ForgeExtension {
     public readonly giveawaysManager = new GiveawaysManager(this, this.emitter)
     commands: GiveawaysCommandManager | null
 
-    public constructor (public readonly options?: IForgeGiveawaysOptions) {
+    public constructor (public readonly options: IForgeGiveawaysOptions = {}) {
         super()
         this.commands = null
+        this.options.useDefault ??= true
     }
 
     public async init(client: ForgeClient) {
@@ -37,7 +39,7 @@ export class ForgeGiveaways extends ForgeExtension {
 
         new GiveawaysInteractionManager(client)
 
-        if (this.options?.events?.length) {
+        if (this.options.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
         }
 

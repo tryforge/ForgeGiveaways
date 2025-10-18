@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
 exports.default = new forgescript_1.NativeFunction({
-    name: "$setRequiredRoles",
+    name: "$addRequiredRoles",
     version: "1.0.0",
-    description: "Sets the required roles for current giveaway",
+    description: "Adds required roles to the current giveaway",
+    aliases: ["$addRequiredRole"],
     unwrap: true,
     brackets: true,
     args: [
@@ -18,8 +19,11 @@ exports.default = new forgescript_1.NativeFunction({
     ],
     execute(ctx, [roles]) {
         ctx.requirements ??= {};
-        ctx.requirements.requiredRoles = roles;
+        const set = new Set(ctx.requirements.requiredRoles);
+        for (const role of roles)
+            set.add(role);
+        ctx.requirements.requiredRoles = [...set];
         return this.success();
     }
 });
-//# sourceMappingURL=setRequiredRoles.js.map
+//# sourceMappingURL=addRequiredRoles.js.map

@@ -59,7 +59,7 @@ exports.default = new forgescript_1.NativeFunction({
             winnersCount: winners || 1,
             requirements: ctx.requirements
         });
-        return this.success(giveaway.id);
+        return this.success(giveaway?.id);
     }
 });
 //# sourceMappingURL=startGiveaway.js.map

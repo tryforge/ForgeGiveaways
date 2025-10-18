@@ -24,7 +24,7 @@ export declare class GiveawaysManager {
      * @param options The start options for the giveaway.
      * @returns
      */
-    start(ctx: Context, options: IGiveawayStartOptions): Promise<Giveaway>;
+    start(ctx: Context, options: IGiveawayStartOptions): Promise<Giveaway | undefined>;
     /**
      * Ends an existing giveaway.
      * @param ctx The current context.

@@ -3,6 +3,7 @@ import { Compiler, Context, Interpreter } from "@tryforge/forgescript"
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
 import { Database, Giveaway, IGiveawayRequirements } from "../structures"
+import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
 import { IGiveawayEvents } from "./GiveawaysEventManager"
 import { ForgeGiveaways } from ".."
 
@@ -34,17 +35,7 @@ export class GiveawaysManager {
         const giveaway = new Giveaway(options)
         const chan = ctx.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
 
-        if (this.client.options?.messages?.start) {
-            const result = await Interpreter.run({
-                ...ctx.runtime,
-                environment: { giveaway },
-                data: Compiler.compile(this.client.options?.messages?.start),
-                doNotSend: true,
-            })
-
-            const res = result?.trim()
-            giveaway.messageID = (res && chan?.messages.cache.get(res) ? res : undefined)
-        } else {
+        if (this.client.options.useDefault) {
             const embed = new EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`**Prize:** ${giveaway.prize}\n**Winners:** ${giveaway.winnersCount}`)
@@ -67,7 +58,12 @@ export class GiveawaysManager {
                 components: [comps.toJSON()]
             }).catch(ctx.noop)
 
-            giveaway.messageID = msg?.id
+            if (!msg) {
+                throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
+                return
+            }
+
+            giveaway.messageID = msg.id
         }
 
         await Database.set(giveaway).catch(ctx.noop)

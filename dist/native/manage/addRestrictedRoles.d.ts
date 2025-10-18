@@ -7,4 +7,4 @@ declare const _default: NativeFunction<[{
     type: ArgType.String;
 }], true>;
 export default _default;
-//# sourceMappingURL=setRequiredRoles.d.ts.map
+//# sourceMappingURL=addRestrictedRoles.d.ts.map
