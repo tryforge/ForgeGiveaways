@@ -16,7 +16,6 @@ export declare class Database extends GiveawaysDatabaseManager {
     private static entities;
     private db;
     private static db;
-    private static repo;
     private static emitter;
     constructor(emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>);
     init(): Promise<void>;

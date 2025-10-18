@@ -15,7 +15,6 @@ class Database extends managers_1.GiveawaysDatabaseManager {
     static entities;
     db;
     static db;
-    static repo;
     static emitter;
     constructor(emitter) {
         super();
@@ -29,7 +28,6 @@ class Database extends managers_1.GiveawaysDatabaseManager {
     async init() {
         Database.emitter = this.emitter;
         Database.db = await this.getDB();
-        Database.repo = Database.db.getRepository(Database.entities.Giveaway);
         Database.emitter.emit("databaseConnect");
     }
     /**
@@ -38,14 +36,14 @@ class Database extends managers_1.GiveawaysDatabaseManager {
      * @returns
      */
     static async get(id) {
-        return await this.repo.findOneBy({ id });
+        return await this.db.getRepository(Database.entities.Giveaway).findOneBy({ id });
     }
     /**
      * Gets all existing giveaways.
      * @returns
      */
     static async getAll() {
-        return await this.repo.find();
+        return await this.db.getRepository(Database.entities.Giveaway).find();
     }
     /**
      * Saves a giveaway in the database.
@@ -53,12 +51,12 @@ class Database extends managers_1.GiveawaysDatabaseManager {
      */
     static async set(data) {
         const newData = new this.entities.Giveaway(data);
-        const oldData = await this.repo.findOneBy({ id: data.id });
+        const oldData = await this.db.getRepository(Database.entities.Giveaway).findOneBy({ id: data.id });
         if (oldData && this.type === "mongodb") {
-            await this.repo.update(oldData.id, data);
+            await this.db.getRepository(Database.entities.Giveaway).update(oldData.id, data);
         }
         else {
-            await this.repo.save(data);
+            await this.db.getRepository(Database.entities.Giveaway).save(data);
         }
     }
     /**
@@ -67,14 +65,14 @@ class Database extends managers_1.GiveawaysDatabaseManager {
      * @returns
      */
     static async delete(id) {
-        return await this.repo.delete({ id });
+        return await this.db.getRepository(Database.entities.Giveaway).delete({ id });
     }
     /**
      * Wipes the entire database.
      * @returns
      */
     static async wipe() {
-        return await this.repo.clear();
+        return await this.db.getRepository(Database.entities.Giveaway).clear();
     }
 }
 exports.Database = Database;
