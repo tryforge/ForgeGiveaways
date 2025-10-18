@@ -25,6 +25,7 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
         this.load(__dirname + "/native");
         new managers_1.GiveawaysInteractionManager(client);
         new structures_1.Database(this.emitter).init();
+        client.db = structures_1.Database;
         if (this.options?.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
         }

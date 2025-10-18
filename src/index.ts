@@ -37,6 +37,7 @@ export class ForgeGiveaways extends ForgeExtension {
 
         new GiveawaysInteractionManager(client)
         new Database(this.emitter).init()
+        client.db = Database
 
         if (this.options?.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
