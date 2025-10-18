@@ -12,6 +12,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Giveaway = void 0;
 const discord_js_1 = require("discord.js");
 const typeorm_1 = require("typeorm");
+const transformer = {
+    to: (value) => JSON.stringify(value ?? []),
+    from: (value) => {
+        try {
+            return JSON.parse(value || "[]");
+        }
+        catch {
+            return [];
+        }
+    }
+};
 let Giveaway = class Giveaway {
     /**
      * The id of this giveaway.
@@ -160,19 +171,19 @@ __decorate([
     __metadata("design:type", String)
 ], Giveaway.prototype, "channelID", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: "text", transformer }),
     __metadata("design:type", Array)
 ], Giveaway.prototype, "entries", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: "text", transformer }),
     __metadata("design:type", Array)
 ], Giveaway.prototype, "winners", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Object)
 ], Giveaway.prototype, "requirements", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Giveaway.prototype, "messageID", void 0);
 exports.Giveaway = Giveaway = __decorate([
