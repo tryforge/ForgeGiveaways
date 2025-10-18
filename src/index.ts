@@ -36,10 +36,11 @@ export class ForgeGiveaways extends ForgeExtension {
         this.load(__dirname + "/native")
 
         new GiveawaysInteractionManager(client)
-        await new Database(this.emitter).init()
 
         if (this.options?.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
         }
+
+        await new Database(this.emitter).init()
     }
 }
