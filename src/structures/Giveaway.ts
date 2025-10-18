@@ -100,7 +100,7 @@ export class Giveaway implements IGiveaway {
         this.guildID = options?.guildID ?? ""
         this.channelID = options?.channelID ?? ""
         this.requirements = options?.requirements
-        this.timestamp = (SnowflakeUtil.timestampFrom(this.id) * 1000)
+        this.timestamp = SnowflakeUtil.timestampFrom(this.id)
         this.hasEnded = false
         this.entries = []
         this.winners = []
