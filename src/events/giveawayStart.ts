@@ -25,6 +25,7 @@ export default new GiveawaysEventHandler({
                         }
                     },
                     data: command.compiled.code,
+                    doNotSend: true,
                 })
 
                 const result = await Interpreter.run(ctx)
