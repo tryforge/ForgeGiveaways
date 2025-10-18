@@ -21,14 +21,12 @@ export class ForgeGiveaways extends ForgeExtension {
 
     public emitter = new TypedEmitter<TransformEvents<IGiveawayEvents>>()
 
-    public readonly database: Database
     public readonly giveawaysManager = new GiveawaysManager(this, this.emitter)
     commands: GiveawaysCommandManager | null
 
     public constructor (public readonly options?: IForgeGiveawaysOptions) {
         super()
         this.commands = null
-        this.database = new Database(this.emitter)
     }
 
     public async init(client: ForgeClient) {
@@ -43,6 +41,6 @@ export class ForgeGiveaways extends ForgeExtension {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
         }
 
-        await this.database.init()
+        await new Database(this.emitter).init()
     }
 }

@@ -15,7 +15,7 @@ export declare class Database extends GiveawaysDatabaseManager {
     };
     private static entities;
     private db;
-    private static db;
+    private static db?;
     private static emitter;
     constructor(emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>);
     init(): Promise<void>;
@@ -24,12 +24,12 @@ export declare class Database extends GiveawaysDatabaseManager {
      * @param id The id of the giveaway to get.
      * @returns
      */
-    static get(id: Snowflake): Promise<Giveaway | null>;
+    static get(id: Snowflake): Promise<Giveaway | null | undefined>;
     /**
      * Gets all existing giveaways.
      * @returns
      */
-    static getAll(): Promise<Giveaway[]>;
+    static getAll(): Promise<Giveaway[] | undefined>;
     /**
      * Saves a giveaway in the database.
      * @param data The giveaway data to save.
@@ -40,11 +40,11 @@ export declare class Database extends GiveawaysDatabaseManager {
      * @param id The id of the giveaway to delete.
      * @returns
      */
-    static delete(id: Snowflake): Promise<import("typeorm").DeleteResult>;
+    static delete(id: Snowflake): Promise<import("typeorm").DeleteResult | undefined>;
     /**
      * Wipes the entire database.
      * @returns
      */
-    static wipe(): Promise<void>;
+    static wipe(): Promise<void | undefined>;
 }
 //# sourceMappingURL=Database.d.ts.map
