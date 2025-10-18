@@ -61,7 +61,7 @@ export class Database extends GiveawaysDatabaseManager {
 
     /**
      * Deletes an existing giveaway from the database.
-     * @param data The id of the giveaway to delete.
+     * @param id The id of the giveaway to delete.
      * @returns 
      */
     public async delete(id: Snowflake) {

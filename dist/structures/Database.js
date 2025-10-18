@@ -53,7 +53,7 @@ class Database extends managers_1.GiveawaysDatabaseManager {
     }
     /**
      * Deletes an existing giveaway from the database.
-     * @param data The id of the giveaway to delete.
+     * @param id The id of the giveaway to delete.
      * @returns
      */
     async delete(id) {

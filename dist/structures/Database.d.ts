@@ -34,7 +34,7 @@ export declare class Database extends GiveawaysDatabaseManager {
     set(data: Giveaway): Promise<void>;
     /**
      * Deletes an existing giveaway from the database.
-     * @param data The id of the giveaway to delete.
+     * @param id The id of the giveaway to delete.
      * @returns
      */
     delete(id: Snowflake): Promise<import("typeorm").DeleteResult | undefined>;

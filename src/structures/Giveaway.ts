@@ -10,17 +10,6 @@ export interface IGiveaway extends IGiveawayStartOptions {
     winners: Snowflake[]
 }
 
-const transformer = {
-    to: (value: unknown[]) => JSON.stringify(value ?? []),
-    from: (value: string) => {
-        try {
-            return JSON.parse(value || "[]")
-        } catch {
-            return []
-        }
-    }
-}
-
 @Entity()
 export class Giveaway implements IGiveaway {
     /**
@@ -74,19 +63,19 @@ export class Giveaway implements IGiveaway {
     /**
      * The user entries for this giveaway.
      */
-    @Column({ type: "text", transformer })
+    @Column("simple-array")
     public entries: Snowflake[]
 
     /**
      * The randomly selected winners of this giveaway.
      */
-    @Column({ type: "text", transformer })
+    @Column("simple-array")
     public winners: Snowflake[]
 
     /**
      * The requirements all participants have to meet for entering this giveaway.
      */
-    @Column({ nullable: true })
+    @Column("simple-json", { nullable: true })
     public requirements?: IGiveawayStartOptions["requirements"]
 
     /**
