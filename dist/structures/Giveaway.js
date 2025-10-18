@@ -168,11 +168,11 @@ __decorate([
     __metadata("design:type", Array)
 ], Giveaway.prototype, "winners", void 0);
 __decorate([
-    (0, typeorm_1.Column)("simple-json", { nullable: true }),
+    (0, typeorm_1.Column)("simple-json"),
     __metadata("design:type", Object)
 ], Giveaway.prototype, "requirements", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Giveaway.prototype, "messageID", void 0);
 exports.Giveaway = Giveaway = __decorate([

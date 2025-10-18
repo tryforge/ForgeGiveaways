@@ -75,13 +75,13 @@ export class Giveaway implements IGiveaway {
     /**
      * The requirements all participants have to meet for entering this giveaway.
      */
-    @Column("simple-json", { nullable: true })
+    @Column("simple-json")
     public requirements?: IGiveawayStartOptions["requirements"]
 
     /**
      * The id of the message this giveaway is associated with.
      */
-    @Column({ nullable: true })
+    @Column()
     public messageID?: Snowflake
 
     constructor(options?: Partial<IGiveawayStartOptions> & { id?: Snowflake }) {
