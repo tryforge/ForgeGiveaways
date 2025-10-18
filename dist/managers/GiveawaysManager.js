@@ -7,7 +7,6 @@ const structures_1 = require("../structures");
 class GiveawaysManager {
     client;
     emitter;
-    giveaways = new discord_js_1.Collection();
     constructor(client, emitter) {
         this.client = client;
         this.emitter = emitter;
@@ -17,15 +16,15 @@ class GiveawaysManager {
      * @param id The id of the giveaway to get.
      * @returns
      */
-    get(id) {
-        return this.giveaways.get(id);
+    async get(id) {
+        return await this.client.database.get(id);
     }
     /**
      * Gets all existing giveaways.
      * @returns
      */
-    getAll() {
-        return this.giveaways;
+    async getAll() {
+        return this.client.database.getAll();
     }
     /**
      * Starts a new giveaway on a guild.
@@ -63,8 +62,8 @@ class GiveawaysManager {
             }).catch(ctx.noop);
             giveaway.messageID = msg?.id;
         }
+        await this.client.database.set(giveaway);
         this.emitter.emit("giveawayStart", giveaway);
-        this.giveaways.set(giveaway.id, giveaway);
         setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration);
         return giveaway;
     }
@@ -75,7 +74,7 @@ class GiveawaysManager {
      * @returns
      */
     async end(ctx, id) {
-        const giveaway = this.get(id);
+        const giveaway = await this.get(id);
         if (!giveaway || giveaway.hasEnded)
             return null;
         giveaway.hasEnded = true;
@@ -119,6 +118,7 @@ class GiveawaysManager {
                 }).catch(ctx.noop);
             }
         }
+        await this.client.database.set(giveaway);
         this.emitter.emit("giveawayEnd", giveaway);
         return giveaway;
     }
@@ -129,7 +129,7 @@ class GiveawaysManager {
      * @returns
      */
     async reroll(ctx, id) {
-        const giveaway = this.get(id);
+        const giveaway = await this.get(id);
         if (!giveaway || !giveaway.hasEnded)
             return null;
         const oldGiveaway = giveaway.clone();
@@ -142,6 +142,7 @@ class GiveawaysManager {
             data: forgescript_1.Compiler.compile(this.client.options?.messages?.reroll),
             doNotSend: true,
         });
+        await this.client.database.set(giveaway);
         this.emitter.emit("giveawayReroll", oldGiveaway, giveaway);
         return giveaway;
     }

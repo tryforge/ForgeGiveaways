@@ -7,13 +7,13 @@ export class GiveawaysInteractionManager {
         this._register()
     }
 
-    private _register() {
+    private async _register() {
         this.client.on("interactionCreate", async (interaction) => {
             if (!interaction.isButton() || !interaction.customId.startsWith("giveawayEntry-")) return
             const [, id] = interaction.customId.split("-")
 
             const client = this.client.getExtension(ForgeGiveaways, true)
-            const giveaway = client.giveawaysManager.get(id)
+            const giveaway = await client.database.get(id)
             if (!giveaway) return
 
             const member = interaction.member

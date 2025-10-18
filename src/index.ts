@@ -1,10 +1,8 @@
 import { EventManager, ForgeClient, ForgeExtension } from "@tryforge/forgescript"
-import { IGiveawayEvents } from "./managers/GiveawaysEventManager"
-import { GiveawaysCommandManager } from "./managers/GiveawaysCommandManager"
-import { GiveawaysInteractionManager } from "./managers/GiveawaysInteractionManager"
-import { GiveawaysManager } from "./managers/GiveawaysManager"
+import { IGiveawayEvents, GiveawaysCommandManager, GiveawaysInteractionManager, GiveawaysManager } from "./managers"
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
+import { Database } from "./structures"
 
 export interface IForgeGiveawaysOptions {
     events?: keyof IGiveawayEvents
@@ -23,14 +21,16 @@ export class ForgeGiveaways extends ForgeExtension {
     public emitter = new TypedEmitter<TransformEvents<IGiveawayEvents>>()
 
     public readonly giveawaysManager = new GiveawaysManager(this, this.emitter)
+    public readonly database: Database
     commands: GiveawaysCommandManager | null
 
     public constructor (public readonly options?: IForgeGiveawaysOptions) {
         super()
         this.commands = null
+        this.database = new Database(this.emitter)
     }
 
-    public init(client: ForgeClient) {
+    public async init(client: ForgeClient) {
         this.commands = new GiveawaysCommandManager(client)
 
         EventManager.load("ForgeGiveawaysEvents", __dirname + "/events")
@@ -41,7 +41,7 @@ export class ForgeGiveaways extends ForgeExtension {
         if (this.options?.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
         }
+
+        await this.database.init()
     }
 }
-
-export * from "./managers"

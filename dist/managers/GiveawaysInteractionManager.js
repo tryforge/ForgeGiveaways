@@ -9,13 +9,13 @@ class GiveawaysInteractionManager {
         this.client = client;
         this._register();
     }
-    _register() {
+    async _register() {
         this.client.on("interactionCreate", async (interaction) => {
             if (!interaction.isButton() || !interaction.customId.startsWith("giveawayEntry-"))
                 return;
             const [, id] = interaction.customId.split("-");
             const client = this.client.getExtension(__1.ForgeGiveaways, true);
-            const giveaway = client.giveawaysManager.get(id);
+            const giveaway = await client.database.get(id);
             if (!giveaway)
                 return;
             const member = interaction.member;

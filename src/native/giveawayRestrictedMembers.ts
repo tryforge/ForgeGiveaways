@@ -24,8 +24,8 @@ export default new NativeFunction({
         },
     ],
     output: array<ArgType.Member>(),
-    execute(ctx, [id, sep]) {
-        const giveaway = getGiveaway(ctx, id) ?? ctx.giveaway
+    async execute(ctx, [id, sep]) {
+        const giveaway = await getGiveaway(ctx, id) ?? ctx.giveaway
         return this.success(giveaway?.requirements?.restrictedMembers?.join(sep ?? ", "))
     }
 })

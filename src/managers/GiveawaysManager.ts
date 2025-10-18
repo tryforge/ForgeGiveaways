@@ -1,9 +1,10 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection, EmbedBuilder, Snowflake, TextChannel, time } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Snowflake, TextChannel, time } from "discord.js"
 import { Compiler, Context, Interpreter } from "@tryforge/forgescript"
-import { ForgeGiveaways, IGiveawayEvents } from ".."
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
 import { Giveaway, IGiveawayRequirements } from "../structures"
+import { IGiveawayEvents } from "./GiveawaysEventManager"
+import { ForgeGiveaways } from ".."
 
 export interface IGiveawayStartOptions {
     prize: string
@@ -16,8 +17,6 @@ export interface IGiveawayStartOptions {
 }
 
 export class GiveawaysManager {
-    private readonly giveaways = new Collection<Snowflake, Giveaway>()
-
     public constructor(
         private readonly client: ForgeGiveaways,
         private emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>
@@ -28,16 +27,16 @@ export class GiveawaysManager {
      * @param id The id of the giveaway to get.
      * @returns 
      */
-    public get(id: Snowflake) {
-        return this.giveaways.get(id)
+    public async get(id: Snowflake) {
+        return await this.client.database.get(id)
     }
 
     /**
      * Gets all existing giveaways.
      * @returns 
      */
-    public getAll() {
-        return this.giveaways
+    public async getAll() {
+        return this.client.database.getAll()
     }
 
     /**
@@ -86,8 +85,8 @@ export class GiveawaysManager {
             giveaway.messageID = msg?.id
         }
 
+        await this.client.database.set(giveaway)
         this.emitter.emit("giveawayStart", giveaway)
-        this.giveaways.set(giveaway.id, giveaway)
         setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration)
 
         return giveaway
@@ -100,7 +99,7 @@ export class GiveawaysManager {
      * @returns 
      */
     public async end(ctx: Context, id: Snowflake) {
-        const giveaway = this.get(id)
+        const giveaway = await this.get(id)
         if (!giveaway || giveaway.hasEnded) return null
         giveaway.hasEnded = true
 
@@ -148,6 +147,7 @@ export class GiveawaysManager {
             }
         }
 
+        await this.client.database.set(giveaway)
         this.emitter.emit("giveawayEnd", giveaway)
 
         return giveaway
@@ -160,7 +160,7 @@ export class GiveawaysManager {
      * @returns 
      */
     public async reroll(ctx: Context, id: Snowflake) {
-        const giveaway = this.get(id)
+        const giveaway = await this.get(id)
         if (!giveaway || !giveaway.hasEnded) return null
         const oldGiveaway = giveaway.clone()
 
@@ -175,6 +175,7 @@ export class GiveawaysManager {
             doNotSend: true,
         })
 
+        await this.client.database.set(giveaway)
         this.emitter.emit("giveawayReroll", oldGiveaway, giveaway)
 
         return giveaway

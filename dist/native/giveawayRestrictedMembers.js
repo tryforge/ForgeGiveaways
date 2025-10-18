@@ -28,8 +28,8 @@ exports.default = new forgescript_1.NativeFunction({
         },
     ],
     output: (0, array_1.default)(),
-    execute(ctx, [id, sep]) {
-        const giveaway = (0, getGiveaway_1.default)(ctx, id) ?? ctx.giveaway;
+    async execute(ctx, [id, sep]) {
+        const giveaway = await (0, getGiveaway_1.default)(ctx, id) ?? ctx.giveaway;
         return this.success(giveaway?.requirements?.restrictedMembers?.join(sep ?? ", "));
     }
 });
