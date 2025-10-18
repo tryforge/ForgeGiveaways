@@ -2,6 +2,7 @@ import { ForgeClient, ForgeExtension } from "@tryforge/forgescript";
 import { IGiveawayEvents, GiveawaysCommandManager, GiveawaysManager } from "./managers";
 import { TypedEmitter } from "tiny-typed-emitter";
 import { TransformEvents } from "@tryforge/forge.db";
+import { Database } from "./structures";
 export interface IForgeGiveawaysOptions {
     events?: keyof IGiveawayEvents;
     messages?: {
@@ -17,6 +18,7 @@ export declare class ForgeGiveaways extends ForgeExtension {
     version: any;
     requireExtensions: string[];
     emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>;
+    readonly database: Database;
     readonly giveawaysManager: GiveawaysManager;
     commands: GiveawaysCommandManager | null;
     constructor(options?: IForgeGiveawaysOptions | undefined);
