@@ -2,7 +2,7 @@ import { GiveawaysDatabaseManager, IGiveawayEvents } from "../managers"
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
 import { Snowflake } from "discord.js"
-import { DataSource, Repository } from "typeorm"
+import { DataSource } from "typeorm"
 import { Giveaway, MongoGiveaway } from "./Giveaway"
 
 export type AnyGiveaway = typeof Giveaway | typeof MongoGiveaway
@@ -36,7 +36,7 @@ export class Database extends GiveawaysDatabaseManager {
 
     public async init() {
         Database.emitter = this.emitter
-        Database.db = await this.getDB()
+        Database.db = await this.db
         Database.emitter.emit("databaseConnect")
     }
 

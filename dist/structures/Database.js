@@ -27,7 +27,7 @@ class Database extends managers_1.GiveawaysDatabaseManager {
     }
     async init() {
         Database.emitter = this.emitter;
-        Database.db = await this.getDB();
+        Database.db = await this.db;
         Database.emitter.emit("databaseConnect");
     }
     /**
