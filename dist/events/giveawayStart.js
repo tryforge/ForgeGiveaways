@@ -24,7 +24,7 @@ exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
                         }
                     },
                     data: command.compiled.code,
-                    doNotSend: true,
+                    allowTopLevelReturn: true
                 });
                 const result = await forgescript_1.Interpreter.run(ctx);
                 if (client.options.useDefault === false) {
