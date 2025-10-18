@@ -12,15 +12,11 @@ class Database extends managers_1.GiveawaysDatabaseManager {
         mysql: [Giveaway_1.Giveaway],
         postgres: [Giveaway_1.Giveaway],
     };
-    static entity;
     db;
     repo;
     constructor(emitter) {
         super();
         this.emitter = emitter;
-        Database.entity = {
-            Giveaway: this.entityManager[this.type === "better-sqlite3" ? "sqlite" : this.type][0],
-        };
     }
     async init() {
         this.db = await this.getDB();

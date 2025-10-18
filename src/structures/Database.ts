@@ -15,18 +15,11 @@ export class Database extends GiveawaysDatabaseManager {
         postgres: [Giveaway],
     }
 
-    private static entity: {
-        Giveaway: typeof Giveaway
-    }
-
     private db?: DataSource
     private repo?: Repository<Giveaway>
 
     constructor(private readonly emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>) {
         super()
-        Database.entity = {
-            Giveaway: this.entityManager[this.type === "better-sqlite3" ? "sqlite" : this.type!][0],
-        }
     }
 
     public async init() {
