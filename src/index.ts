@@ -14,10 +14,10 @@ export interface IForgeGiveawaysOptions {
 }
 
 export class ForgeGiveaways extends ForgeExtension {
-    name = "ForgeGiveaways"
+    name = "forge.giveaways"
     description = ""
     version = require("../package.json").version
-    requireExtensions = ["ForgeDB"]
+    requireExtensions = ["forge.db"]
 
     public emitter = new TypedEmitter<TransformEvents<IGiveawayEvents>>()
 

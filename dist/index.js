@@ -7,10 +7,10 @@ const tiny_typed_emitter_1 = require("tiny-typed-emitter");
 const structures_1 = require("./structures");
 class ForgeGiveaways extends forgescript_1.ForgeExtension {
     options;
-    name = "ForgeGiveaways";
+    name = "forge.giveaways";
     description = "";
     version = require("../package.json").version;
-    requireExtensions = ["ForgeDB"];
+    requireExtensions = ["forge.db"];
     emitter = new tiny_typed_emitter_1.TypedEmitter();
     giveawaysManager = new managers_1.GiveawaysManager(this, this.emitter);
     commands;

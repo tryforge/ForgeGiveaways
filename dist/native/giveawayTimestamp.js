@@ -4,6 +4,7 @@ const forgescript_1 = require("@tryforge/forgescript");
 const structures_1 = require("../structures");
 exports.default = new forgescript_1.NativeFunction({
     name: "$giveawayTimestamp",
+    version: "1.0.0",
     description: "Returns the created timestamp of a giveaway in ms",
     unwrap: true,
     brackets: false,
