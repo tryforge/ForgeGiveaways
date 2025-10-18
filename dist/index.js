@@ -19,15 +19,15 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
         this.options = options;
         this.commands = null;
     }
-    async init(client) {
+    init(client) {
         this.commands = new managers_1.GiveawaysCommandManager(client);
         forgescript_1.EventManager.load("ForgeGiveawaysEvents", __dirname + "/events");
         this.load(__dirname + "/native");
         new managers_1.GiveawaysInteractionManager(client);
+        new structures_1.Database(this.emitter).init();
         if (this.options?.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
         }
-        await new structures_1.Database(this.emitter).init();
     }
 }
 exports.ForgeGiveaways = ForgeGiveaways;

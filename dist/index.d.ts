@@ -20,6 +20,6 @@ export declare class ForgeGiveaways extends ForgeExtension {
     readonly giveawaysManager: GiveawaysManager;
     commands: GiveawaysCommandManager | null;
     constructor(options?: IForgeGiveawaysOptions | undefined);
-    init(client: ForgeClient): Promise<void>;
+    init(client: ForgeClient): void;
 }
 //# sourceMappingURL=index.d.ts.map

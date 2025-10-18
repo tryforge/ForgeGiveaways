@@ -29,18 +29,17 @@ export class ForgeGiveaways extends ForgeExtension {
         this.commands = null
     }
 
-    public async init(client: ForgeClient) {
+    public init(client: ForgeClient) {
         this.commands = new GiveawaysCommandManager(client)
 
         EventManager.load("ForgeGiveawaysEvents", __dirname + "/events")
         this.load(__dirname + "/native")
 
         new GiveawaysInteractionManager(client)
+        new Database(this.emitter).init()
 
         if (this.options?.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
         }
-
-        await new Database(this.emitter).init()
     }
 }
