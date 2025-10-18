@@ -85,7 +85,7 @@ export class Giveaway implements IGiveaway {
     public messageID?: Snowflake
 
     constructor(options: IGiveawayStartOptions & { id?: Snowflake }) {
-        this.id = options.id ?? SnowflakeUtil.generate().toString()
+        this.id = options?.id ?? SnowflakeUtil.generate().toString()
         this.prize = options.prize
         this.duration = options.duration
         this.winnersCount = options.winnersCount

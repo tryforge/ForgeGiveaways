@@ -62,7 +62,7 @@ let Giveaway = class Giveaway {
      */
     messageID;
     constructor(options) {
-        this.id = options.id ?? discord_js_1.SnowflakeUtil.generate().toString();
+        this.id = options?.id ?? discord_js_1.SnowflakeUtil.generate().toString();
         this.prize = options.prize;
         this.duration = options.duration;
         this.winnersCount = options.winnersCount;
