@@ -11,6 +11,7 @@ export enum GiveawaysErrorType {
  * @param id The id of the referenced giveaway.
  */
 export function throwGiveawaysError(type: GiveawaysErrorType, id: Snowflake) {
+    const key = Object.keys(GiveawaysErrorType).find((x) => GiveawaysErrorType[x as keyof typeof GiveawaysErrorType] === type)
     const message = type.replace(/\$(\d+)/g, () => id)
-    Logger.error(message)
+    Logger.error(`[ForgeGiveaways] ${key}: ${message}`)
 }

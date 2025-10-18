@@ -13,7 +13,8 @@ var GiveawaysErrorType;
  * @param id The id of the referenced giveaway.
  */
 function throwGiveawaysError(type, id) {
+    const key = Object.keys(GiveawaysErrorType).find((x) => GiveawaysErrorType[x] === type);
     const message = type.replace(/\$(\d+)/g, () => id);
-    forgescript_1.Logger.error(message);
+    forgescript_1.Logger.error(`[ForgeGiveaways] ${key}: ${message}`);
 }
 //# sourceMappingURL=error.js.map
