@@ -1,5 +1,5 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
-import getGiveaway from "../functions/getGiveaway"
+import { Database } from "../structures"
 import array from "../functions/array"
 
 export default new NativeFunction({
@@ -25,7 +25,7 @@ export default new NativeFunction({
     ],
     output: array<ArgType.Role>(),
     async execute(ctx, [id, sep]) {
-        const giveaway = await getGiveaway(ctx, id) ?? ctx.giveaway
+        const giveaway = await Database.get(id) ?? ctx.giveaway
         return this.success(giveaway?.requirements?.requiredRoles?.join(sep ?? ", "))
     }
 })

@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Snowflake, 
 import { Compiler, Context, Interpreter } from "@tryforge/forgescript"
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
-import { Giveaway, IGiveawayRequirements } from "../structures"
+import { Database, Giveaway, IGiveawayRequirements } from "../structures"
 import { IGiveawayEvents } from "./GiveawaysEventManager"
 import { ForgeGiveaways } from ".."
 
@@ -20,23 +20,8 @@ export class GiveawaysManager {
     public constructor(
         private readonly client: ForgeGiveaways,
         private emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>
-    ) {}
-
-    /**
-     * Gets an existing giveaway.
-     * @param id The id of the giveaway to get.
-     * @returns 
-     */
-    public async get(id: Snowflake) {
-        return await this.client.database.get(id)
-    }
-
-    /**
-     * Gets all existing giveaways.
-     * @returns 
-     */
-    public async getAll() {
-        return this.client.database.getAll()
+    ) {
+        this._restoreGiveaways()
     }
 
     /**
@@ -85,7 +70,7 @@ export class GiveawaysManager {
             giveaway.messageID = msg?.id
         }
 
-        await this.client.database.set(giveaway)
+        await Database.set(giveaway).catch(ctx.noop)
         this.emitter.emit("giveawayStart", giveaway)
         setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration)
 
@@ -99,7 +84,7 @@ export class GiveawaysManager {
      * @returns 
      */
     public async end(ctx: Context, id: Snowflake) {
-        const giveaway = await this.get(id)
+        const giveaway = await Database.get(id)
         if (!giveaway || giveaway.hasEnded) return null
         giveaway.hasEnded = true
 
@@ -147,7 +132,7 @@ export class GiveawaysManager {
             }
         }
 
-        await this.client.database.set(giveaway)
+        await Database.set(giveaway).catch(ctx.noop)
         this.emitter.emit("giveawayEnd", giveaway)
 
         return giveaway
@@ -160,7 +145,7 @@ export class GiveawaysManager {
      * @returns 
      */
     public async reroll(ctx: Context, id: Snowflake) {
-        const giveaway = await this.get(id)
+        const giveaway = await Database.get(id)
         if (!giveaway || !giveaway.hasEnded) return null
         const oldGiveaway = giveaway.clone()
 
@@ -175,7 +160,7 @@ export class GiveawaysManager {
             doNotSend: true,
         })
 
-        await this.client.database.set(giveaway)
+        await Database.set(giveaway).catch(ctx.noop)
         this.emitter.emit("giveawayReroll", oldGiveaway, giveaway)
 
         return giveaway
@@ -184,5 +169,16 @@ export class GiveawaysManager {
     private _pickWinners(entries: Snowflake[], amount: number) {
         const shuffled = entries.sort(() => Math.random() - 0.5)
         return shuffled.slice(0, amount)
+    }
+
+    private async _restoreGiveaways() {
+        const giveaways = await Database.getAll()
+        if (!giveaways) return
+
+        for (const giveaway of giveaways) {
+            if (Date.now() > (giveaway.timestamp + giveaway.duration)) {
+                // some stuff
+            }
+        }
     }
 }

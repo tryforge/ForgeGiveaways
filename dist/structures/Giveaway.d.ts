@@ -2,6 +2,7 @@ import { GuildMember, Snowflake } from "discord.js";
 import { IGiveawayStartOptions } from "../managers/GiveawaysManager";
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake;
+    timestamp: number;
     hasEnded: boolean;
     messageID?: Snowflake;
     entries: Snowflake[];
@@ -17,9 +18,13 @@ export declare class Giveaway implements IGiveaway {
      */
     prize: string;
     /**
-     * The duration of the giveaway in ms.
+     * The duration of this giveaway in ms.
      */
     duration: number;
+    /**
+     * The timestamp this giveaway has been created at.
+     */
+    timestamp: number;
     /**
      * The max amount of winners for this giveaway.
      */
@@ -88,5 +93,11 @@ export declare class Giveaway implements IGiveaway {
      * @returns
      */
     clone(): this;
+}
+export declare class MongoGiveaway extends Giveaway {
+    /**
+     * The object id for MongoDB.
+     */
+    mongoId?: string;
 }
 //# sourceMappingURL=Giveaway.d.ts.map

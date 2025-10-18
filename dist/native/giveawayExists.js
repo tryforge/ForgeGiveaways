@@ -3,24 +3,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
 const structures_1 = require("../structures");
 exports.default = new forgescript_1.NativeFunction({
-    name: "$giveawayGuildID",
-    version: "1.0.0",
-    description: "Returns the guild id of a giveaway",
+    name: "$giveawayExists",
+    description: "Returns whether a giveaway exists",
     unwrap: true,
-    brackets: false,
+    brackets: true,
     args: [
         {
             name: "giveaway ID",
-            description: "The giveaway to pull data from",
+            description: "The id of the giveaway to check for",
             rest: false,
             required: true,
             type: forgescript_1.ArgType.String,
         },
     ],
-    output: forgescript_1.ArgType.Guild,
+    output: forgescript_1.ArgType.Boolean,
     async execute(ctx, [id]) {
-        const giveaway = await structures_1.Database.get(id) ?? ctx.giveaway;
-        return this.success(giveaway?.guildID);
+        return this.success(!!(await structures_1.Database.get(id)));
     }
 });
-//# sourceMappingURL=giveawayGuildID.js.map
+//# sourceMappingURL=giveawayExists.js.map

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GiveawaysInteractionManager = void 0;
 const discord_js_1 = require("discord.js");
 const __1 = require("..");
+const structures_1 = require("../structures");
 class GiveawaysInteractionManager {
     client;
     constructor(client) {
@@ -15,7 +16,7 @@ class GiveawaysInteractionManager {
                 return;
             const [, id] = interaction.customId.split("-");
             const client = this.client.getExtension(__1.ForgeGiveaways, true);
-            const giveaway = await client.database.get(id);
+            const giveaway = await structures_1.Database.get(id);
             if (!giveaway)
                 return;
             const member = interaction.member;
@@ -25,12 +26,12 @@ class GiveawaysInteractionManager {
             const entered = giveaway.hasEntered(member.id);
             if (entered) {
                 giveaway.removeEntry(member.id);
-                client.database.set(giveaway);
+                await structures_1.Database.set(giveaway);
                 client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway);
             }
             else {
                 giveaway.addEntry(member.id);
-                client.database.set(giveaway);
+                await structures_1.Database.set(giveaway);
                 client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway);
             }
             interaction.reply({

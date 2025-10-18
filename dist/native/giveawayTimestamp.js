@@ -3,9 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
 const structures_1 = require("../structures");
 exports.default = new forgescript_1.NativeFunction({
-    name: "$giveawayGuildID",
-    version: "1.0.0",
-    description: "Returns the guild id of a giveaway",
+    name: "$giveawayTimestamp",
+    description: "Returns the created timestamp of a giveaway in ms",
     unwrap: true,
     brackets: false,
     args: [
@@ -17,10 +16,10 @@ exports.default = new forgescript_1.NativeFunction({
             type: forgescript_1.ArgType.String,
         },
     ],
-    output: forgescript_1.ArgType.Guild,
+    output: forgescript_1.ArgType.Number,
     async execute(ctx, [id]) {
         const giveaway = await structures_1.Database.get(id) ?? ctx.giveaway;
-        return this.success(giveaway?.guildID);
+        return this.success(giveaway?.timestamp);
     }
 });
-//# sourceMappingURL=giveawayGuildID.js.map
+//# sourceMappingURL=giveawayTimestamp.js.map

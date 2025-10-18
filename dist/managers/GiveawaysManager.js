@@ -10,21 +10,7 @@ class GiveawaysManager {
     constructor(client, emitter) {
         this.client = client;
         this.emitter = emitter;
-    }
-    /**
-     * Gets an existing giveaway.
-     * @param id The id of the giveaway to get.
-     * @returns
-     */
-    async get(id) {
-        return await this.client.database.get(id);
-    }
-    /**
-     * Gets all existing giveaways.
-     * @returns
-     */
-    async getAll() {
-        return this.client.database.getAll();
+        this._restoreGiveaways();
     }
     /**
      * Starts a new giveaway on a guild.
@@ -62,7 +48,7 @@ class GiveawaysManager {
             }).catch(ctx.noop);
             giveaway.messageID = msg?.id;
         }
-        await this.client.database.set(giveaway);
+        await structures_1.Database.set(giveaway).catch(ctx.noop);
         this.emitter.emit("giveawayStart", giveaway);
         setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration);
         return giveaway;
@@ -74,7 +60,7 @@ class GiveawaysManager {
      * @returns
      */
     async end(ctx, id) {
-        const giveaway = await this.get(id);
+        const giveaway = await structures_1.Database.get(id);
         if (!giveaway || giveaway.hasEnded)
             return null;
         giveaway.hasEnded = true;
@@ -118,7 +104,7 @@ class GiveawaysManager {
                 }).catch(ctx.noop);
             }
         }
-        await this.client.database.set(giveaway);
+        await structures_1.Database.set(giveaway).catch(ctx.noop);
         this.emitter.emit("giveawayEnd", giveaway);
         return giveaway;
     }
@@ -129,7 +115,7 @@ class GiveawaysManager {
      * @returns
      */
     async reroll(ctx, id) {
-        const giveaway = await this.get(id);
+        const giveaway = await structures_1.Database.get(id);
         if (!giveaway || !giveaway.hasEnded)
             return null;
         const oldGiveaway = giveaway.clone();
@@ -142,13 +128,23 @@ class GiveawaysManager {
             data: forgescript_1.Compiler.compile(this.client.options?.messages?.reroll),
             doNotSend: true,
         });
-        await this.client.database.set(giveaway);
+        await structures_1.Database.set(giveaway).catch(ctx.noop);
         this.emitter.emit("giveawayReroll", oldGiveaway, giveaway);
         return giveaway;
     }
     _pickWinners(entries, amount) {
         const shuffled = entries.sort(() => Math.random() - 0.5);
         return shuffled.slice(0, amount);
+    }
+    async _restoreGiveaways() {
+        const giveaways = await structures_1.Database.getAll();
+        if (!giveaways)
+            return;
+        for (const giveaway of giveaways) {
+            if (Date.now() > (giveaway.timestamp + giveaway.duration)) {
+                // some stuff
+            }
+        }
     }
 }
 exports.GiveawaysManager = GiveawaysManager;

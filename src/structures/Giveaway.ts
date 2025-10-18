@@ -1,9 +1,10 @@
 import { GuildMember, Snowflake, SnowflakeUtil } from "discord.js"
 import { IGiveawayStartOptions } from "../managers/GiveawaysManager"
-import { Column, Entity, PrimaryColumn } from "typeorm"
+import { Column, Entity, ObjectIdColumn, PrimaryColumn } from "typeorm"
 
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake
+    timestamp: number
     hasEnded: boolean
     messageID?: Snowflake
     entries: Snowflake[]
@@ -25,10 +26,16 @@ export class Giveaway implements IGiveaway {
     public prize: string
 
     /**
-     * The duration of the giveaway in ms.
+     * The duration of this giveaway in ms.
      */
     @Column()
     public duration: number
+
+    /**
+     * The timestamp this giveaway has been created at.
+     */
+    @Column()
+    public timestamp: number
 
     /**
      * The max amount of winners for this giveaway.
@@ -93,6 +100,7 @@ export class Giveaway implements IGiveaway {
         this.guildID = options?.guildID ?? ""
         this.channelID = options?.channelID ?? ""
         this.requirements = options?.requirements
+        this.timestamp = (SnowflakeUtil.timestampFrom(this.id) * 1000)
         this.hasEnded = false
         this.entries = []
         this.winners = []
@@ -150,4 +158,13 @@ export class Giveaway implements IGiveaway {
     public clone() {
         return structuredClone(this)
     }
+}
+
+@Entity()
+export class MongoGiveaway extends Giveaway {
+    /**
+     * The object id for MongoDB.
+     */
+    @ObjectIdColumn()
+    public mongoId?: string
 }

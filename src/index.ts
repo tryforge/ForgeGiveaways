@@ -17,17 +17,16 @@ export class ForgeGiveaways extends ForgeExtension {
     name = "ForgeGiveaways"
     description = ""
     version = require("../package.json").version
+    requireExtensions = ["ForgeDB"]
 
     public emitter = new TypedEmitter<TransformEvents<IGiveawayEvents>>()
 
     public readonly giveawaysManager = new GiveawaysManager(this, this.emitter)
-    public readonly database: Database
     commands: GiveawaysCommandManager | null
 
     public constructor (public readonly options?: IForgeGiveawaysOptions) {
         super()
         this.commands = null
-        this.database = new Database(this.emitter)
     }
 
     public async init(client: ForgeClient) {
@@ -37,11 +36,10 @@ export class ForgeGiveaways extends ForgeExtension {
         this.load(__dirname + "/native")
 
         new GiveawaysInteractionManager(client)
+        await new Database(this.emitter).init()
 
         if (this.options?.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
         }
-
-        await this.database.init()
     }
 }

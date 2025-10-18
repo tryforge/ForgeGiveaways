@@ -1,5 +1,5 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
-import getGiveaway from "../functions/getGiveaway"
+import { Database } from "../structures"
 
 export default new NativeFunction({
     name: "$giveawayDuration",
@@ -18,7 +18,7 @@ export default new NativeFunction({
     ],
     output: ArgType.Number,
     async execute(ctx, [id]) {
-        const giveaway = await getGiveaway(ctx, id) ?? ctx.giveaway
+        const giveaway = await Database.get(id) ?? ctx.giveaway
         return this.success(giveaway?.duration)
     }
 })

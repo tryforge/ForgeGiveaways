@@ -19,17 +19,6 @@ export declare class GiveawaysManager {
     private emitter;
     constructor(client: ForgeGiveaways, emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>);
     /**
-     * Gets an existing giveaway.
-     * @param id The id of the giveaway to get.
-     * @returns
-     */
-    get(id: Snowflake): Promise<Giveaway | null | undefined>;
-    /**
-     * Gets all existing giveaways.
-     * @returns
-     */
-    getAll(): Promise<Giveaway[] | undefined>;
-    /**
      * Starts a new giveaway on a guild.
      * @param ctx The current context.
      * @param options The start options for the giveaway.
@@ -51,5 +40,6 @@ export declare class GiveawaysManager {
      */
     reroll(ctx: Context, id: Snowflake): Promise<Giveaway | null>;
     private _pickWinners;
+    private _restoreGiveaways;
 }
 //# sourceMappingURL=GiveawaysManager.d.ts.map

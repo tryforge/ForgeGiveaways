@@ -2,18 +2,22 @@ import { GiveawaysDatabaseManager, IGiveawayEvents } from "../managers";
 import { TypedEmitter } from "tiny-typed-emitter";
 import { TransformEvents } from "@tryforge/forge.db";
 import { Snowflake } from "discord.js";
-import { Giveaway } from "./Giveaway";
+import { Giveaway, MongoGiveaway } from "./Giveaway";
+export type AnyGiveaway = typeof Giveaway | typeof MongoGiveaway;
 export declare class Database extends GiveawaysDatabaseManager {
     private readonly emitter;
     database: string;
     entityManager: {
         sqlite: (typeof Giveaway)[];
-        mongodb: (typeof Giveaway)[];
+        mongodb: (typeof MongoGiveaway)[];
         mysql: (typeof Giveaway)[];
         postgres: (typeof Giveaway)[];
     };
-    private db?;
-    private repo?;
+    private static entities;
+    private db;
+    private static db;
+    private static repo;
+    private static emitter;
     constructor(emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>);
     init(): Promise<void>;
     /**
@@ -21,27 +25,27 @@ export declare class Database extends GiveawaysDatabaseManager {
      * @param id The id of the giveaway to get.
      * @returns
      */
-    get(id: Snowflake): Promise<Giveaway | null | undefined>;
+    static get(id: Snowflake): Promise<Giveaway | null>;
     /**
      * Gets all existing giveaways.
      * @returns
      */
-    getAll(): Promise<Giveaway[] | undefined>;
+    static getAll(): Promise<Giveaway[]>;
     /**
      * Saves a giveaway in the database.
      * @param data The giveaway data to save.
      */
-    set(data: Giveaway): Promise<void>;
+    static set(data: Giveaway): Promise<void>;
     /**
      * Deletes an existing giveaway from the database.
      * @param id The id of the giveaway to delete.
      * @returns
      */
-    delete(id: Snowflake): Promise<import("typeorm").DeleteResult | undefined>;
+    static delete(id: Snowflake): Promise<import("typeorm").DeleteResult>;
     /**
      * Wipes the entire database.
      * @returns
      */
-    wipe(): Promise<void | undefined>;
+    static wipe(): Promise<void>;
 }
 //# sourceMappingURL=Database.d.ts.map

@@ -2,9 +2,9 @@ import { ArgType, NativeFunction } from "@tryforge/forgescript"
 import { Database } from "../structures"
 
 export default new NativeFunction({
-    name: "$giveawayPrize",
+    name: "$giveawayTimestamp",
     version: "1.0.0",
-    description: "Returns the prize of a giveaway",
+    description: "Returns the created timestamp of a giveaway in ms",
     unwrap: true,
     brackets: false,
     args: [
@@ -16,9 +16,9 @@ export default new NativeFunction({
             type: ArgType.String,
         },
     ],
-    output: ArgType.String,
+    output: ArgType.Number,
     async execute(ctx, [id]) {
         const giveaway = await Database.get(id) ?? ctx.giveaway
-        return this.success(giveaway?.prize)
+        return this.success(giveaway?.timestamp)
     }
 })

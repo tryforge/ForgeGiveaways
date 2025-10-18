@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Giveaway = void 0;
+exports.MongoGiveaway = exports.Giveaway = void 0;
 const discord_js_1 = require("discord.js");
 const typeorm_1 = require("typeorm");
 let Giveaway = class Giveaway {
@@ -22,9 +22,13 @@ let Giveaway = class Giveaway {
      */
     prize;
     /**
-     * The duration of the giveaway in ms.
+     * The duration of this giveaway in ms.
      */
     duration;
+    /**
+     * The timestamp this giveaway has been created at.
+     */
+    timestamp;
     /**
      * The max amount of winners for this giveaway.
      */
@@ -70,6 +74,7 @@ let Giveaway = class Giveaway {
         this.guildID = options?.guildID ?? "";
         this.channelID = options?.channelID ?? "";
         this.requirements = options?.requirements;
+        this.timestamp = (discord_js_1.SnowflakeUtil.timestampFrom(this.id) * 1000);
         this.hasEnded = false;
         this.entries = [];
         this.winners = [];
@@ -142,6 +147,10 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
+], Giveaway.prototype, "timestamp", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
 ], Giveaway.prototype, "winnersCount", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
@@ -179,4 +188,18 @@ exports.Giveaway = Giveaway = __decorate([
     (0, typeorm_1.Entity)(),
     __metadata("design:paramtypes", [Object])
 ], Giveaway);
+let MongoGiveaway = class MongoGiveaway extends Giveaway {
+    /**
+     * The object id for MongoDB.
+     */
+    mongoId;
+};
+exports.MongoGiveaway = MongoGiveaway;
+__decorate([
+    (0, typeorm_1.ObjectIdColumn)(),
+    __metadata("design:type", String)
+], MongoGiveaway.prototype, "mongoId", void 0);
+exports.MongoGiveaway = MongoGiveaway = __decorate([
+    (0, typeorm_1.Entity)()
+], MongoGiveaway);
 //# sourceMappingURL=Giveaway.js.map

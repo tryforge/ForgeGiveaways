@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
-const getGiveaway_1 = __importDefault(require("../functions/getGiveaway"));
+const structures_1 = require("../structures");
 const array_1 = __importDefault(require("../functions/array"));
 exports.default = new forgescript_1.NativeFunction({
     name: "$giveawayEntries",
@@ -29,7 +29,7 @@ exports.default = new forgescript_1.NativeFunction({
     ],
     output: (0, array_1.default)(),
     async execute(ctx, [id, sep]) {
-        const giveaway = await (0, getGiveaway_1.default)(ctx, id) ?? ctx.giveaway;
+        const giveaway = await structures_1.Database.get(id) ?? ctx.giveaway;
         return this.success(giveaway?.entries.join(sep ?? ", "));
     }
 });

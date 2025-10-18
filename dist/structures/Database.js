@@ -8,47 +8,57 @@ class Database extends managers_1.GiveawaysDatabaseManager {
     database = "giveaway.db";
     entityManager = {
         sqlite: [Giveaway_1.Giveaway],
-        mongodb: [Giveaway_1.Giveaway],
+        mongodb: [Giveaway_1.MongoGiveaway],
         mysql: [Giveaway_1.Giveaway],
         postgres: [Giveaway_1.Giveaway],
     };
+    static entities;
     db;
-    repo;
+    static db;
+    static repo;
+    static emitter;
     constructor(emitter) {
         super();
         this.emitter = emitter;
+        this.type ??= "sqlite";
+        this.db = this.getDB();
+        Database.entities = {
+            Giveaway: this.entityManager[this.type === "better-sqlite3" ? "sqlite" : this.type][0],
+        };
     }
     async init() {
-        this.db = await this.getDB();
-        this.repo = this.db.getRepository(Giveaway_1.Giveaway);
-        this.emitter.emit("databaseConnect");
+        Database.emitter = this.emitter;
+        Database.db = await this.getDB();
+        Database.repo = Database.db.getRepository(Database.entities.Giveaway);
+        Database.emitter.emit("databaseConnect");
     }
     /**
      * Gets an existing giveaway.
      * @param id The id of the giveaway to get.
      * @returns
      */
-    async get(id) {
-        return await this.repo?.findOneBy({ id });
+    static async get(id) {
+        return await this.repo.findOneBy({ id });
     }
     /**
      * Gets all existing giveaways.
      * @returns
      */
-    async getAll() {
-        return await this.repo?.find();
+    static async getAll() {
+        return await this.repo.find();
     }
     /**
      * Saves a giveaway in the database.
      * @param data The giveaway data to save.
      */
-    async set(data) {
-        const oldData = await this.repo?.findOneBy({ id: data.id });
+    static async set(data) {
+        const newData = new this.entities.Giveaway(data);
+        const oldData = await this.repo.findOneBy({ id: data.id });
         if (oldData && this.type === "mongodb") {
-            await this.repo?.update(oldData.id, data);
+            await this.repo.update(oldData.id, data);
         }
         else {
-            await this.repo?.save(data);
+            await this.repo.save(data);
         }
     }
     /**
@@ -56,15 +66,15 @@ class Database extends managers_1.GiveawaysDatabaseManager {
      * @param id The id of the giveaway to delete.
      * @returns
      */
-    async delete(id) {
-        return await this.repo?.delete({ id });
+    static async delete(id) {
+        return await this.repo.delete({ id });
     }
     /**
      * Wipes the entire database.
      * @returns
      */
-    async wipe() {
-        return await this.repo?.clear();
+    static async wipe() {
+        return await this.repo.clear();
     }
 }
 exports.Database = Database;

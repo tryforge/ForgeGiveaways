@@ -2,23 +2,22 @@ import { ArgType, NativeFunction } from "@tryforge/forgescript"
 import { Database } from "../structures"
 
 export default new NativeFunction({
-    name: "$giveawayPrize",
+    name: "$giveawayExists",
     version: "1.0.0",
-    description: "Returns the prize of a giveaway",
+    description: "Returns whether a giveaway exists",
     unwrap: true,
-    brackets: false,
+    brackets: true,
     args: [
         {
             name: "giveaway ID",
-            description: "The giveaway to pull data from",
+            description: "The id of the giveaway to check for",
             rest: false,
             required: true,
             type: ArgType.String,
         },
     ],
-    output: ArgType.String,
+    output: ArgType.Boolean,
     async execute(ctx, [id]) {
-        const giveaway = await Database.get(id) ?? ctx.giveaway
-        return this.success(giveaway?.prize)
+        return this.success(!!(await Database.get(id)))
     }
 })

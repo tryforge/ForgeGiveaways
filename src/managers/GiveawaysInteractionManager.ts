@@ -1,6 +1,7 @@
 import { ForgeClient } from "@tryforge/forgescript"
 import { GuildMember, MessageFlags } from "discord.js"
 import { ForgeGiveaways } from ".."
+import { Database } from "../structures"
 
 export class GiveawaysInteractionManager {
     public constructor(private readonly client: ForgeClient) {
@@ -13,7 +14,7 @@ export class GiveawaysInteractionManager {
             const [, id] = interaction.customId.split("-")
 
             const client = this.client.getExtension(ForgeGiveaways, true)
-            const giveaway = await client.database.get(id)
+            const giveaway = await Database.get(id)
             if (!giveaway) return
 
             const member = interaction.member
@@ -24,11 +25,11 @@ export class GiveawaysInteractionManager {
 
             if (entered) {
                 giveaway.removeEntry(member.id)
-                client.database.set(giveaway)
+                await Database.set(giveaway)
                 client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway)
             } else {
                 giveaway.addEntry(member.id)
-                client.database.set(giveaway)
+                await Database.set(giveaway)
                 client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway)
             }
 

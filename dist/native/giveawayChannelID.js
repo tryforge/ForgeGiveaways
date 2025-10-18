@@ -1,10 +1,7 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
-const getGiveaway_1 = __importDefault(require("../functions/getGiveaway"));
+const structures_1 = require("../structures");
 exports.default = new forgescript_1.NativeFunction({
     name: "$giveawayChannelID",
     version: "1.0.0",
@@ -22,7 +19,7 @@ exports.default = new forgescript_1.NativeFunction({
     ],
     output: forgescript_1.ArgType.Channel,
     async execute(ctx, [id]) {
-        const giveaway = await (0, getGiveaway_1.default)(ctx, id) ?? ctx.giveaway;
+        const giveaway = await structures_1.Database.get(id) ?? ctx.giveaway;
         return this.success(giveaway?.channelID);
     }
 });
