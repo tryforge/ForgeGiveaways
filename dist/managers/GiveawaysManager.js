@@ -66,15 +66,7 @@ class GiveawaysManager {
         });
         const winners = this._pickWinners(eligibleEntries, giveaway.winnersCount);
         giveaway.winners = winners;
-        if (this.client.options?.messages?.end) {
-            await forgescript_1.Interpreter.run({
-                ...ctx.runtime,
-                environment: { giveaway },
-                data: forgescript_1.Compiler.compile(this.client.options?.messages?.end),
-                doNotSend: true,
-            });
-        }
-        else {
+        if (this.client.options.useDefault) {
             const chan = ctx.client.channels.cache.get(giveaway.channelID);
             const msg = giveaway.messageID ? await chan?.messages.fetch(giveaway.messageID).catch(ctx.noop) : undefined;
             if (msg) {

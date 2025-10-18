@@ -92,14 +92,7 @@ export class GiveawaysManager {
         const winners = this._pickWinners(eligibleEntries, giveaway.winnersCount)
         giveaway.winners = winners
 
-        if (this.client.options?.messages?.end) {
-            await Interpreter.run({
-                ...ctx.runtime,
-                environment: { giveaway },
-                data: Compiler.compile(this.client.options?.messages?.end),
-                doNotSend: true,
-            })
-        } else {
+        if (this.client.options.useDefault) {
             const chan = ctx.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
             const msg = giveaway.messageID ? await chan?.messages.fetch(giveaway.messageID).catch(ctx.noop) : undefined
 

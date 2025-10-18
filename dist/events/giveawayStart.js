@@ -28,9 +28,11 @@ exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
                 const result = await forgescript_1.Interpreter.run(ctx);
                 if (client.options.useDefault === false) {
                     const res = result?.trim();
+                    console.log(res);
                     const chan = this.channels.cache.get(gw.channelID);
-                    const msg = res ? chan?.messages.cache.get(res) : undefined;
-                    if (!res || !msg) {
+                    const msg = res ? await chan?.messages.fetch(res).catch(ctx.noop) : undefined;
+                    console.log(msg);
+                    if (!msg) {
                         (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, gw.id);
                         await structures_1.Database.delete(gw.id);
                         continue;

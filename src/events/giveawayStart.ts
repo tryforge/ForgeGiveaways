@@ -31,10 +31,12 @@ export default new GiveawaysEventHandler({
 
                 if (client.options.useDefault === false) {
                     const res = result?.trim()
+                    console.log(res)
                     const chan = this.channels.cache.get(gw.channelID) as TextChannel | undefined
-                    const msg = res ? chan?.messages.cache.get(res) : undefined
+                    const msg = res ? await chan?.messages.fetch(res).catch(ctx.noop) : undefined
+                    console.log(msg)
 
-                    if (!res || !msg) {
+                    if (!msg) {
                         throwGiveawaysError(GiveawaysErrorType.MessageNotFound, gw.id)
                         await Database.delete(gw.id)
                         continue
