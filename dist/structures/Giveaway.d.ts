@@ -56,7 +56,7 @@ export declare class Giveaway implements IGiveaway {
      * The id of the message this giveaway is associated with.
      */
     messageID?: Snowflake;
-    constructor(options: IGiveawayStartOptions & {
+    constructor(options?: Partial<IGiveawayStartOptions> & {
         id?: Snowflake;
     });
     /**

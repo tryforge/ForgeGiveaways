@@ -84,15 +84,15 @@ export class Giveaway implements IGiveaway {
     @Column({ nullable: true })
     public messageID?: Snowflake
 
-    constructor(options: IGiveawayStartOptions & { id?: Snowflake }) {
+    constructor(options?: Partial<IGiveawayStartOptions> & { id?: Snowflake }) {
         this.id = options?.id ?? SnowflakeUtil.generate().toString()
-        this.prize = options.prize
-        this.duration = options.duration
-        this.winnersCount = options.winnersCount
-        this.hostID = options.hostID
-        this.guildID = options.guildID
-        this.channelID = options.channelID
-        this.requirements = options.requirements
+        this.prize = options?.prize ?? ""
+        this.duration = options?.duration ?? 0
+        this.winnersCount = options?.winnersCount ?? 1
+        this.hostID = options?.hostID ?? ""
+        this.guildID = options?.guildID ?? ""
+        this.channelID = options?.channelID ?? ""
+        this.requirements = options?.requirements
         this.hasEnded = false
         this.entries = []
         this.winners = []
