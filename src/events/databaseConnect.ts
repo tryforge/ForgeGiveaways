@@ -10,17 +10,15 @@ export default new GiveawaysEventHandler({
     listener: async function() {
         const commands = this.getExtension(ForgeGiveaways, true).commands.get("databaseConnect")
 
-        if (commands?.length) {
-            for (const command of commands) {
-                const ctx = new Context({
-                    obj: {},
-                    command,
-                    client: this,
-                    data: command.compiled.code,
-                })
+        for (const command of commands) {
+            const ctx = new Context({
+                obj: {},
+                command,
+                client: this,
+                data: command.compiled.code,
+            })
 
-                Interpreter.run(ctx)
-            }
+            Interpreter.run(ctx)
         }
     },
 })

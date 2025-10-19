@@ -10,23 +10,21 @@ export default new GiveawaysEventHandler({
     listener: async function(old, newer) {
         const commands = this.getExtension(ForgeGiveaways, true).commands.get("giveawayEntryRemove")
 
-        if (commands?.length) {
-            for (const command of commands) {
-                const ctx = new Context({
-                    obj: newer,
-                    command,
-                    client: this,
-                    states: {
-                        giveaway: {
-                            new: newer,
-                            old
-                        }
-                    },
-                    data: command.compiled.code,
-                })
+        for (const command of commands) {
+            const ctx = new Context({
+                obj: newer,
+                command,
+                client: this,
+                states: {
+                    giveaway: {
+                        new: newer,
+                        old
+                    }
+                },
+                data: command.compiled.code,
+            })
 
-                Interpreter.run(ctx)
-            }
+            Interpreter.run(ctx)
         }
     },
 })

@@ -10,22 +10,20 @@ export default new GiveawaysEventHandler({
     listener: async function(gw) {
         const commands = this.getExtension(ForgeGiveaways, true).commands.get("giveawayEnd")
 
-        if (commands?.length) {
-            for (const command of commands) {
-                const ctx = new Context({
-                    obj: gw,
-                    command,
-                    client: this,
-                    states: {
-                        giveaway: {
-                            new: gw,
-                        }
-                    },
-                    data: command.compiled.code,
-                })
+        for (const command of commands) {
+            const ctx = new Context({
+                obj: gw,
+                command,
+                client: this,
+                states: {
+                    giveaway: {
+                        new: gw,
+                    }
+                },
+                data: command.compiled.code,
+            })
 
-                Interpreter.run(ctx)
-            }
+            Interpreter.run(ctx)
         }
     },
 })

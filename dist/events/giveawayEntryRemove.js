@@ -10,22 +10,20 @@ exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
     description: "This event is fired when a giveaway entry is removed",
     listener: async function (old, newer) {
         const commands = this.getExtension(__1.ForgeGiveaways, true).commands.get("giveawayEntryRemove");
-        if (commands?.length) {
-            for (const command of commands) {
-                const ctx = new structures_1.Context({
-                    obj: newer,
-                    command,
-                    client: this,
-                    states: {
-                        giveaway: {
-                            new: newer,
-                            old
-                        }
-                    },
-                    data: command.compiled.code,
-                });
-                forgescript_1.Interpreter.run(ctx);
-            }
+        for (const command of commands) {
+            const ctx = new structures_1.Context({
+                obj: newer,
+                command,
+                client: this,
+                states: {
+                    giveaway: {
+                        new: newer,
+                        old
+                    }
+                },
+                data: command.compiled.code,
+            });
+            forgescript_1.Interpreter.run(ctx);
         }
     },
 });

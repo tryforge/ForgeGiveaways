@@ -10,21 +10,19 @@ exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
     description: "This event is fired when a giveaway ended",
     listener: async function (gw) {
         const commands = this.getExtension(__1.ForgeGiveaways, true).commands.get("giveawayEnd");
-        if (commands?.length) {
-            for (const command of commands) {
-                const ctx = new structures_1.Context({
-                    obj: gw,
-                    command,
-                    client: this,
-                    states: {
-                        giveaway: {
-                            new: gw,
-                        }
-                    },
-                    data: command.compiled.code,
-                });
-                forgescript_1.Interpreter.run(ctx);
-            }
+        for (const command of commands) {
+            const ctx = new structures_1.Context({
+                obj: gw,
+                command,
+                client: this,
+                states: {
+                    giveaway: {
+                        new: gw,
+                    }
+                },
+                data: command.compiled.code,
+            });
+            forgescript_1.Interpreter.run(ctx);
         }
     },
 });
