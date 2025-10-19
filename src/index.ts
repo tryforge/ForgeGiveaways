@@ -1,5 +1,6 @@
 import { EventManager, ForgeClient, ForgeExtension } from "@tryforge/forgescript"
-import { IGiveawayEvents, GiveawaysCommandManager, GiveawaysManager, GiveawaysInteractionHandler } from "./managers"
+import { GiveawaysCommandManager, GiveawaysManager } from "./managers"
+import { GiveawaysInteractionHandler, IGiveawayEvents } from "./handlers"
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
 import { Database } from "./structures"
@@ -49,6 +50,7 @@ export class ForgeGiveaways extends ForgeExtension {
     }
 }
 
+export * from "./handlers"
 export * from "./managers"
 export * from "./structures"
 export * from "./types"

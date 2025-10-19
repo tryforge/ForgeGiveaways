@@ -8,6 +8,7 @@ export interface IGiveawayEvents {
     giveawayReroll: [Giveaway, Giveaway];
     giveawayEntryAdd: [Giveaway, Giveaway];
     giveawayEntryRemove: [Giveaway, Giveaway];
+    giveawayEntryRevoked: [Giveaway];
 }
 export declare class GiveawaysEventHandler<T extends keyof IGiveawayEvents> extends BaseEventHandler<IGiveawayEvents, T> {
     register(client: ForgeClient): void;

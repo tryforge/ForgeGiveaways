@@ -1,1 +1,1 @@
-{"version":3,"file":"giveawayEdit.d.ts","sourceRoot":"","sources":["../../src/events/giveawayEdit.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,qBAAqB,EAAE,MAAM,mCAAmC,CAAA;;AAIzE,wBAwBE"}
+{"version":3,"file":"giveawayEdit.d.ts","sourceRoot":"","sources":["../../src/events/giveawayEdit.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,qBAAqB,EAAE,MAAM,aAAa,CAAA;;AAInD,wBAwBE"}

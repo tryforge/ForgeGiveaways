@@ -17,6 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ForgeGiveaways = void 0;
 const forgescript_1 = require("@tryforge/forgescript");
 const managers_1 = require("./managers");
+const handlers_1 = require("./handlers");
 const tiny_typed_emitter_1 = require("tiny-typed-emitter");
 const structures_1 = require("./structures");
 class ForgeGiveaways extends forgescript_1.ForgeExtension {
@@ -37,7 +38,7 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
         this.commands = new managers_1.GiveawaysCommandManager(client);
         forgescript_1.EventManager.load("ForgeGiveawaysEvents", __dirname + "/events");
         this.load(__dirname + "/native");
-        new managers_1.GiveawaysInteractionHandler(client);
+        new handlers_1.GiveawaysInteractionHandler(client);
         if (this.options.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
         }
@@ -46,6 +47,7 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
     }
 }
 exports.ForgeGiveaways = ForgeGiveaways;
+__exportStar(require("./handlers"), exports);
 __exportStar(require("./managers"), exports);
 __exportStar(require("./structures"), exports);
 __exportStar(require("./types"), exports);

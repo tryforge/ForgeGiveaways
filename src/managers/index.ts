@@ -1,5 +1,3 @@
 export * from "./GiveawaysCommandManager"
 export * from "./GiveawaysDatabaseManager"
-export * from "../handlers/GiveawaysEventHandler"
-export * from "../handlers/GiveawaysInteractionHandler"
 export * from "./GiveawaysManager"

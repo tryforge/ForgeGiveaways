@@ -28,13 +28,16 @@ class GiveawaysManager {
             const embed = new discord_js_1.EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`**Prize:** ${giveaway.prize}\n**Winners:** ${giveaway.winnersCount}`)
-                .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(new Date(Date.now() + giveaway.duration), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
+                .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
                 .setColor("Green");
             const comps = new discord_js_1.ActionRowBuilder()
                 .addComponents(new discord_js_1.ButtonBuilder()
                 .setCustomId(`giveawayEntry-${giveaway.id}`)
                 .setLabel("Entry")
-                .setStyle(discord_js_1.ButtonStyle.Primary));
+                .setStyle(discord_js_1.ButtonStyle.Success), new discord_js_1.ButtonBuilder()
+                .setCustomId(`giveawayEnd-${giveaway.id}`)
+                .setLabel("End")
+                .setStyle(discord_js_1.ButtonStyle.Danger));
             const msg = await chan?.send({
                 embeds: [embed],
                 components: [comps.toJSON()]
@@ -71,20 +74,26 @@ class GiveawaysManager {
             const chan = this.client.channels.cache.get(giveaway.channelID);
             const msg = giveaway.messageID ? await chan?.messages.fetch(giveaway.messageID).catch(noop_1.default) : undefined;
             if (msg) {
-                const oldEmbed = msg.embeds[0];
-                const embed = discord_js_1.EmbedBuilder.from(oldEmbed)
+                const plural = winners.length > 1 ? "s" : "";
+                const mentions = winners.map((id) => `<@${id}>`).join(", ");
+                const embed = new discord_js_1.EmbedBuilder()
                     .setTitle("🎉 GIVEAWAY ENDED 🎉")
-                    .spliceFields(0, 1, { name: "Ended", value: oldEmbed.fields[0].value, inline: true })
+                    .setDescription(`**Prize:** ${giveaway.prize}\n**Winner${plural}:** ${mentions}`)
+                    .addFields({ name: "Ended", value: `${(0, discord_js_1.time)(new Date(), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
                     .setColor("Red");
+                const comps = new discord_js_1.ActionRowBuilder()
+                    .addComponents(new discord_js_1.ButtonBuilder()
+                    .setCustomId(`giveawayReroll-${giveaway.id}`)
+                    .setLabel("Reroll")
+                    .setStyle(discord_js_1.ButtonStyle.Primary));
                 msg.edit({
                     embeds: [embed],
-                    components: []
+                    components: [comps.toJSON()]
                 }).catch(noop_1.default);
-                const plural = winners.length > 1 ? "s" : "";
                 msg.reply({
                     content: winners.length === 0
                         ? "😢 No winners for this giveaway!"
-                        : `🎉 Congratulations to the winner${plural} of **${giveaway.prize}**!\n> 🏆 **Winner${plural}:** ${winners.map((id) => `<@${id}>`).join(", ")}`,
+                        : `🎉 Congratulations to the winner${plural} of **${giveaway.prize}**!\n🏆 **Winner${plural}:** ${mentions}`,
                     allowedMentions: {
                         repliedUser: false,
                         parse: ["users"]

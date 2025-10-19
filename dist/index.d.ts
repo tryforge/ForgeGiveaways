@@ -1,5 +1,6 @@
 import { ForgeClient, ForgeExtension } from "@tryforge/forgescript";
-import { IGiveawayEvents, GiveawaysCommandManager, GiveawaysManager } from "./managers";
+import { GiveawaysCommandManager, GiveawaysManager } from "./managers";
+import { IGiveawayEvents } from "./handlers";
 import { TypedEmitter } from "tiny-typed-emitter";
 import { TransformEvents } from "@tryforge/forge.db";
 export interface IForgeGiveawaysOptions {
@@ -24,6 +25,7 @@ export declare class ForgeGiveaways extends ForgeExtension {
     constructor(options?: IForgeGiveawaysOptions);
     init(client: ForgeClient): Promise<void>;
 }
+export * from "./handlers";
 export * from "./managers";
 export * from "./structures";
 export * from "./types";

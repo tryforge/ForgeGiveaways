@@ -1,5 +1,5 @@
 import { Interpreter } from "@tryforge/forgescript"
-import { GiveawaysEventHandler } from "../handlers/GiveawaysEventHandler"
+import { GiveawaysEventHandler } from "../handlers"
 import { ForgeGiveaways } from ".."
 import { Context } from "../structures"
 

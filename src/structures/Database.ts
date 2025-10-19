@@ -1,4 +1,5 @@
-import { GiveawaysDatabaseManager, IGiveawayEvents } from "../managers"
+import { GiveawaysDatabaseManager } from "../managers"
+import { IGiveawayEvents } from "../handlers"
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
 import { Snowflake } from "discord.js"

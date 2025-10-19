@@ -5,20 +5,19 @@ const handlers_1 = require("../handlers");
 const __1 = require("..");
 const structures_1 = require("../structures");
 exports.default = new handlers_1.GiveawaysEventHandler({
-    name: "giveawayReroll",
+    name: "giveawayEntryRevoked",
     version: "1.0.0",
-    description: "This event is fired when a giveaway was rerolled",
-    listener: async function (old, newer) {
-        const commands = this.getExtension(__1.ForgeGiveaways, true).commands.get("giveawayReroll");
+    description: "This event is fired when a giveaway entry is revoked",
+    listener: async function (gw) {
+        const commands = this.getExtension(__1.ForgeGiveaways, true).commands.get("giveawayEntryRevoked");
         for (const command of commands) {
             const ctx = new structures_1.Context({
-                obj: newer,
+                obj: gw,
                 command,
                 client: this,
                 states: {
                     giveaway: {
-                        new: newer,
-                        old
+                        new: gw
                     }
                 },
                 data: command.compiled.code,
@@ -27,4 +26,4 @@ exports.default = new handlers_1.GiveawaysEventHandler({
         }
     },
 });
-//# sourceMappingURL=giveawayReroll.js.map
+//# sourceMappingURL=giveawayEntryRevoked.js.map
