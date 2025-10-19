@@ -45,7 +45,7 @@ export class ForgeGiveaways extends ForgeExtension {
         }
 
         await new Database(this.emitter).init()
-        this.giveawaysManager = new GiveawaysManager(this, client, this.emitter)
+        this.giveawaysManager = new GiveawaysManager(this, client)
     }
 }
 

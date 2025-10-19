@@ -1,10 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Snowflake, TextChannel, time } from "discord.js"
 import { ForgeClient } from "@tryforge/forgescript"
-import { TransformEvents } from "@tryforge/forge.db"
-import { TypedEmitter } from "tiny-typed-emitter"
 import { Database, IGiveawayRequirements } from "../structures"
 import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
-import { IGiveawayEvents } from "./GiveawaysEventManager"
 import { ForgeGiveaways } from ".."
 import noop from "../functions/noop"
 
@@ -23,8 +20,7 @@ export type IGiveawayEditOptions = Omit<IGiveawayStartOptions, "guildID" | "chan
 export class GiveawaysManager {
     public constructor(
         private readonly giveaways: ForgeGiveaways,
-        private readonly client: ForgeClient,
-        private emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>
+        private readonly client: ForgeClient
     ) {
         client.once("clientReady", () => this._restoreGiveaways())
     }
@@ -70,7 +66,7 @@ export class GiveawaysManager {
         }
 
         await Database.set(giveaway).catch(noop)
-        this.emitter.emit("giveawayStart", giveaway)
+        this.giveaways.emitter.emit("giveawayStart", giveaway)
         setTimeout(async () => await this.end(giveaway.id).catch(noop), giveaway.duration)
 
         return giveaway
@@ -124,7 +120,7 @@ export class GiveawaysManager {
         }
 
         await Database.set(giveaway).catch(noop)
-        this.emitter.emit("giveawayEnd", giveaway)
+        this.giveaways.emitter.emit("giveawayEnd", giveaway)
 
         return giveaway
     }
@@ -146,7 +142,7 @@ export class GiveawaysManager {
         if (this.giveaways.options.useDefault) {}
 
         await Database.set(giveaway).catch(noop)
-        this.emitter.emit("giveawayReroll", oldGiveaway, giveaway)
+        this.giveaways.emitter.emit("giveawayReroll", oldGiveaway, giveaway)
 
         return giveaway
     }
@@ -170,7 +166,7 @@ export class GiveawaysManager {
         if (this.giveaways.options.useDefault) {}
 
         await Database.set(giveaway).catch(noop)
-        this.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
+        this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
 
         return giveaway
     }

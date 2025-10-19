@@ -34,7 +34,7 @@ let Giveaway = class Giveaway {
      */
     winnersCount;
     /**
-     * Returns whether this giveaway has ended.
+     * Indicates whether this giveaway has ended.
      */
     hasEnded;
     /**

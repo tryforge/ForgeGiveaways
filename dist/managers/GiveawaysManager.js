@@ -11,11 +11,9 @@ const noop_1 = __importDefault(require("../functions/noop"));
 class GiveawaysManager {
     giveaways;
     client;
-    emitter;
-    constructor(giveaways, client, emitter) {
+    constructor(giveaways, client) {
         this.giveaways = giveaways;
         this.client = client;
-        this.emitter = emitter;
         client.once("clientReady", () => this._restoreGiveaways());
     }
     /**
@@ -48,7 +46,7 @@ class GiveawaysManager {
             giveaway.messageID = msg.id;
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
-        this.emitter.emit("giveawayStart", giveaway);
+        this.giveaways.emitter.emit("giveawayStart", giveaway);
         setTimeout(async () => await this.end(giveaway.id).catch(noop_1.default), giveaway.duration);
         return giveaway;
     }
@@ -95,7 +93,7 @@ class GiveawaysManager {
             }
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
-        this.emitter.emit("giveawayEnd", giveaway);
+        this.giveaways.emitter.emit("giveawayEnd", giveaway);
         return giveaway;
     }
     /**
@@ -113,7 +111,7 @@ class GiveawaysManager {
         giveaway.winners = newWinners;
         if (this.giveaways.options.useDefault) { }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
-        this.emitter.emit("giveawayReroll", oldGiveaway, giveaway);
+        this.giveaways.emitter.emit("giveawayReroll", oldGiveaway, giveaway);
         return giveaway;
     }
     /**
@@ -138,7 +136,7 @@ class GiveawaysManager {
             giveaway.requirements = options.requirements;
         if (this.giveaways.options.useDefault) { }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
-        this.emitter.emit("giveawayEdit", oldGiveaway, giveaway);
+        this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway);
         return giveaway;
     }
     /**

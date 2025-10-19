@@ -42,7 +42,7 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
         }
         await new structures_1.Database(this.emitter).init();
-        this.giveawaysManager = new managers_1.GiveawaysManager(this, client, this.emitter);
+        this.giveawaysManager = new managers_1.GiveawaysManager(this, client);
     }
 }
 exports.ForgeGiveaways = ForgeGiveaways;

@@ -26,7 +26,7 @@ exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
                     data: command.compiled.code,
                     allowTopLevelReturn: true
                 });
-                const result = await forgescript_1.Interpreter.run(ctx);
+                const result = await forgescript_1.Interpreter.run(ctx.runtime);
                 if (client.options.useDefault === false) {
                     const res = result?.trim();
                     console.log(res);

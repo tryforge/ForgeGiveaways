@@ -28,7 +28,7 @@ export default new GiveawaysEventHandler({
                     allowTopLevelReturn: true
                 })
 
-                const result = await Interpreter.run(ctx)
+                const result = await Interpreter.run(ctx.runtime)
 
                 if (client.options.useDefault === false) {
                     const res = result?.trim()

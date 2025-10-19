@@ -18,13 +18,13 @@ ForgeGiveaways is a lightweight, flexible, and reliable extension for managing g
 
 <h3 align="center">Installation</h3><hr>
 
+> [!WARNING]
+> **ForgeGiveaways** requires the extension [**ForgeDB**](https://docs.botforge.org/p/ForgeDB/) installed in order to operate.
+
 1. Run the following command to install the required `npm` packages:
     ```bash
     npm i @tryforge/forge.giveaways @tryforge/forge.db
     ```
-
-    > [!WARNING]
-    > **ForgeGiveaways** requires the extension [**ForgeDB**](https://docs.botforge.org/p/ForgeDB/) installed in order to operate.
 
 2. Here’s an example of how your main file should look:
     ```js

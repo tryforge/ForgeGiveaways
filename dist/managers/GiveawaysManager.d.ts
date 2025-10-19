@@ -1,9 +1,6 @@
 import { Snowflake } from "discord.js";
 import { ForgeClient } from "@tryforge/forgescript";
-import { TransformEvents } from "@tryforge/forge.db";
-import { TypedEmitter } from "tiny-typed-emitter";
 import { IGiveawayRequirements } from "../structures";
-import { IGiveawayEvents } from "./GiveawaysEventManager";
 import { ForgeGiveaways } from "..";
 export interface IGiveawayStartOptions {
     prize: string;
@@ -18,8 +15,7 @@ export type IGiveawayEditOptions = Omit<IGiveawayStartOptions, "guildID" | "chan
 export declare class GiveawaysManager {
     private readonly giveaways;
     private readonly client;
-    private emitter;
-    constructor(giveaways: ForgeGiveaways, client: ForgeClient, emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>);
+    constructor(giveaways: ForgeGiveaways, client: ForgeClient);
     /**
      * Starts a new giveaway on a guild.
      * @param options The start options for the giveaway.

@@ -36,7 +36,7 @@ export declare class Database extends GiveawaysDatabaseManager {
      * Saves a giveaway in the database.
      * @param data The giveaway data to save.
      */
-    static set(data: Giveaway): Promise<void>;
+    static set(data: Giveaway | MongoGiveaway): Promise<void>;
     /**
      * Deletes an existing giveaway from the database.
      * @param id The id of the giveaway to delete.

@@ -30,7 +30,7 @@ export declare class Giveaway implements IGiveaway {
      */
     winnersCount: number;
     /**
-     * Returns whether this giveaway has ended.
+     * Indicates whether this giveaway has ended.
      */
     hasEnded: boolean;
     /**

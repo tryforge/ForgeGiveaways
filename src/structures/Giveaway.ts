@@ -44,7 +44,7 @@ export class Giveaway implements IGiveaway {
     public winnersCount: number
 
     /**
-     * Returns whether this giveaway has ended.
+     * Indicates whether this giveaway has ended.
      */
     @Column()
     public hasEnded: boolean
