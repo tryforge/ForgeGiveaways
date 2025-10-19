@@ -16,11 +16,17 @@ exports.default = new forgescript_1.NativeFunction({
             required: true,
             type: forgescript_1.ArgType.String,
         },
+        {
+            name: "amount",
+            description: "The amount of new winners, defaults to winners count",
+            rest: false,
+            type: forgescript_1.ArgType.Number,
+        },
     ],
     output: forgescript_1.ArgType.Boolean,
-    async execute(ctx, [id]) {
+    async execute(ctx, [id, amount]) {
         const client = ctx.client.getExtension(__1.ForgeGiveaways, true);
-        const giveaway = await client.giveawaysManager.reroll(id).catch(ctx.noop);
+        const giveaway = await client.giveawaysManager.reroll(id, amount || undefined).catch(ctx.noop);
         return this.success(!!giveaway);
     }
 });

@@ -27,13 +27,16 @@ class GiveawaysManager {
         if (this.giveaways.options.useDefault) {
             const embed = new discord_js_1.EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
-                .setDescription(`**Prize:** ${giveaway.prize}\n**Winners:** ${giveaway.winnersCount}`)
+                .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}`)
                 .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
+                .setFooter({ text: "Join by clicking the button below!" })
+                .setTimestamp()
                 .setColor("Green");
             const comps = new discord_js_1.ActionRowBuilder()
                 .addComponents(new discord_js_1.ButtonBuilder()
                 .setCustomId(`giveawayEntry-${giveaway.id}`)
-                .setLabel("Entry")
+                .setLabel("Join")
+                .setEmoji("🎉")
                 .setStyle(discord_js_1.ButtonStyle.Success), new discord_js_1.ButtonBuilder()
                 .setCustomId(`giveawayEnd-${giveaway.id}`)
                 .setLabel("End")
@@ -71,20 +74,22 @@ class GiveawaysManager {
         const winners = this._pickWinners(eligibleEntries, giveaway.winnersCount);
         giveaway.winners = winners;
         if (this.giveaways.options.useDefault) {
-            const chan = this.client.channels.cache.get(giveaway.channelID);
-            const msg = giveaway.messageID ? await chan?.messages.fetch(giveaway.messageID).catch(noop_1.default) : undefined;
+            const msg = await this._fetchMessage(giveaway);
             if (msg) {
-                const plural = winners.length > 1 ? "s" : "";
-                const mentions = winners.map((id) => `<@${id}>`).join(", ");
+                const plural = winners.length === 1 ? "" : "s";
+                const mentions = this._parseMentions(winners);
                 const embed = new discord_js_1.EmbedBuilder()
                     .setTitle("🎉 GIVEAWAY ENDED 🎉")
-                    .setDescription(`**Prize:** ${giveaway.prize}\n**Winner${plural}:** ${mentions}`)
+                    .setDescription(`>>> 🎁 **Prize:** ${giveaway.prize}\n🏆 **Winner${plural}:** ${mentions || "None"}\n👥 **Total Entries:** ${giveaway.entries.length}`)
                     .addFields({ name: "Ended", value: `${(0, discord_js_1.time)(new Date(), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
+                    .setFooter({ text: "Thanks for participating!" })
+                    .setTimestamp(giveaway.timestamp)
                     .setColor("Red");
                 const comps = new discord_js_1.ActionRowBuilder()
                     .addComponents(new discord_js_1.ButtonBuilder()
                     .setCustomId(`giveawayReroll-${giveaway.id}`)
                     .setLabel("Reroll")
+                    .setEmoji("🔁")
                     .setStyle(discord_js_1.ButtonStyle.Primary));
                 msg.edit({
                     embeds: [embed],
@@ -108,17 +113,31 @@ class GiveawaysManager {
     /**
      * Rerolls an existing giveaway.
      * @param id The id of the giveaway to reroll.
+     * @param amount The amount of new winners.
      * @returns
      */
-    async reroll(id) {
+    async reroll(id, amount) {
         const giveaway = await structures_1.Database.get(id);
         if (!giveaway || !giveaway.hasEnded)
             return null;
         const oldGiveaway = giveaway.clone();
+        amount ??= giveaway.winnersCount;
         const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e));
-        const newWinners = this._pickWinners(eligibleEntries, giveaway.winnersCount);
+        const newWinners = this._pickWinners(eligibleEntries, amount);
         giveaway.winners = newWinners;
-        if (this.giveaways.options.useDefault) { }
+        if (this.giveaways.options.useDefault) {
+            const msg = await this._fetchMessage(giveaway);
+            if (msg) {
+                const plural = newWinners.length === 1 ? "" : "s";
+                msg.reply({
+                    content: `🔁 Rerolled giveaway, congratulations to the new winner${plural}!\n🏆 **New Winner${plural}:** ${this._parseMentions(newWinners)}`,
+                    allowedMentions: {
+                        repliedUser: false,
+                        parse: ["users"]
+                    }
+                }).catch(noop_1.default);
+            }
+        }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
         this.giveaways.emitter.emit("giveawayReroll", oldGiveaway, giveaway);
         return giveaway;
@@ -157,6 +176,23 @@ class GiveawaysManager {
     _pickWinners(entries, amount) {
         const shuffled = entries.sort(() => Math.random() - 0.5);
         return shuffled.slice(0, amount);
+    }
+    /**
+     * Parses the mentions for all giveaway winners.
+     * @param winners The winners to parse mentions for.
+     * @returns
+     */
+    _parseMentions(winners) {
+        return winners.map((id) => `<@${id}>`).join(", ");
+    }
+    /**
+     * Fetches the message of a giveaway.
+     * @param data The giveaway data to use.
+     * @returns
+     */
+    async _fetchMessage(data) {
+        const chan = this.client.channels.cache.get(data.channelID);
+        return (data.messageID ? await chan?.messages.fetch(data.messageID).catch(noop_1.default) : undefined);
     }
     /**
      * Restores all active giveaways on startup.

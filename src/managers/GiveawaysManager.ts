@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Snowflake, TextChannel, time } from "discord.js"
 import { ForgeClient } from "@tryforge/forgescript"
-import { Database, IGiveawayRequirements } from "../structures"
+import { Database, Giveaway, IGiveawayRequirements, MongoGiveaway } from "../structures"
 import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
 import { ForgeGiveaways } from ".."
 import noop from "../functions/noop"
@@ -37,18 +37,21 @@ export class GiveawaysManager {
         if (this.giveaways.options.useDefault) {
             const embed = new EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
-                .setDescription(`**Prize:** ${giveaway.prize}\n**Winners:** ${giveaway.winnersCount}`)
+                .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}`)
                 .setFields(
                     { name: "Ends", value: `${time(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true },
                     { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true },
                 )
+                .setFooter({ text: "Join by clicking the button below!" })
+                .setTimestamp()
                 .setColor("Green")
 
             const comps = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
                         .setCustomId(`giveawayEntry-${giveaway.id}`)
-                        .setLabel("Entry")
+                        .setLabel("Join")
+                        .setEmoji("🎉")
                         .setStyle(ButtonStyle.Success),
                     new ButtonBuilder()
                         .setCustomId(`giveawayEnd-${giveaway.id}`)
@@ -95,20 +98,21 @@ export class GiveawaysManager {
         giveaway.winners = winners
 
         if (this.giveaways.options.useDefault) {
-            const chan = this.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
-            const msg = giveaway.messageID ? await chan?.messages.fetch(giveaway.messageID).catch(noop) : undefined
+            const msg = await this._fetchMessage(giveaway)
 
             if (msg) {
-                const plural = winners.length > 1 ? "s" : ""
-                const mentions = winners.map((id) => `<@${id}>`).join(", ")
+                const plural = winners.length === 1 ? "" : "s"
+                const mentions = this._parseMentions(winners)
 
                 const embed = new EmbedBuilder()
                     .setTitle("🎉 GIVEAWAY ENDED 🎉")
-                    .setDescription(`**Prize:** ${giveaway.prize}\n**Winner${plural}:** ${mentions}`)
+                    .setDescription(`>>> 🎁 **Prize:** ${giveaway.prize}\n🏆 **Winner${plural}:** ${mentions || "None"}\n👥 **Total Entries:** ${giveaway.entries.length}`)
                     .addFields(
                         { name: "Ended", value: `${time(new Date(), "R")}`, inline: true },
                         { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true },
                     )
+                    .setFooter({ text: "Thanks for participating!" })
+                    .setTimestamp(giveaway.timestamp)
                     .setColor("Red")
 
                 const comps = new ActionRowBuilder()
@@ -116,6 +120,7 @@ export class GiveawaysManager {
                     new ButtonBuilder()
                         .setCustomId(`giveawayReroll-${giveaway.id}`)
                         .setLabel("Reroll")
+                        .setEmoji("🔁")
                         .setStyle(ButtonStyle.Primary),
                 )
 
@@ -145,18 +150,34 @@ export class GiveawaysManager {
     /**
      * Rerolls an existing giveaway.
      * @param id The id of the giveaway to reroll.
+     * @param amount The amount of new winners.
      * @returns 
      */
-    public async reroll(id: Snowflake) {
+    public async reroll(id: Snowflake, amount?: number) {
         const giveaway = await Database.get(id)
         if (!giveaway || !giveaway.hasEnded) return null
         const oldGiveaway = giveaway.clone()
+        amount ??= giveaway.winnersCount
 
         const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e))
-        const newWinners = this._pickWinners(eligibleEntries, giveaway.winnersCount)
+        const newWinners = this._pickWinners(eligibleEntries, amount)
         giveaway.winners = newWinners
 
-        if (this.giveaways.options.useDefault) {}
+        if (this.giveaways.options.useDefault) {
+            const msg = await this._fetchMessage(giveaway)
+
+            if (msg) {
+                const plural = newWinners.length === 1 ? "" : "s"
+
+                msg.reply({
+                    content: `🔁 Rerolled giveaway, congratulations to the new winner${plural}!\n🏆 **New Winner${plural}:** ${this._parseMentions(newWinners)}`,
+                    allowedMentions: {
+                        repliedUser: false,
+                        parse: ["users"]
+                    }
+                }).catch(noop)
+            }
+        }
 
         await Database.set(giveaway).catch(noop)
         this.giveaways.emitter.emit("giveawayReroll", oldGiveaway, giveaway)
@@ -197,6 +218,25 @@ export class GiveawaysManager {
     private _pickWinners(entries: Snowflake[], amount: number) {
         const shuffled = entries.sort(() => Math.random() - 0.5)
         return shuffled.slice(0, amount)
+    }
+
+    /**
+     * Parses the mentions for all giveaway winners.
+     * @param winners The winners to parse mentions for.
+     * @returns 
+     */
+    private _parseMentions(winners: Snowflake[]) {
+        return winners.map((id) => `<@${id}>`).join(", ")
+    }
+
+    /**
+     * Fetches the message of a giveaway.
+     * @param data The giveaway data to use.
+     * @returns 
+     */
+    private async _fetchMessage(data: Giveaway | MongoGiveaway) {
+        const chan = this.client.channels.cache.get(data.channelID) as TextChannel | undefined
+        return (data.messageID ? await chan?.messages.fetch(data.messageID).catch(noop) : undefined)
     }
 
     /**

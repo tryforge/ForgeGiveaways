@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 import { ForgeClient } from "@tryforge/forgescript";
-import { IGiveawayRequirements } from "../structures";
+import { Giveaway, IGiveawayRequirements } from "../structures";
 import { ForgeGiveaways } from "..";
 export interface IGiveawayStartOptions {
     prize: string;
@@ -21,25 +21,26 @@ export declare class GiveawaysManager {
      * @param options The start options for the giveaway.
      * @returns
      */
-    start(options: IGiveawayStartOptions): Promise<import("..").Giveaway | undefined>;
+    start(options: IGiveawayStartOptions): Promise<Giveaway | undefined>;
     /**
      * Ends an existing giveaway.
      * @param id The id of the giveaway to end.
      * @returns
      */
-    end(id: Snowflake): Promise<import("..").Giveaway | null>;
+    end(id: Snowflake): Promise<Giveaway | null>;
     /**
      * Rerolls an existing giveaway.
      * @param id The id of the giveaway to reroll.
+     * @param amount The amount of new winners.
      * @returns
      */
-    reroll(id: Snowflake): Promise<import("..").Giveaway | null>;
+    reroll(id: Snowflake, amount?: number): Promise<Giveaway | null>;
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
      * @param options The options used to edit this giveaway.
      */
-    edit(id: Snowflake, options: IGiveawayEditOptions): Promise<import("..").Giveaway | null>;
+    edit(id: Snowflake, options: IGiveawayEditOptions): Promise<Giveaway | null>;
     /**
      * Randomly picks X amount of winners from the provided entries.
      * @param entries The entries to pick winners from.
@@ -47,6 +48,18 @@ export declare class GiveawaysManager {
      * @returns
      */
     private _pickWinners;
+    /**
+     * Parses the mentions for all giveaway winners.
+     * @param winners The winners to parse mentions for.
+     * @returns
+     */
+    private _parseMentions;
+    /**
+     * Fetches the message of a giveaway.
+     * @param data The giveaway data to use.
+     * @returns
+     */
+    private _fetchMessage;
     /**
      * Restores all active giveaways on startup.
      * @returns

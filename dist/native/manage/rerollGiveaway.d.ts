@@ -5,6 +5,11 @@ declare const _default: NativeFunction<[{
     rest: false;
     required: true;
     type: ArgType.String;
+}, {
+    name: string;
+    description: string;
+    rest: false;
+    type: ArgType.Number;
 }], true>;
 export default _default;
 //# sourceMappingURL=rerollGiveaway.d.ts.map
