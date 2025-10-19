@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GiveawaysInteractionManager = void 0;
+exports.GiveawaysInteractionHandler = void 0;
 const discord_js_1 = require("discord.js");
 const __1 = require("..");
 const structures_1 = require("../structures");
-class GiveawaysInteractionManager {
+class GiveawaysInteractionHandler {
     client;
     constructor(client) {
         this.client = client;
@@ -41,5 +41,5 @@ class GiveawaysInteractionManager {
         });
     }
 }
-exports.GiveawaysInteractionManager = GiveawaysInteractionManager;
-//# sourceMappingURL=GiveawaysInteractionManager.js.map
+exports.GiveawaysInteractionHandler = GiveawaysInteractionHandler;
+//# sourceMappingURL=GiveawaysInteractionHandler.js.map

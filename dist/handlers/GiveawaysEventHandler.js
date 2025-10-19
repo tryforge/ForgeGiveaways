@@ -10,4 +10,4 @@ class GiveawaysEventHandler extends forgescript_1.BaseEventHandler {
     }
 }
 exports.GiveawaysEventHandler = GiveawaysEventHandler;
-//# sourceMappingURL=GiveawaysEventManager.js.map
+//# sourceMappingURL=GiveawaysEventHandler.js.map

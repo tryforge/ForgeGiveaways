@@ -1,5 +1,5 @@
 import { EventManager, ForgeClient, ForgeExtension } from "@tryforge/forgescript"
-import { IGiveawayEvents, GiveawaysCommandManager, GiveawaysInteractionManager, GiveawaysManager } from "./managers"
+import { IGiveawayEvents, GiveawaysCommandManager, GiveawaysManager, GiveawaysInteractionHandler } from "./managers"
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
 import { Database } from "./structures"
@@ -38,7 +38,7 @@ export class ForgeGiveaways extends ForgeExtension {
         EventManager.load("ForgeGiveawaysEvents", __dirname + "/events")
         this.load(__dirname + "/native")
 
-        new GiveawaysInteractionManager(client)
+        new GiveawaysInteractionHandler(client)
 
         if (this.options.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events)

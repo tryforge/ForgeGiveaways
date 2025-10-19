@@ -1,5 +1,5 @@
 import { Compiler, Interpreter } from "@tryforge/forgescript"
-import { GiveawaysEventHandler } from "../managers/GiveawaysEventManager"
+import { GiveawaysEventHandler } from "../handlers/GiveawaysEventHandler"
 import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
 import { Context, Database } from "../structures"
 import { ForgeGiveaways } from ".."
@@ -23,13 +23,13 @@ export default new GiveawaysEventHandler({
                         new: gw,
                     }
                 },
-                data: Compiler.compile(command.data.code)
+                data: command.compiled.code
             })
 
-            const result = await Interpreter.run(ctx)
+            const result = Interpreter.run(ctx)
 
             if (client.options.useDefault === false) {
-                const res = result?.trim()
+                const res = (await result)?.trim()
                 console.log(res)
                 const chan = this.channels.cache.get(gw.channelID) as TextChannel | undefined
                 const msg = res ? await chan?.messages.fetch(res).catch(ctx.noop) : undefined

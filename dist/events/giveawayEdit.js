@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
-const GiveawaysEventManager_1 = require("../managers/GiveawaysEventManager");
+const GiveawaysEventHandler_1 = require("../handlers/GiveawaysEventHandler");
 const __1 = require("..");
 const structures_1 = require("../structures");
-exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
+exports.default = new GiveawaysEventHandler_1.GiveawaysEventHandler({
     name: "giveawayEdit",
     version: "1.0.0",
     description: "This event is fired when a giveaway was edited",

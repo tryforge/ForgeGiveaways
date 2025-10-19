@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
-const GiveawaysEventManager_1 = require("../managers/GiveawaysEventManager");
+const GiveawaysEventHandler_1 = require("../handlers/GiveawaysEventHandler");
 const error_1 = require("../functions/error");
 const structures_1 = require("../structures");
 const __1 = require("..");
-exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
+exports.default = new GiveawaysEventHandler_1.GiveawaysEventHandler({
     name: "giveawayStart",
     version: "1.0.0",
     description: "This event is fired when a giveaway started",
@@ -22,11 +22,11 @@ exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
                         new: gw,
                     }
                 },
-                data: forgescript_1.Compiler.compile(command.data.code)
+                data: command.compiled.code
             });
-            const result = await forgescript_1.Interpreter.run(ctx);
+            const result = forgescript_1.Interpreter.run(ctx);
             if (client.options.useDefault === false) {
-                const res = result?.trim();
+                const res = (await result)?.trim();
                 console.log(res);
                 const chan = this.channels.cache.get(gw.channelID);
                 const msg = res ? await chan?.messages.fetch(res).catch(ctx.noop) : undefined;

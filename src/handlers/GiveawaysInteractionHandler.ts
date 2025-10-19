@@ -3,7 +3,7 @@ import { GuildMember, MessageFlags } from "discord.js"
 import { ForgeGiveaways } from ".."
 import { Database } from "../structures"
 
-export class GiveawaysInteractionManager {
+export class GiveawaysInteractionHandler {
     public constructor(private readonly client: ForgeClient) {
         this._register()
     }

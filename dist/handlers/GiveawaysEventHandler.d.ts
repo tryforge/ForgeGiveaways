@@ -12,4 +12,4 @@ export interface IGiveawayEvents {
 export declare class GiveawaysEventHandler<T extends keyof IGiveawayEvents> extends BaseEventHandler<IGiveawayEvents, T> {
     register(client: ForgeClient): void;
 }
-//# sourceMappingURL=GiveawaysEventManager.d.ts.map
+//# sourceMappingURL=GiveawaysEventHandler.d.ts.map

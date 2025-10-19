@@ -37,7 +37,7 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
         this.commands = new managers_1.GiveawaysCommandManager(client);
         forgescript_1.EventManager.load("ForgeGiveawaysEvents", __dirname + "/events");
         this.load(__dirname + "/native");
-        new managers_1.GiveawaysInteractionManager(client);
+        new managers_1.GiveawaysInteractionHandler(client);
         if (this.options.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
         }
