@@ -18,8 +18,8 @@ export declare class ForgeGiveaways extends ForgeExtension {
     version: any;
     requireExtensions: string[];
     emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>;
-    readonly giveawaysManager: GiveawaysManager;
-    commands: GiveawaysCommandManager | null;
+    giveawaysManager: GiveawaysManager;
+    commands: GiveawaysCommandManager;
     constructor(options?: IForgeGiveawaysOptions);
     init(client: ForgeClient): Promise<void>;
 }

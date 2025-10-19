@@ -12,12 +12,11 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
     version = require("../package.json").version;
     requireExtensions = ["forge.db"];
     emitter = new tiny_typed_emitter_1.TypedEmitter();
-    giveawaysManager = new managers_1.GiveawaysManager(this, this.emitter);
+    giveawaysManager;
     commands;
     constructor(options = {}) {
         super();
         this.options = options;
-        this.commands = null;
         this.options.useDefault ??= true;
     }
     async init(client) {
@@ -29,6 +28,7 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
         }
         await new structures_1.Database(this.emitter).init();
+        this.giveawaysManager = new managers_1.GiveawaysManager(this, client, this.emitter);
     }
 }
 exports.ForgeGiveaways = ForgeGiveaways;

@@ -65,6 +65,11 @@ export declare class Giveaway implements IGiveaway {
         id?: Snowflake;
     });
     /**
+     * Returns the time left for this giveaway.
+     * @returns
+     */
+    timeLeft(): number;
+    /**
      * Returns whether a user has entered this giveaway.
      * @param userID The user to check for.
      * @returns

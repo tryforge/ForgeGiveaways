@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Snowflake, TextChannel, time } from "discord.js"
-import { Compiler, Context, Interpreter } from "@tryforge/forgescript"
-import { TypedEmitter } from "tiny-typed-emitter"
+import { Compiler, Context, ForgeClient, Interpreter } from "@tryforge/forgescript"
 import { TransformEvents } from "@tryforge/forge.db"
+import { TypedEmitter } from "tiny-typed-emitter"
 import { Database, Giveaway, IGiveawayRequirements } from "../structures"
 import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
 import { IGiveawayEvents } from "./GiveawaysEventManager"
@@ -19,9 +19,12 @@ export interface IGiveawayStartOptions {
 
 export class GiveawaysManager {
     public constructor(
-        private readonly client: ForgeGiveaways,
+        private readonly giveaways: ForgeGiveaways,
+        private readonly client: ForgeClient,
         private emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>
-    ) {}
+    ) {
+        this._checkGiveaways()
+    }
 
     /**
      * Starts a new giveaway on a guild.
@@ -33,7 +36,7 @@ export class GiveawaysManager {
         const giveaway = new Giveaway(options)
         const chan = ctx.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
 
-        if (this.client.options.useDefault) {
+        if (this.giveaways.options.useDefault) {
             const embed = new EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`**Prize:** ${giveaway.prize}\n**Winners:** ${giveaway.winnersCount}`)
@@ -66,23 +69,23 @@ export class GiveawaysManager {
 
         await Database.set(giveaway).catch(ctx.noop)
         this.emitter.emit("giveawayStart", giveaway)
-        setTimeout(() => this.end(ctx, giveaway.id), giveaway.duration)
+        setTimeout(async () => await this.end(giveaway.id, ctx), giveaway.duration)
 
         return giveaway
     }
 
     /**
      * Ends an existing giveaway.
-     * @param ctx The current context.
      * @param id The id of the giveaway to end.
+     * @param ctx The optional current context.
      * @returns 
      */
-    public async end(ctx: Context, id: Snowflake) {
+    public async end(id: Snowflake, ctx?: Context) {
         const giveaway = await Database.get(id)
         if (!giveaway || giveaway.hasEnded) return null
         giveaway.hasEnded = true
 
-        const guild = ctx.client.guilds.cache.get(giveaway.guildID)
+        const guild = this.client.guilds.cache.get(giveaway.guildID)
         const eligibleEntries = giveaway.entries.filter((e) => {
             const member = guild?.members.cache.get(e)
             return member && giveaway.canEnter(member)
@@ -90,9 +93,9 @@ export class GiveawaysManager {
         const winners = this._pickWinners(eligibleEntries, giveaway.winnersCount)
         giveaway.winners = winners
 
-        if (this.client.options.useDefault) {
-            const chan = ctx.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
-            const msg = giveaway.messageID ? await chan?.messages.fetch(giveaway.messageID).catch(ctx.noop) : undefined
+        if (this.giveaways.options.useDefault) {
+            const chan = this.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
+            const msg = giveaway.messageID ? await chan?.messages.fetch(giveaway.messageID).catch(ctx?.noop) : undefined
 
             if (msg) {
                 const oldEmbed = msg.embeds[0]
@@ -104,7 +107,7 @@ export class GiveawaysManager {
                 msg.edit({
                     embeds: [embed],
                     components: []
-                }).catch(ctx.noop)
+                }).catch(ctx?.noop)
 
                 const plural = winners.length > 1 ? "s" : ""
                 msg.reply({
@@ -115,11 +118,11 @@ export class GiveawaysManager {
                         repliedUser: false,
                         parse: ["users"]
                     }
-                }).catch(ctx.noop)
+                }).catch(ctx?.noop)
             }
         }
 
-        await Database.set(giveaway).catch(ctx.noop)
+        await Database.set(giveaway).catch(ctx?.noop)
         this.emitter.emit("giveawayEnd", giveaway)
 
         return giveaway
@@ -143,7 +146,7 @@ export class GiveawaysManager {
         await Interpreter.run({
             ...ctx.runtime,
             environment: { giveaway },
-            data: Compiler.compile(this.client.options?.messages?.reroll),
+            data: Compiler.compile(this.giveaways.options?.messages?.reroll),
             doNotSend: true,
         })
 
@@ -156,5 +159,20 @@ export class GiveawaysManager {
     private _pickWinners(entries: Snowflake[], amount: number) {
         const shuffled = entries.sort(() => Math.random() - 0.5)
         return shuffled.slice(0, amount)
+    }
+
+    private async _checkGiveaways() {
+        const giveaways = await Database.getAll()
+        if (!giveaways) return
+
+        for (const giveaway of giveaways) {
+            if (giveaway.hasEnded) continue
+
+            if (giveaway.timeLeft() > 0) {
+                setTimeout(async () => await this.end(giveaway.id), giveaway.timeLeft())
+            } else {
+                await this.end(giveaway.id)
+            }
+        }
     }
 }

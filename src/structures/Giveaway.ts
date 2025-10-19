@@ -107,6 +107,14 @@ export class Giveaway implements IGiveaway {
     }
 
     /**
+     * Returns the time left for this giveaway.
+     * @returns 
+     */
+    public timeLeft() {
+        return Math.max(this.duration - (Date.now() - this.timestamp), 0)
+    }
+
+    /**
      * Returns whether a user has entered this giveaway.
      * @param userID The user to check for.
      * @returns 

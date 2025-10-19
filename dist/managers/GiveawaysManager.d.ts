@@ -1,7 +1,7 @@
 import { Snowflake } from "discord.js";
-import { Context } from "@tryforge/forgescript";
-import { TypedEmitter } from "tiny-typed-emitter";
+import { Context, ForgeClient } from "@tryforge/forgescript";
 import { TransformEvents } from "@tryforge/forge.db";
+import { TypedEmitter } from "tiny-typed-emitter";
 import { Giveaway, IGiveawayRequirements } from "../structures";
 import { IGiveawayEvents } from "./GiveawaysEventManager";
 import { ForgeGiveaways } from "..";
@@ -15,9 +15,10 @@ export interface IGiveawayStartOptions {
     requirements?: IGiveawayRequirements;
 }
 export declare class GiveawaysManager {
+    private readonly giveaways;
     private readonly client;
     private emitter;
-    constructor(client: ForgeGiveaways, emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>);
+    constructor(giveaways: ForgeGiveaways, client: ForgeClient, emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>);
     /**
      * Starts a new giveaway on a guild.
      * @param ctx The current context.
@@ -27,11 +28,11 @@ export declare class GiveawaysManager {
     start(ctx: Context, options: IGiveawayStartOptions): Promise<Giveaway | undefined>;
     /**
      * Ends an existing giveaway.
-     * @param ctx The current context.
      * @param id The id of the giveaway to end.
+     * @param ctx The optional current context.
      * @returns
      */
-    end(ctx: Context, id: Snowflake): Promise<Giveaway | null>;
+    end(id: Snowflake, ctx?: Context): Promise<Giveaway | null>;
     /**
      * Rerolls an existing giveaway.
      * @param ctx The current context.
@@ -40,5 +41,6 @@ export declare class GiveawaysManager {
      */
     reroll(ctx: Context, id: Snowflake): Promise<Giveaway | null>;
     private _pickWinners;
+    private _checkGiveaways;
 }
 //# sourceMappingURL=GiveawaysManager.d.ts.map
