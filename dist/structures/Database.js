@@ -53,10 +53,10 @@ class Database extends managers_1.GiveawaysDatabaseManager {
         const newData = new this.entities.Giveaway(data);
         const oldData = await this.db.getRepository(Database.entities.Giveaway).findOneBy({ id: data.id });
         if (oldData && this.type === "mongodb") {
-            await this.db.getRepository(Database.entities.Giveaway).update(oldData.id, data);
+            await this.db.getRepository(Database.entities.Giveaway).update(oldData.id, newData);
         }
         else {
-            await this.db.getRepository(Database.entities.Giveaway).save(data);
+            await this.db.getRepository(Database.entities.Giveaway).save(newData);
         }
     }
     /**

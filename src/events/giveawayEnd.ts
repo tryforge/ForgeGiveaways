@@ -8,7 +8,7 @@ export default new GiveawaysEventHandler({
     version: "1.0.0",
     description: "This event is fired when a giveaway ended",
     listener: async function(gw) {
-        const commands = this.getExtension(ForgeGiveaways, true).commands?.get("giveawayEnd")
+        const commands = this.getExtension(ForgeGiveaways, true).commands.get("giveawayEnd")
 
         if (commands?.length) {
             for (const command of commands) {

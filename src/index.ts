@@ -5,13 +5,15 @@ import { TransformEvents } from "@tryforge/forge.db"
 import { Database } from "./structures"
 
 export interface IForgeGiveawaysOptions {
+    /**
+     * The giveaway events to use.
+     */
     events?: keyof IGiveawayEvents
+
+    /**
+     * Whether to use the default giveaway messages. Defaults to `true`.
+     */
     useDefault?: boolean
-    messages?: {
-        start: string
-        end: string
-        reroll: string
-    }
 }
 
 export class ForgeGiveaways extends ForgeExtension {

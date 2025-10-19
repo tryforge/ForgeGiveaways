@@ -19,7 +19,7 @@ export default new NativeFunction({
     output: ArgType.Boolean,
     async execute(ctx, [id]) {
         const client = ctx.client.getExtension(ForgeGiveaways, true)
-        const giveaway = await client.giveawaysManager.end(id, ctx)
+        const giveaway = await client.giveawaysManager.end(id).catch(ctx.noop)
         return this.success(!!giveaway)
     }
 })

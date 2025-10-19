@@ -3,13 +3,14 @@ import { IGiveawayEvents, GiveawaysCommandManager, GiveawaysManager } from "./ma
 import { TypedEmitter } from "tiny-typed-emitter";
 import { TransformEvents } from "@tryforge/forge.db";
 export interface IForgeGiveawaysOptions {
+    /**
+     * The giveaway events to use.
+     */
     events?: keyof IGiveawayEvents;
+    /**
+     * Whether to use the default giveaway messages. Defaults to `true`.
+     */
     useDefault?: boolean;
-    messages?: {
-        start: string;
-        end: string;
-        reroll: string;
-    };
 }
 export declare class ForgeGiveaways extends ForgeExtension {
     readonly options: IForgeGiveawaysOptions;

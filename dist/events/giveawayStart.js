@@ -11,7 +11,7 @@ exports.default = new GiveawaysEventManager_1.GiveawaysEventHandler({
     description: "This event is fired when a giveaway started",
     listener: async function (gw) {
         const client = this.getExtension(__1.ForgeGiveaways, true);
-        const commands = client.commands?.get("giveawayStart");
+        const commands = client.commands.get("giveawayStart");
         if (commands?.length) {
             for (const command of commands) {
                 const ctx = new structures_1.Context({

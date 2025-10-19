@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { Context, ForgeClient } from "@tryforge/forgescript";
+import { ForgeClient } from "@tryforge/forgescript";
 import { TransformEvents } from "@tryforge/forge.db";
 import { TypedEmitter } from "tiny-typed-emitter";
 import { Giveaway, IGiveawayRequirements } from "../structures";
@@ -14,6 +14,7 @@ export interface IGiveawayStartOptions {
     channelID: Snowflake;
     requirements?: IGiveawayRequirements;
 }
+export type IGiveawayEditOptions = Omit<IGiveawayStartOptions, "guildID" | "channelID">;
 export declare class GiveawaysManager {
     private readonly giveaways;
     private readonly client;
@@ -21,26 +22,40 @@ export declare class GiveawaysManager {
     constructor(giveaways: ForgeGiveaways, client: ForgeClient, emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>);
     /**
      * Starts a new giveaway on a guild.
-     * @param ctx The current context.
      * @param options The start options for the giveaway.
      * @returns
      */
-    start(ctx: Context, options: IGiveawayStartOptions): Promise<Giveaway | undefined>;
+    start(options: IGiveawayStartOptions): Promise<Giveaway | undefined>;
     /**
      * Ends an existing giveaway.
      * @param id The id of the giveaway to end.
-     * @param ctx The optional current context.
      * @returns
      */
-    end(id: Snowflake, ctx?: Context): Promise<Giveaway | null>;
+    end(id: Snowflake): Promise<Giveaway | null>;
     /**
      * Rerolls an existing giveaway.
      * @param ctx The current context.
      * @param id The id of the giveaway to reroll.
      * @returns
      */
-    reroll(ctx: Context, id: Snowflake): Promise<Giveaway | null>;
+    reroll(id: Snowflake): Promise<Giveaway | null>;
+    /**
+     * Edits an existing giveaway.
+     * @param id The id of the giveaway to edit.
+     * @param options The options used to edit this giveaway.
+     */
+    edit(id: Snowflake, options: IGiveawayEditOptions): Promise<Giveaway | null>;
+    /**
+     * Randomly picks X amount of winners from the provided entries.
+     * @param entries The entries to pick winners from.
+     * @param amount The amount of winners to pick.
+     * @returns
+     */
     private _pickWinners;
+    /**
+     * Restores all active giveaways on startup.
+     * @returns
+     */
     private _restoreGiveaways;
 }
 //# sourceMappingURL=GiveawaysManager.d.ts.map

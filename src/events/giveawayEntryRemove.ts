@@ -8,7 +8,7 @@ export default new GiveawaysEventHandler({
     version: "1.0.0",
     description: "This event is fired when a giveaway entry is removed",
     listener: async function(old, newer) {
-        const commands = this.getExtension(ForgeGiveaways, true).commands?.get("giveawayEntryRemove")
+        const commands = this.getExtension(ForgeGiveaways, true).commands.get("giveawayEntryRemove")
 
         if (commands?.length) {
             for (const command of commands) {

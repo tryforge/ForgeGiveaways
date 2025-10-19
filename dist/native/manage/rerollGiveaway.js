@@ -20,7 +20,7 @@ exports.default = new forgescript_1.NativeFunction({
     output: forgescript_1.ArgType.Boolean,
     async execute(ctx, [id]) {
         const client = ctx.client.getExtension(__1.ForgeGiveaways, true);
-        const giveaway = await client.giveawaysManager.reroll(ctx, id);
+        const giveaway = await client.giveawaysManager.reroll(id).catch(ctx.noop);
         return this.success(!!giveaway);
     }
 });

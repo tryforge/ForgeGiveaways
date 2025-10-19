@@ -1,10 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GiveawaysManager = void 0;
 const discord_js_1 = require("discord.js");
-const forgescript_1 = require("@tryforge/forgescript");
 const structures_1 = require("../structures");
 const error_1 = require("../functions/error");
+const noop_1 = __importDefault(require("../functions/noop"));
 class GiveawaysManager {
     giveaways;
     client;
@@ -17,13 +20,12 @@ class GiveawaysManager {
     }
     /**
      * Starts a new giveaway on a guild.
-     * @param ctx The current context.
      * @param options The start options for the giveaway.
      * @returns
      */
-    async start(ctx, options) {
+    async start(options) {
         const giveaway = new structures_1.Giveaway(options);
-        const chan = ctx.client.channels.cache.get(giveaway.channelID);
+        const chan = this.client.channels.cache.get(giveaway.channelID);
         if (this.giveaways.options.useDefault) {
             const embed = new discord_js_1.EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
@@ -38,25 +40,24 @@ class GiveawaysManager {
             const msg = await chan?.send({
                 embeds: [embed],
                 components: [comps.toJSON()]
-            }).catch(ctx.noop);
+            }).catch(noop_1.default);
             if (!msg) {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
                 return;
             }
             giveaway.messageID = msg.id;
         }
-        await structures_1.Database.set(giveaway).catch(ctx.noop);
+        await structures_1.Database.set(giveaway).catch(noop_1.default);
         this.emitter.emit("giveawayStart", giveaway);
-        setTimeout(async () => await this.end(giveaway.id, ctx), giveaway.duration);
+        setTimeout(async () => await this.end(giveaway.id).catch(noop_1.default), giveaway.duration);
         return giveaway;
     }
     /**
      * Ends an existing giveaway.
      * @param id The id of the giveaway to end.
-     * @param ctx The optional current context.
      * @returns
      */
-    async end(id, ctx) {
+    async end(id) {
         const giveaway = await structures_1.Database.get(id);
         if (!giveaway || giveaway.hasEnded)
             return null;
@@ -70,7 +71,7 @@ class GiveawaysManager {
         giveaway.winners = winners;
         if (this.giveaways.options.useDefault) {
             const chan = this.client.channels.cache.get(giveaway.channelID);
-            const msg = giveaway.messageID ? await chan?.messages.fetch(giveaway.messageID).catch(ctx?.noop) : undefined;
+            const msg = giveaway.messageID ? await chan?.messages.fetch(giveaway.messageID).catch(noop_1.default) : undefined;
             if (msg) {
                 const oldEmbed = msg.embeds[0];
                 const embed = discord_js_1.EmbedBuilder.from(oldEmbed)
@@ -80,7 +81,7 @@ class GiveawaysManager {
                 msg.edit({
                     embeds: [embed],
                     components: []
-                }).catch(ctx?.noop);
+                }).catch(noop_1.default);
                 const plural = winners.length > 1 ? "s" : "";
                 msg.reply({
                     content: winners.length === 0
@@ -90,10 +91,10 @@ class GiveawaysManager {
                         repliedUser: false,
                         parse: ["users"]
                     }
-                }).catch(ctx?.noop);
+                }).catch(noop_1.default);
             }
         }
-        await structures_1.Database.set(giveaway).catch(ctx?.noop);
+        await structures_1.Database.set(giveaway).catch(noop_1.default);
         this.emitter.emit("giveawayEnd", giveaway);
         return giveaway;
     }
@@ -103,7 +104,7 @@ class GiveawaysManager {
      * @param id The id of the giveaway to reroll.
      * @returns
      */
-    async reroll(ctx, id) {
+    async reroll(id) {
         const giveaway = await structures_1.Database.get(id);
         if (!giveaway || !giveaway.hasEnded)
             return null;
@@ -111,20 +112,50 @@ class GiveawaysManager {
         const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e));
         const newWinners = this._pickWinners(eligibleEntries, giveaway.winnersCount);
         giveaway.winners = newWinners;
-        await forgescript_1.Interpreter.run({
-            ...ctx.runtime,
-            environment: { giveaway },
-            data: forgescript_1.Compiler.compile(this.giveaways.options?.messages?.reroll),
-            doNotSend: true,
-        });
-        await structures_1.Database.set(giveaway).catch(ctx.noop);
+        if (this.giveaways.options.useDefault) { }
+        await structures_1.Database.set(giveaway).catch(noop_1.default);
         this.emitter.emit("giveawayReroll", oldGiveaway, giveaway);
         return giveaway;
     }
+    /**
+     * Edits an existing giveaway.
+     * @param id The id of the giveaway to edit.
+     * @param options The options used to edit this giveaway.
+     */
+    async edit(id, options) {
+        const giveaway = await structures_1.Database.get(id);
+        if (!giveaway || giveaway.hasEnded)
+            return null;
+        const oldGiveaway = giveaway.clone();
+        if (options.prize)
+            giveaway.prize = options.prize;
+        if (options.duration)
+            giveaway.duration = options.duration;
+        if (options.winnersCount)
+            giveaway.winnersCount = options.winnersCount;
+        if (options.hostID)
+            giveaway.hostID = options.hostID;
+        if (options.requirements)
+            giveaway.requirements = options.requirements;
+        if (this.giveaways.options.useDefault) { }
+        await structures_1.Database.set(giveaway).catch(noop_1.default);
+        this.emitter.emit("giveawayEdit", oldGiveaway, giveaway);
+        return giveaway;
+    }
+    /**
+     * Randomly picks X amount of winners from the provided entries.
+     * @param entries The entries to pick winners from.
+     * @param amount The amount of winners to pick.
+     * @returns
+     */
     _pickWinners(entries, amount) {
         const shuffled = entries.sort(() => Math.random() - 0.5);
         return shuffled.slice(0, amount);
     }
+    /**
+     * Restores all active giveaways on startup.
+     * @returns
+     */
     async _restoreGiveaways() {
         const giveaways = await structures_1.Database.getAll();
         if (!giveaways)
@@ -133,10 +164,10 @@ class GiveawaysManager {
             if (giveaway.hasEnded)
                 continue;
             if (giveaway.timeLeft() > 0) {
-                setTimeout(async () => await this.end(giveaway.id), giveaway.timeLeft());
+                setTimeout(async () => await this.end(giveaway.id).catch(noop_1.default), giveaway.timeLeft());
             }
             else {
-                await this.end(giveaway.id);
+                await this.end(giveaway.id).catch(noop_1.default);
             }
         }
     }

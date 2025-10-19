@@ -8,7 +8,7 @@ export default new GiveawaysEventHandler({
     version: "1.0.0",
     description: "This event is fired when the database has connected",
     listener: async function() {
-        const commands = this.getExtension(ForgeGiveaways, true).commands?.get("databaseConnect")
+        const commands = this.getExtension(ForgeGiveaways, true).commands.get("databaseConnect")
 
         if (commands?.length) {
             for (const command of commands) {

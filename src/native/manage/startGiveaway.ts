@@ -51,7 +51,7 @@ export default new NativeFunction({
     async execute(ctx, [channel, host, prize, duration, winners]) {
         const client = ctx.client.getExtension(ForgeGiveaways, true)
 
-        const giveaway = await client.giveawaysManager.start(ctx, {
+        const giveaway = await client.giveawaysManager.start({
             guildID: (channel as GuildBasedChannel).guildId,
             channelID: channel.id,
             hostID: host.id,
@@ -59,7 +59,7 @@ export default new NativeFunction({
             prize,
             winnersCount: winners || 1,
             requirements: ctx.requirements
-        })
+        }).catch(ctx.noop)
 
         return this.success(giveaway?.id)
     }
