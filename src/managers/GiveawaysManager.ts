@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Snowflake, TextChannel, time } from "discord.js"
-import { Compiler, Context, ForgeClient, Interpreter } from "@tryforge/forgescript"
+import { ForgeClient } from "@tryforge/forgescript"
 import { TransformEvents } from "@tryforge/forge.db"
 import { TypedEmitter } from "tiny-typed-emitter"
-import { Database, Giveaway, IGiveawayRequirements } from "../structures"
+import { Database, IGiveawayRequirements } from "../structures"
 import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
 import { IGiveawayEvents } from "./GiveawaysEventManager"
 import { ForgeGiveaways } from ".."
@@ -35,7 +35,7 @@ export class GiveawaysManager {
      * @returns 
      */
     public async start(options: IGiveawayStartOptions) {
-        const giveaway = new Giveaway(options)
+        const giveaway = new Database.entities.Giveaway(options)
         const chan = this.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
 
         if (this.giveaways.options.useDefault) {

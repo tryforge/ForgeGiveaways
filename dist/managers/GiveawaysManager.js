@@ -24,7 +24,7 @@ class GiveawaysManager {
      * @returns
      */
     async start(options) {
-        const giveaway = new structures_1.Giveaway(options);
+        const giveaway = new structures_1.Database.entities.Giveaway(options);
         const chan = this.client.channels.cache.get(giveaway.channelID);
         if (this.giveaways.options.useDefault) {
             const embed = new discord_js_1.EmbedBuilder()

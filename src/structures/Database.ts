@@ -17,7 +17,7 @@ export class Database extends GiveawaysDatabaseManager {
         postgres: [Giveaway],
     }
 
-    private static entities: {
+    public static entities: {
         Giveaway: AnyGiveaway
     }
 
@@ -46,7 +46,7 @@ export class Database extends GiveawaysDatabaseManager {
      * @returns 
      */
     public static async get(id: Snowflake) {
-        return await this.db.getRepository(Database.entities.Giveaway).findOneBy({ id })
+        return await this.db.getRepository(this.entities.Giveaway).findOneBy({ id })
     }
 
     /**
@@ -54,7 +54,7 @@ export class Database extends GiveawaysDatabaseManager {
      * @returns 
      */
     public static async getAll() {
-        return await this.db.getRepository(Database.entities.Giveaway).find()
+        return await this.db.getRepository(this.entities.Giveaway).find()
     }
 
     /**
@@ -62,13 +62,12 @@ export class Database extends GiveawaysDatabaseManager {
      * @param data The giveaway data to save.
      */
     public static async set(data: Giveaway) {
-        const newData = new Database.entities.Giveaway(data)
-        const oldData = await this.db.getRepository(Database.entities.Giveaway).findOneBy({ id: data.id })
+        const oldData = await this.db.getRepository(this.entities.Giveaway).findOneBy({ id: data.id })
 
         if (oldData && this.type === "mongodb") {
-            await this.db.getRepository(Database.entities.Giveaway).update(oldData.id, newData)
+            await this.db.getRepository(this.entities.Giveaway).update(oldData.id, data)
         } else {
-            await this.db.getRepository(Database.entities.Giveaway).save(newData)
+            await this.db.getRepository(this.entities.Giveaway).save(data)
         }
     }
 
@@ -78,7 +77,7 @@ export class Database extends GiveawaysDatabaseManager {
      * @returns 
      */
     public static async delete(id: Snowflake) {
-        return await this.db.getRepository(Database.entities.Giveaway).delete({ id })
+        return await this.db.getRepository(this.entities.Giveaway).delete({ id })
     }
 
     /**
@@ -86,6 +85,6 @@ export class Database extends GiveawaysDatabaseManager {
      * @returns 
      */
     public static async wipe() {
-        return await this.db.getRepository(Database.entities.Giveaway).clear()
+        return await this.db.getRepository(this.entities.Giveaway).clear()
     }
 }

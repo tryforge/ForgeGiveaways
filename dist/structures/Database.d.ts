@@ -13,7 +13,9 @@ export declare class Database extends GiveawaysDatabaseManager {
         mysql: (typeof Giveaway)[];
         postgres: (typeof Giveaway)[];
     };
-    private static entities;
+    static entities: {
+        Giveaway: AnyGiveaway;
+    };
     private db;
     private static db;
     private static emitter;
