@@ -42,7 +42,7 @@ export class GiveawaysManager {
                     { name: "Ends", value: `${time(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true },
                     { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true },
                 )
-                .setFooter({ text: "Join by clicking the button below!" })
+                .setFooter({ text: "Click the button below to join!" })
                 .setTimestamp()
                 .setColor("Green")
 
@@ -65,7 +65,7 @@ export class GiveawaysManager {
             }).catch(noop)
 
             if (!msg) {
-                throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
+                throwGiveawaysError(GiveawaysErrorType.MessageNotDetermined, giveaway.id)
                 return
             }
 
@@ -106,7 +106,7 @@ export class GiveawaysManager {
 
                 const embed = new EmbedBuilder()
                     .setTitle("🎉 GIVEAWAY ENDED 🎉")
-                    .setDescription(`>>> 🎁 **Prize:** ${giveaway.prize}\n🏆 **Winner${plural}:** ${mentions || "None"}\n👥 **Total Entries:** ${giveaway.entries.length}`)
+                    .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winner${plural}:** ${mentions || "None"}\n👥 **Total Entries:** ${giveaway.entries.length}`)
                     .addFields(
                         { name: "Ended", value: `${time(new Date(), "R")}`, inline: true },
                         { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true },
@@ -130,14 +130,16 @@ export class GiveawaysManager {
                 }).catch(noop)
 
                 msg.reply({
-                    content: winners.length === 0
-                        ? "😢 No winners for this giveaway!"
-                        : `🎉 Congratulations to the winner${plural} of **${giveaway.prize}**!\n🏆 **Winner${plural}:** ${mentions}`,
+                    content: winners.length
+                        ? `🎉 Congratulations to the winner${plural} of **${giveaway.prize}**!\n🏆 **Winner${plural}:** ${mentions}`
+                        : "😢 No winners for this giveaway!",
                     allowedMentions: {
                         repliedUser: false,
                         parse: ["users"]
                     }
                 }).catch(noop)
+            } else {
+                throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
             }
         }
 
@@ -150,17 +152,21 @@ export class GiveawaysManager {
     /**
      * Rerolls an existing giveaway.
      * @param id The id of the giveaway to reroll.
+     * @param unique Whether to not include the previous winners.
      * @param amount The amount of new winners.
      * @returns 
      */
-    public async reroll(id: Snowflake, amount?: number) {
+    public async reroll(id: Snowflake, unique: boolean = false, amount?: number) {
         const giveaway = await Database.get(id)
         if (!giveaway || !giveaway.hasEnded) return null
         const oldGiveaway = giveaway.clone()
         amount ??= giveaway.winnersCount
 
-        const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e))
-        const newWinners = this._pickWinners(eligibleEntries, amount)
+        const { entries, winners } = giveaway
+        const eligibleEntries = unique ? entries.filter((e) => !winners.includes(e)) : entries
+        let newWinners = this._pickWinners(eligibleEntries, amount)
+
+        if (!newWinners.length) newWinners = this._pickWinners(entries, amount)
         giveaway.winners = newWinners
 
         if (this.giveaways.options.useDefault) {
@@ -176,6 +182,8 @@ export class GiveawaysManager {
                         parse: ["users"]
                     }
                 }).catch(noop)
+            } else {
+                throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
             }
         }
 
@@ -216,7 +224,7 @@ export class GiveawaysManager {
      * @returns 
      */
     private _pickWinners(entries: Snowflake[], amount: number) {
-        const shuffled = entries.sort(() => Math.random() - 0.5)
+        const shuffled = [...entries].sort(() => Math.random() - 0.5)
         return shuffled.slice(0, amount)
     }
 

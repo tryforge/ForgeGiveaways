@@ -16,16 +16,22 @@ export default new NativeFunction({
             type: ArgType.String,
         },
         {
+            name: "unique",
+            description: "Whether to not include the previous winners, defaults to false",
+            rest: false,
+            type: ArgType.Boolean,
+        },
+        {
             name: "amount",
-            description: "The amount of new winners, defaults to winners count",
+            description: "The amount of new winners, defaults to max winners count",
             rest: false,
             type: ArgType.Number,
         },
     ],
     output: ArgType.Boolean,
-    async execute(ctx, [id, amount]) {
+    async execute(ctx, [id, unique, amount]) {
         const client = ctx.client.getExtension(ForgeGiveaways, true)
-        const giveaway = await client.giveawaysManager.reroll(id, amount || undefined).catch(ctx.noop)
+        const giveaway = await client.giveawaysManager.reroll(id, unique || undefined, amount || undefined).catch(ctx.noop)
         return this.success(!!giveaway)
     }
 })

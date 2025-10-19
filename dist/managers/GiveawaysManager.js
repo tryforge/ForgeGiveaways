@@ -29,7 +29,7 @@ class GiveawaysManager {
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}`)
                 .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
-                .setFooter({ text: "Join by clicking the button below!" })
+                .setFooter({ text: "Click the button below to join!" })
                 .setTimestamp()
                 .setColor("Green");
             const comps = new discord_js_1.ActionRowBuilder()
@@ -46,7 +46,7 @@ class GiveawaysManager {
                 components: [comps.toJSON()]
             }).catch(noop_1.default);
             if (!msg) {
-                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
+                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotDetermined, giveaway.id);
                 return;
             }
             giveaway.messageID = msg.id;
@@ -80,7 +80,7 @@ class GiveawaysManager {
                 const mentions = this._parseMentions(winners);
                 const embed = new discord_js_1.EmbedBuilder()
                     .setTitle("🎉 GIVEAWAY ENDED 🎉")
-                    .setDescription(`>>> 🎁 **Prize:** ${giveaway.prize}\n🏆 **Winner${plural}:** ${mentions || "None"}\n👥 **Total Entries:** ${giveaway.entries.length}`)
+                    .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winner${plural}:** ${mentions || "None"}\n👥 **Total Entries:** ${giveaway.entries.length}`)
                     .addFields({ name: "Ended", value: `${(0, discord_js_1.time)(new Date(), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
                     .setFooter({ text: "Thanks for participating!" })
                     .setTimestamp(giveaway.timestamp)
@@ -96,14 +96,17 @@ class GiveawaysManager {
                     components: [comps.toJSON()]
                 }).catch(noop_1.default);
                 msg.reply({
-                    content: winners.length === 0
-                        ? "😢 No winners for this giveaway!"
-                        : `🎉 Congratulations to the winner${plural} of **${giveaway.prize}**!\n🏆 **Winner${plural}:** ${mentions}`,
+                    content: winners.length
+                        ? `🎉 Congratulations to the winner${plural} of **${giveaway.prize}**!\n🏆 **Winner${plural}:** ${mentions}`
+                        : "😢 No winners for this giveaway!",
                     allowedMentions: {
                         repliedUser: false,
                         parse: ["users"]
                     }
                 }).catch(noop_1.default);
+            }
+            else {
+                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
             }
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
@@ -113,17 +116,21 @@ class GiveawaysManager {
     /**
      * Rerolls an existing giveaway.
      * @param id The id of the giveaway to reroll.
+     * @param unique Whether to not include the previous winners.
      * @param amount The amount of new winners.
      * @returns
      */
-    async reroll(id, amount) {
+    async reroll(id, unique = false, amount) {
         const giveaway = await structures_1.Database.get(id);
         if (!giveaway || !giveaway.hasEnded)
             return null;
         const oldGiveaway = giveaway.clone();
         amount ??= giveaway.winnersCount;
-        const eligibleEntries = giveaway.entries.filter((e) => !giveaway.winners.includes(e));
-        const newWinners = this._pickWinners(eligibleEntries, amount);
+        const { entries, winners } = giveaway;
+        const eligibleEntries = unique ? entries.filter((e) => !winners.includes(e)) : entries;
+        let newWinners = this._pickWinners(eligibleEntries, amount);
+        if (!newWinners.length)
+            newWinners = this._pickWinners(entries, amount);
         giveaway.winners = newWinners;
         if (this.giveaways.options.useDefault) {
             const msg = await this._fetchMessage(giveaway);
@@ -136,6 +143,9 @@ class GiveawaysManager {
                         parse: ["users"]
                     }
                 }).catch(noop_1.default);
+            }
+            else {
+                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
             }
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
@@ -174,7 +184,7 @@ class GiveawaysManager {
      * @returns
      */
     _pickWinners(entries, amount) {
-        const shuffled = entries.sort(() => Math.random() - 0.5);
+        const shuffled = [...entries].sort(() => Math.random() - 0.5);
         return shuffled.slice(0, amount);
     }
     /**

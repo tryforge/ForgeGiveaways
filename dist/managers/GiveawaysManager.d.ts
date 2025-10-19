@@ -31,10 +31,11 @@ export declare class GiveawaysManager {
     /**
      * Rerolls an existing giveaway.
      * @param id The id of the giveaway to reroll.
+     * @param unique Whether to not include the previous winners.
      * @param amount The amount of new winners.
      * @returns
      */
-    reroll(id: Snowflake, amount?: number): Promise<Giveaway | null>;
+    reroll(id: Snowflake, unique?: boolean, amount?: number): Promise<Giveaway | null>;
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.

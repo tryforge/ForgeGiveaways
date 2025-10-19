@@ -5,7 +5,8 @@ exports.throwGiveawaysError = throwGiveawaysError;
 const forgescript_1 = require("@tryforge/forgescript");
 var GiveawaysErrorType;
 (function (GiveawaysErrorType) {
-    GiveawaysErrorType["MessageNotFound"] = "Could not determine the messageID for giveaway with ID \"$1\", giveaway terminated";
+    GiveawaysErrorType["MessageNotFound"] = "Could not find and update the message for giveaway with ID \"$1\"";
+    GiveawaysErrorType["MessageNotDetermined"] = "Could not determine the messageID for giveaway with ID \"$1\", giveaway terminated";
 })(GiveawaysErrorType || (exports.GiveawaysErrorType = GiveawaysErrorType = {}));
 /**
  * Throws a giveaways error in the console.
