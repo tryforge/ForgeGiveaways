@@ -62,7 +62,7 @@ export class Database extends GiveawaysDatabaseManager {
      * @param data The giveaway data to save.
      */
     public static async set(data: Giveaway) {
-        const newData = new this.entities.Giveaway(data)
+        const newData = new Database.entities.Giveaway(data)
         const oldData = await this.db.getRepository(Database.entities.Giveaway).findOneBy({ id: data.id })
 
         if (oldData && this.type === "mongodb") {
