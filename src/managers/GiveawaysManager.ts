@@ -23,7 +23,7 @@ export class GiveawaysManager {
         private readonly client: ForgeClient,
         private emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>
     ) {
-        this._restoreGiveaways()
+        client.once("clientReady", () => this._restoreGiveaways())
     }
 
     /**

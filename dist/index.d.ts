@@ -21,6 +21,6 @@ export declare class ForgeGiveaways extends ForgeExtension {
     giveawaysManager: GiveawaysManager;
     commands: GiveawaysCommandManager;
     constructor(options?: IForgeGiveawaysOptions);
-    init(client: ForgeClient): void;
+    init(client: ForgeClient): Promise<void>;
 }
 //# sourceMappingURL=index.d.ts.map

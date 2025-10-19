@@ -13,7 +13,7 @@ class GiveawaysManager {
         this.giveaways = giveaways;
         this.client = client;
         this.emitter = emitter;
-        this._restoreGiveaways();
+        client.once("clientReady", () => this._restoreGiveaways());
     }
     /**
      * Starts a new giveaway on a guild.
