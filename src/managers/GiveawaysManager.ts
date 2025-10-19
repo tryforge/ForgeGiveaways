@@ -23,7 +23,7 @@ export class GiveawaysManager {
         private readonly client: ForgeClient,
         private emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>
     ) {
-        this._checkGiveaways()
+        this._restoreGiveaways()
     }
 
     /**
@@ -161,7 +161,7 @@ export class GiveawaysManager {
         return shuffled.slice(0, amount)
     }
 
-    private async _checkGiveaways() {
+    private async _restoreGiveaways() {
         const giveaways = await Database.getAll()
         if (!giveaways) return
 

@@ -13,7 +13,7 @@ class GiveawaysManager {
         this.giveaways = giveaways;
         this.client = client;
         this.emitter = emitter;
-        this._checkGiveaways();
+        this._restoreGiveaways();
     }
     /**
      * Starts a new giveaway on a guild.
@@ -125,7 +125,7 @@ class GiveawaysManager {
         const shuffled = entries.sort(() => Math.random() - 0.5);
         return shuffled.slice(0, amount);
     }
-    async _checkGiveaways() {
+    async _restoreGiveaways() {
         const giveaways = await structures_1.Database.getAll();
         if (!giveaways)
             return;
