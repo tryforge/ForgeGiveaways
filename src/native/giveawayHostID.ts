@@ -18,7 +18,7 @@ export default new NativeFunction({
     ],
     output: ArgType.User,
     async execute(ctx, [id]) {
-        const giveaway = await Database.get(id) ?? ctx.giveaway
+        const giveaway = this.hasFields ? await Database.get(id) : ctx.giveaway
         return this.success(giveaway?.hostID)
     }
 })

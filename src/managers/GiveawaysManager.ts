@@ -21,9 +21,7 @@ export class GiveawaysManager {
     public constructor(
         private readonly client: ForgeGiveaways,
         private emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>
-    ) {
-        this._restoreGiveaways()
-    }
+    ) {}
 
     /**
      * Starts a new giveaway on a guild.
@@ -158,16 +156,5 @@ export class GiveawaysManager {
     private _pickWinners(entries: Snowflake[], amount: number) {
         const shuffled = entries.sort(() => Math.random() - 0.5)
         return shuffled.slice(0, amount)
-    }
-
-    private async _restoreGiveaways() {
-        const giveaways = await Database.getAll()
-        if (!giveaways) return
-
-        for (const giveaway of giveaways) {
-            if (Date.now() > (giveaway.timestamp + giveaway.duration)) {
-                // some stuff
-            }
-        }
     }
 }

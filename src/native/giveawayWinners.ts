@@ -25,7 +25,7 @@ export default new NativeFunction({
     ],
     output: array<ArgType.User>(),
     async execute(ctx, [id, sep]) {
-        const giveaway = await Database.get(id) ?? ctx.giveaway
+        const giveaway = this.hasFields ? await Database.get(id) : ctx.giveaway
         return this.success(giveaway?.winners.join(sep ?? ", "))
     }
 })

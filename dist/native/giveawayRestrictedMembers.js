@@ -29,7 +29,7 @@ exports.default = new forgescript_1.NativeFunction({
     ],
     output: (0, array_1.default)(),
     async execute(ctx, [id, sep]) {
-        const giveaway = await structures_1.Database.get(id) ?? ctx.giveaway;
+        const giveaway = this.hasFields ? await structures_1.Database.get(id) : ctx.giveaway;
         return this.success(giveaway?.requirements?.restrictedMembers?.join(sep ?? ", "));
     }
 });

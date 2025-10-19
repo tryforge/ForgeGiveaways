@@ -19,7 +19,7 @@ exports.default = new forgescript_1.NativeFunction({
     ],
     output: forgescript_1.ArgType.String,
     async execute(ctx, [id]) {
-        const giveaway = await structures_1.Database.get(id) ?? ctx.giveaway;
+        const giveaway = this.hasFields ? await structures_1.Database.get(id) : ctx.giveaway;
         return this.success(giveaway?.prize);
     }
 });

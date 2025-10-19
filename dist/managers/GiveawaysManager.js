@@ -11,7 +11,6 @@ class GiveawaysManager {
     constructor(client, emitter) {
         this.client = client;
         this.emitter = emitter;
-        this._restoreGiveaways();
     }
     /**
      * Starts a new giveaway on a guild.
@@ -122,16 +121,6 @@ class GiveawaysManager {
     _pickWinners(entries, amount) {
         const shuffled = entries.sort(() => Math.random() - 0.5);
         return shuffled.slice(0, amount);
-    }
-    async _restoreGiveaways() {
-        const giveaways = await structures_1.Database.getAll();
-        if (!giveaways)
-            return;
-        for (const giveaway of giveaways) {
-            if (Date.now() > (giveaway.timestamp + giveaway.duration)) {
-                // some stuff
-            }
-        }
     }
 }
 exports.GiveawaysManager = GiveawaysManager;

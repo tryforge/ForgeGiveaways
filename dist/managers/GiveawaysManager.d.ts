@@ -40,6 +40,5 @@ export declare class GiveawaysManager {
      */
     reroll(ctx: Context, id: Snowflake): Promise<Giveaway | null>;
     private _pickWinners;
-    private _restoreGiveaways;
 }
 //# sourceMappingURL=GiveawaysManager.d.ts.map
