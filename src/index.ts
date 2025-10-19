@@ -18,7 +18,7 @@ export interface IForgeGiveawaysOptions {
 
 export class ForgeGiveaways extends ForgeExtension {
     name = "forge.giveaways"
-    description = ""
+    description = require("../package.json").description
     version = require("../package.json").version
     requireExtensions = ["forge.db"]
 
@@ -48,3 +48,7 @@ export class ForgeGiveaways extends ForgeExtension {
         this.giveawaysManager = new GiveawaysManager(this, client, this.emitter)
     }
 }
+
+export * from "./managers"
+export * from "./structures"
+export * from "./types"

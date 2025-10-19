@@ -100,7 +100,6 @@ class GiveawaysManager {
     }
     /**
      * Rerolls an existing giveaway.
-     * @param ctx The current context.
      * @param id The id of the giveaway to reroll.
      * @returns
      */

@@ -1,7 +1,7 @@
 {
   "name": "forge.giveaways",
   "version": "1.0.0",
-  "description": "",
+  "description": "ForgeGiveaways is a lightweight, flexible, and reliable extension for managing giveaways. Fully customizable features let you automate, track, and control every giveaway seamlessly.",
   "main": "dist/index.js",
   "scripts": {
     "docgen": "tsc && typedoc src/index.ts && node dist/docgen",

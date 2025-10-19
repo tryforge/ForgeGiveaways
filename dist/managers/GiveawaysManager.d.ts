@@ -25,26 +25,25 @@ export declare class GiveawaysManager {
      * @param options The start options for the giveaway.
      * @returns
      */
-    start(options: IGiveawayStartOptions): Promise<import("../structures").Giveaway | undefined>;
+    start(options: IGiveawayStartOptions): Promise<import("..").Giveaway | undefined>;
     /**
      * Ends an existing giveaway.
      * @param id The id of the giveaway to end.
      * @returns
      */
-    end(id: Snowflake): Promise<import("../structures").Giveaway | null>;
+    end(id: Snowflake): Promise<import("..").Giveaway | null>;
     /**
      * Rerolls an existing giveaway.
-     * @param ctx The current context.
      * @param id The id of the giveaway to reroll.
      * @returns
      */
-    reroll(id: Snowflake): Promise<import("../structures").Giveaway | null>;
+    reroll(id: Snowflake): Promise<import("..").Giveaway | null>;
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
      * @param options The options used to edit this giveaway.
      */
-    edit(id: Snowflake, options: IGiveawayEditOptions): Promise<import("../structures").Giveaway | null>;
+    edit(id: Snowflake, options: IGiveawayEditOptions): Promise<import("..").Giveaway | null>;
     /**
      * Randomly picks X amount of winners from the provided entries.
      * @param entries The entries to pick winners from.

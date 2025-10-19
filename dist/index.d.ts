@@ -15,7 +15,7 @@ export interface IForgeGiveawaysOptions {
 export declare class ForgeGiveaways extends ForgeExtension {
     readonly options: IForgeGiveawaysOptions;
     name: string;
-    description: string;
+    description: any;
     version: any;
     requireExtensions: string[];
     emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>;
@@ -24,4 +24,7 @@ export declare class ForgeGiveaways extends ForgeExtension {
     constructor(options?: IForgeGiveawaysOptions);
     init(client: ForgeClient): Promise<void>;
 }
+export * from "./managers";
+export * from "./structures";
+export * from "./types";
 //# sourceMappingURL=index.d.ts.map

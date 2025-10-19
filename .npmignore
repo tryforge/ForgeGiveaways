@@ -1,0 +1,8 @@
+*/__tests__/
+docs/
+src/
+metadata/
+.vscode/
+.github/
+.env
+tsconfig.json
