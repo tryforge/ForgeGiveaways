@@ -23,10 +23,15 @@ export default new NativeFunction({
             type: ArgType.String
         }
     ],
-    output: ArgType.Unknown,
+    output: [
+        ArgType.Json,
+        ArgType.Unknown
+    ],
     execute(ctx, [prop, sep]) {
         const giveaway = ctx.extendedStates?.giveaway?.old
-        if (!giveaway || prop) return this.success(GiveawayProperties[prop](giveaway, sep))
+        if (!giveaway) return this.success()
+
+        if (prop) return this.success(GiveawayProperties[prop](giveaway, sep))
         return this.successJSON(giveaway)
     }
 })

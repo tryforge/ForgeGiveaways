@@ -27,7 +27,7 @@ export declare class GiveawaysManager {
      * @param id The id of the giveaway to end.
      * @returns
      */
-    end(id: Snowflake): Promise<Giveaway | null>;
+    end(id: Snowflake): Promise<Giveaway | undefined>;
     /**
      * Rerolls an existing giveaway.
      * @param id The id of the giveaway to reroll.
@@ -35,7 +35,7 @@ export declare class GiveawaysManager {
      * @param amount The amount of new winners.
      * @returns
      */
-    reroll(id: Snowflake, unique?: boolean, amount?: number): Promise<Giveaway | null>;
+    reroll(id: Snowflake, unique?: boolean, amount?: number): Promise<Giveaway | undefined>;
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.

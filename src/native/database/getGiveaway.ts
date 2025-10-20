@@ -1,18 +1,25 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
 import { GiveawayProperties, GiveawayProperty } from "../../properties/giveaway"
+import { Database } from "../.."
 
 export default new NativeFunction({
-    name: "$newGiveaway",
+    name: "$getGiveaway",
     version: "1.0.0",
-    description: "Retrieves new data from an event whose context was a giveaway instance",
+    description: "Gets an existing giveaway from the database",
     unwrap: true,
-    brackets: false,
+    brackets: true,
     args: [
+        {
+            name: "giveaway ID",
+            description: "The giveaway to get",
+            rest: false,
+            required: true,
+            type: ArgType.String,
+        },
         {
             name: "property",
             description: "The property of the giveaway to return",
             rest: false,
-            required: true,
             type: ArgType.Enum,
             enum: GiveawayProperty
         },
@@ -27,8 +34,8 @@ export default new NativeFunction({
         ArgType.Json,
         ArgType.Unknown
     ],
-    execute(ctx, [prop, sep]) {
-        const giveaway = ctx.extendedStates?.giveaway?.new
+    async execute(ctx, [id, prop, sep]) {
+        const giveaway = await Database.get(id)
         if (!giveaway) return this.success()
 
         if (prop) return this.success(GiveawayProperties[prop](giveaway, sep))

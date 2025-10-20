@@ -64,7 +64,7 @@ class GiveawaysManager {
     async end(id) {
         const giveaway = await structures_1.Database.get(id);
         if (!giveaway || giveaway.hasEnded)
-            return null;
+            return;
         giveaway.hasEnded = true;
         const guild = this.client.guilds.cache.get(giveaway.guildID);
         const eligibleEntries = giveaway.entries.filter((e) => {
@@ -107,6 +107,7 @@ class GiveawaysManager {
             }
             else {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
+                return;
             }
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
@@ -122,8 +123,8 @@ class GiveawaysManager {
      */
     async reroll(id, unique = false, amount) {
         const giveaway = await structures_1.Database.get(id);
-        if (!giveaway || !giveaway.hasEnded)
-            return null;
+        if (!giveaway || !giveaway.hasEnded || !giveaway.winners.length)
+            return;
         const oldGiveaway = giveaway.clone();
         amount ??= giveaway.winnersCount;
         const { entries, winners } = giveaway;
@@ -146,6 +147,7 @@ class GiveawaysManager {
             }
             else {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
+                return;
             }
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);

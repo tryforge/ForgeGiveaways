@@ -86,7 +86,7 @@ export class GiveawaysManager {
      */
     public async end(id: Snowflake) {
         const giveaway = await Database.get(id)
-        if (!giveaway || giveaway.hasEnded) return null
+        if (!giveaway || giveaway.hasEnded) return
         giveaway.hasEnded = true
 
         const guild = this.client.guilds.cache.get(giveaway.guildID)
@@ -140,6 +140,7 @@ export class GiveawaysManager {
                 }).catch(noop)
             } else {
                 throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
+                return
             }
         }
 
@@ -158,7 +159,7 @@ export class GiveawaysManager {
      */
     public async reroll(id: Snowflake, unique: boolean = false, amount?: number) {
         const giveaway = await Database.get(id)
-        if (!giveaway || !giveaway.hasEnded) return null
+        if (!giveaway || !giveaway.hasEnded || !giveaway.winners.length) return
         const oldGiveaway = giveaway.clone()
         amount ??= giveaway.winnersCount
 
@@ -184,6 +185,7 @@ export class GiveawaysManager {
                 }).catch(noop)
             } else {
                 throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
+                return
             }
         }
 

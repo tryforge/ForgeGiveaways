@@ -2,18 +2,24 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
 const giveaway_1 = require("../../properties/giveaway");
+const __1 = require("../..");
 exports.default = new forgescript_1.NativeFunction({
-    name: "$newGiveaway",
-    version: "1.0.0",
-    description: "Retrieves new data from an event whose context was a giveaway instance",
+    name: "$getGiveaway",
+    description: "Gets an existing giveaway from the database",
     unwrap: true,
-    brackets: false,
+    brackets: true,
     args: [
+        {
+            name: "giveaway ID",
+            description: "The giveaway to get",
+            rest: false,
+            required: true,
+            type: forgescript_1.ArgType.String,
+        },
         {
             name: "property",
             description: "The property of the giveaway to return",
             rest: false,
-            required: true,
             type: forgescript_1.ArgType.Enum,
             enum: giveaway_1.GiveawayProperty
         },
@@ -28,8 +34,8 @@ exports.default = new forgescript_1.NativeFunction({
         forgescript_1.ArgType.Json,
         forgescript_1.ArgType.Unknown
     ],
-    execute(ctx, [prop, sep]) {
-        const giveaway = ctx.extendedStates?.giveaway?.new;
+    async execute(ctx, [id, prop, sep]) {
+        const giveaway = await __1.Database.get(id);
         if (!giveaway)
             return this.success();
         if (prop)
@@ -37,4 +43,4 @@ exports.default = new forgescript_1.NativeFunction({
         return this.successJSON(giveaway);
     }
 });
-//# sourceMappingURL=newGiveaway.js.map
+//# sourceMappingURL=getGiveaway.js.map

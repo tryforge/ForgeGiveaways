@@ -1,16 +1,18 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
 import { GiveawayProperties, GiveawayProperty } from "../../properties/giveaway"
+import { Database } from "../.."
+import array from "../../functions/array"
 
 export default new NativeFunction({
-    name: "$newGiveaway",
+    name: "$getAllGiveaways",
     version: "1.0.0",
-    description: "Retrieves new data from an event whose context was a giveaway instance",
+    description: "Gets all existing giveaways from the database",
     unwrap: true,
     brackets: false,
     args: [
         {
             name: "property",
-            description: "The property of the giveaway to return",
+            description: "The property of the giveaways to return",
             rest: false,
             required: true,
             type: ArgType.Enum,
@@ -18,20 +20,18 @@ export default new NativeFunction({
         },
         {
             name: "separator",
-            description: "The separator to use in case of array",
+            description: "The separator to use for each property",
             rest: false,
             type: ArgType.String
         }
     ],
     output: [
         ArgType.Json,
-        ArgType.Unknown
+        array<ArgType.Unknown>()
     ],
-    execute(ctx, [prop, sep]) {
-        const giveaway = ctx.extendedStates?.giveaway?.new
-        if (!giveaway) return this.success()
-
-        if (prop) return this.success(GiveawayProperties[prop](giveaway, sep))
-        return this.successJSON(giveaway)
+    async execute(ctx, [prop, sep]) {
+        const giveaways = await Database.getAll()
+        if (prop) return this.success(giveaways.map((x) => GiveawayProperties[prop](x, sep)).join(sep ?? ", "))
+        return this.successJSON(giveaways)
     }
 })

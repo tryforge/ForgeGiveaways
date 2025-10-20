@@ -24,10 +24,15 @@ exports.default = new forgescript_1.NativeFunction({
             type: forgescript_1.ArgType.String
         }
     ],
-    output: forgescript_1.ArgType.Unknown,
+    output: [
+        forgescript_1.ArgType.Json,
+        forgescript_1.ArgType.Unknown
+    ],
     execute(ctx, [prop, sep]) {
         const giveaway = ctx.extendedStates?.giveaway?.old;
-        if (!giveaway || prop)
+        if (!giveaway)
+            return this.success();
+        if (prop)
             return this.success(giveaway_1.GiveawayProperties[prop](giveaway, sep));
         return this.successJSON(giveaway);
     }
