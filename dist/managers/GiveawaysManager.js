@@ -50,9 +50,10 @@ class GiveawaysManager {
                 ...ctx.runtime,
                 environment: { giveaway },
                 data: forgescript_1.Compiler.compile(this.giveaways.options.startMessage),
-                doNotSend: true,
             });
-            msg = await this._fetchMessage(giveaway.channelID, result?.trim());
+            const res = result?.trim();
+            console.log(res);
+            msg = await this._fetchMessage(giveaway.channelID, res);
         }
         else {
             (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.NoStartMessage);
