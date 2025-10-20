@@ -61,11 +61,11 @@ export class GiveawaysManager {
                 components: [comps.toJSON()]
             }).catch(noop)
         } else if (this.giveaways.options.startMessage) {
-            const result = await Interpreter.run({
-                ...ctx.runtime,
+            const result = await Interpreter.run(ctx.clone({
                 environment: { giveaway },
                 data: Compiler.compile(this.giveaways.options.startMessage),
-            })
+                doNotSend: true,
+            }))
 
             const res = result?.trim()
             console.log(res)
