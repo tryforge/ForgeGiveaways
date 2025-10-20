@@ -31,7 +31,7 @@ class GiveawaysInteractionHandler {
             const member = interaction.member;
             if (!giveaway.canEnter(member)) {
                 await interaction.reply({
-                    content: `You do not meet the requirements to enter this giveaway!`,
+                    content: `❌ You do not meet the requirements to enter this giveaway!`,
                     flags: discord_js_1.MessageFlags.Ephemeral,
                 }).catch(noop_1.default);
                 client.emitter.emit("giveawayEntryRevoked", giveaway);
@@ -50,7 +50,7 @@ class GiveawaysInteractionHandler {
                 client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway);
             }
             await interaction.reply({
-                content: `You have successfully ${entered ? "left" : "joined"} this giveaway.`,
+                content: `✅ You have successfully ${entered ? "left" : "joined"} this giveaway.`,
                 flags: discord_js_1.MessageFlags.Ephemeral,
             }).catch(noop_1.default);
         });

@@ -57,7 +57,8 @@ export declare class GiveawaysManager {
     private _parseMentions;
     /**
      * Fetches the message of a giveaway.
-     * @param data The giveaway data to use.
+     * @param channelID The id of the channel to pull message from.
+     * @param messageID The id of the message to fetch.
      * @returns
      */
     private _fetchMessage;

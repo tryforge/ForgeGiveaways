@@ -50,7 +50,6 @@ class GiveawaysManager {
                 ...ctx.runtime,
                 environment: { giveaway },
                 data: forgescript_1.Compiler.compile(this.giveaways.options.startMessage),
-                allowTopLevelReturn: true,
                 doNotSend: true,
             });
             msg = await this._fetchMessage(giveaway.channelID, result?.trim());
@@ -206,14 +205,15 @@ class GiveawaysManager {
     }
     /**
      * Fetches the message of a giveaway.
-     * @param data The giveaway data to use.
+     * @param channelID The id of the channel to pull message from.
+     * @param messageID The id of the message to fetch.
      * @returns
      */
     async _fetchMessage(channelID, messageID) {
         if (!messageID)
             return;
         const chan = this.client.channels.cache.get(channelID);
-        return await chan?.messages.fetch(messageID).catch(() => { });
+        return chan?.messages.cache.get(messageID) ?? await chan?.messages.fetch(messageID).catch(() => { });
     }
     /**
      * Restores all active giveaways on startup.

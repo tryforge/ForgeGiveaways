@@ -28,7 +28,7 @@ export class GiveawaysInteractionHandler {
 
             if (!giveaway.canEnter(member)) {
                 await interaction.reply({
-                    content: `You do not meet the requirements to enter this giveaway!`,
+                    content: `❌ You do not meet the requirements to enter this giveaway!`,
                     flags: MessageFlags.Ephemeral,
                 }).catch(noop)
                 client.emitter.emit("giveawayEntryRevoked", giveaway)
@@ -49,7 +49,7 @@ export class GiveawaysInteractionHandler {
             }
 
             await interaction.reply({
-                content: `You have successfully ${entered ? "left" : "joined"} this giveaway.`,
+                content: `✅ You have successfully ${entered ? "left" : "joined"} this giveaway.`,
                 flags: MessageFlags.Ephemeral,
             }).catch(noop)
         })

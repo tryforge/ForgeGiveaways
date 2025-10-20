@@ -65,7 +65,6 @@ export class GiveawaysManager {
                 ...ctx.runtime,
                 environment: { giveaway },
                 data: Compiler.compile(this.giveaways.options.startMessage),
-                allowTopLevelReturn: true,
                 doNotSend: true,
             })
 
@@ -79,7 +78,6 @@ export class GiveawaysManager {
             throwGiveawaysError(GiveawaysErrorType.MessageNotDetermined, giveaway.id)
             return
         }
-
         giveaway.messageID = msg.id
 
         await Database.set(giveaway).catch(noop)
@@ -242,13 +240,14 @@ export class GiveawaysManager {
 
     /**
      * Fetches the message of a giveaway.
-     * @param data The giveaway data to use.
+     * @param channelID The id of the channel to pull message from.
+     * @param messageID The id of the message to fetch.
      * @returns 
      */
     private async _fetchMessage(channelID: Snowflake, messageID?: Snowflake) {
         if (!messageID) return
         const chan = this.client.channels.cache.get(channelID) as TextChannel | undefined
-        return await chan?.messages.fetch(messageID).catch(() => {})
+        return chan?.messages.cache.get(messageID) ?? await chan?.messages.fetch(messageID).catch(() => {})
     }
 
     /**
