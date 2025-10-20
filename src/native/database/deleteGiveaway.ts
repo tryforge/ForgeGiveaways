@@ -4,7 +4,7 @@ import { Database } from "../.."
 export default new NativeFunction({
     name: "$deleteGiveaway",
     version: "1.0.0",
-    description: "Deletes an existing giveaway from the database permanently",
+    description: "Deletes an existing giveaway from the database permanently, returns bool",
     unwrap: true,
     brackets: true,
     args: [
@@ -16,9 +16,9 @@ export default new NativeFunction({
             type: ArgType.String,
         },
     ],
-    output: ArgType.Json,
+    output: ArgType.Boolean,
     async execute(ctx, [id]) {
-        const giveaway = await Database.delete(id)
-        return this.successJSON(giveaway)
+        const result = await Database.delete(id)
+        return this.success(result.affected === 1)
     }
 })

@@ -1,6 +1,6 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Snowflake, TextChannel, time } from "discord.js"
-import { ForgeClient } from "@tryforge/forgescript"
-import { Database, Giveaway, IGiveawayRequirements, MongoGiveaway } from "../structures"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Message, Snowflake, TextChannel, time } from "discord.js"
+import { Compiler, Context, ForgeClient, Interpreter } from "@tryforge/forgescript"
+import { Database, IGiveawayRequirements } from "../structures"
 import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
 import { ForgeGiveaways } from ".."
 import noop from "../functions/noop"
@@ -30,9 +30,10 @@ export class GiveawaysManager {
      * @param options The start options for the giveaway.
      * @returns 
      */
-    public async start(options: IGiveawayStartOptions) {
+    public async start(ctx: Context, options: IGiveawayStartOptions) {
         const giveaway = new Database.entities.Giveaway(options)
         const chan = this.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
+        let msg: Message | undefined | void
 
         if (this.giveaways.options.useDefault) {
             const embed = new EmbedBuilder()
@@ -52,25 +53,34 @@ export class GiveawaysManager {
                         .setCustomId(`giveawayEntry-${giveaway.id}`)
                         .setLabel("Join")
                         .setEmoji("🎉")
-                        .setStyle(ButtonStyle.Success),
-                    new ButtonBuilder()
-                        .setCustomId(`giveawayEnd-${giveaway.id}`)
-                        .setLabel("End")
-                        .setStyle(ButtonStyle.Danger)
+                        .setStyle(ButtonStyle.Success)
                 )
 
-            const msg = await chan?.send({
+            msg = await chan?.send({
                 embeds: [embed],
                 components: [comps.toJSON()]
             }).catch(noop)
+        } else if (this.giveaways.options.startMessage) {
+            const result = await Interpreter.run({
+                ...ctx.runtime,
+                environment: { giveaway },
+                data: Compiler.compile(this.giveaways.options.startMessage),
+                allowTopLevelReturn: true,
+                doNotSend: true,
+            })
 
-            if (!msg) {
-                throwGiveawaysError(GiveawaysErrorType.MessageNotDetermined, giveaway.id)
-                return
-            }
-
-            giveaway.messageID = msg.id
+            msg = await this._fetchMessage(giveaway.channelID, result?.trim())
+        } else {
+            throwGiveawaysError(GiveawaysErrorType.NoStartMessage)
+            return
         }
+
+        if (!msg) {
+            throwGiveawaysError(GiveawaysErrorType.MessageNotDetermined, giveaway.id)
+            return
+        }
+
+        giveaway.messageID = msg.id
 
         await Database.set(giveaway).catch(noop)
         this.giveaways.emitter.emit("giveawayStart", giveaway)
@@ -98,7 +108,7 @@ export class GiveawaysManager {
         giveaway.winners = winners
 
         if (this.giveaways.options.useDefault) {
-            const msg = await this._fetchMessage(giveaway)
+            const msg = await this._fetchMessage(giveaway.channelID, giveaway.messageID)
 
             if (msg) {
                 const plural = winners.length === 1 ? "" : "s"
@@ -115,18 +125,9 @@ export class GiveawaysManager {
                     .setTimestamp(giveaway.timestamp)
                     .setColor("Red")
 
-                const comps = new ActionRowBuilder()
-                .addComponents(
-                    new ButtonBuilder()
-                        .setCustomId(`giveawayReroll-${giveaway.id}`)
-                        .setLabel("Reroll")
-                        .setEmoji("🔁")
-                        .setStyle(ButtonStyle.Primary),
-                )
-
                 msg.edit({
                     embeds: [embed],
-                    components: [comps.toJSON()]
+                    components: []
                 }).catch(noop)
 
                 msg.reply({
@@ -171,7 +172,7 @@ export class GiveawaysManager {
         giveaway.winners = newWinners
 
         if (this.giveaways.options.useDefault) {
-            const msg = await this._fetchMessage(giveaway)
+            const msg = await this._fetchMessage(giveaway.channelID, giveaway.messageID)
 
             if (msg) {
                 const plural = newWinners.length === 1 ? "" : "s"
@@ -211,7 +212,7 @@ export class GiveawaysManager {
         if (options.hostID) giveaway.hostID = options.hostID
         if (options.requirements) giveaway.requirements = options.requirements
 
-        if (this.giveaways.options.useDefault) {}
+        if (this.giveaways.options.useDefault) { }
 
         await Database.set(giveaway).catch(noop)
         this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
@@ -244,9 +245,10 @@ export class GiveawaysManager {
      * @param data The giveaway data to use.
      * @returns 
      */
-    private async _fetchMessage(data: Giveaway | MongoGiveaway) {
-        const chan = this.client.channels.cache.get(data.channelID) as TextChannel | undefined
-        return (data.messageID ? await chan?.messages.fetch(data.messageID).catch(noop) : undefined)
+    private async _fetchMessage(channelID: Snowflake, messageID?: Snowflake) {
+        if (!messageID) return
+        const chan = this.client.channels.cache.get(channelID) as TextChannel | undefined
+        return await chan?.messages.fetch(messageID).catch(() => {})
     }
 
     /**

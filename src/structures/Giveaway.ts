@@ -1,4 +1,4 @@
-import { GuildMember, Snowflake, SnowflakeUtil } from "discord.js"
+import { APIInteractionGuildMember, GuildMember, Snowflake, SnowflakeUtil } from "discord.js"
 import { IGiveawayStartOptions } from "../managers/GiveawaysManager"
 import { Column, Entity, ObjectIdColumn, PrimaryColumn } from "typeorm"
 
@@ -150,12 +150,15 @@ export class Giveaway implements IGiveaway {
      * @param member The guild member to check for requirements.
      * @returns 
      */
-    public canEnter(member: GuildMember) {
+    public canEnter(member: GuildMember | APIInteractionGuildMember) {
         const req = this.requirements
         if (!req) return true
-        const hasRequiredRoles = req.requiredRoles?.every(r => member.roles.cache.has(r)) ?? true
-        const noRestrictedRoles = req.restrictedRoles?.every(r => !member.roles.cache.has(r)) ?? true
-        const notRestrictedMember = !req.restrictedMembers?.includes(member.id)
+
+        const roles = member instanceof GuildMember ? member.roles.cache.map((x) => x.id) : member.roles
+        const hasRequiredRoles = req.requiredRoles?.every((r) => roles.includes(r)) ?? true
+        const noRestrictedRoles = req.restrictedRoles?.every((r) => !roles.includes(r)) ?? true
+        const notRestrictedMember = !req.restrictedMembers?.includes(member.user.id)
+
         return hasRequiredRoles && noRestrictedRoles && notRestrictedMember
     }
 

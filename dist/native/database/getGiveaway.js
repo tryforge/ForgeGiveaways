@@ -5,6 +5,7 @@ const giveaway_1 = require("../../properties/giveaway");
 const __1 = require("../..");
 exports.default = new forgescript_1.NativeFunction({
     name: "$getGiveaway",
+    version: "1.0.0",
     description: "Gets an existing giveaway from the database",
     unwrap: true,
     brackets: true,

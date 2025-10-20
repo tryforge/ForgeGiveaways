@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
-import { ForgeClient } from "@tryforge/forgescript";
-import { Giveaway, IGiveawayRequirements } from "../structures";
+import { Context, ForgeClient } from "@tryforge/forgescript";
+import { IGiveawayRequirements } from "../structures";
 import { ForgeGiveaways } from "..";
 export interface IGiveawayStartOptions {
     prize: string;
@@ -21,13 +21,13 @@ export declare class GiveawaysManager {
      * @param options The start options for the giveaway.
      * @returns
      */
-    start(options: IGiveawayStartOptions): Promise<Giveaway | undefined>;
+    start(ctx: Context, options: IGiveawayStartOptions): Promise<import("..").Giveaway | undefined>;
     /**
      * Ends an existing giveaway.
      * @param id The id of the giveaway to end.
      * @returns
      */
-    end(id: Snowflake): Promise<Giveaway | undefined>;
+    end(id: Snowflake): Promise<import("..").Giveaway | undefined>;
     /**
      * Rerolls an existing giveaway.
      * @param id The id of the giveaway to reroll.
@@ -35,13 +35,13 @@ export declare class GiveawaysManager {
      * @param amount The amount of new winners.
      * @returns
      */
-    reroll(id: Snowflake, unique?: boolean, amount?: number): Promise<Giveaway | undefined>;
+    reroll(id: Snowflake, unique?: boolean, amount?: number): Promise<import("..").Giveaway | undefined>;
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
      * @param options The options used to edit this giveaway.
      */
-    edit(id: Snowflake, options: IGiveawayEditOptions): Promise<Giveaway | null>;
+    edit(id: Snowflake, options: IGiveawayEditOptions): Promise<import("..").Giveaway | null>;
     /**
      * Randomly picks X amount of winners from the provided entries.
      * @param entries The entries to pick winners from.

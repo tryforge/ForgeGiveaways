@@ -125,9 +125,10 @@ let Giveaway = class Giveaway {
         const req = this.requirements;
         if (!req)
             return true;
-        const hasRequiredRoles = req.requiredRoles?.every(r => member.roles.cache.has(r)) ?? true;
-        const noRestrictedRoles = req.restrictedRoles?.every(r => !member.roles.cache.has(r)) ?? true;
-        const notRestrictedMember = !req.restrictedMembers?.includes(member.id);
+        const roles = member instanceof discord_js_1.GuildMember ? member.roles.cache.map((x) => x.id) : member.roles;
+        const hasRequiredRoles = req.requiredRoles?.every((r) => roles.includes(r)) ?? true;
+        const noRestrictedRoles = req.restrictedRoles?.every((r) => !roles.includes(r)) ?? true;
+        const notRestrictedMember = !req.restrictedMembers?.includes(member.user.id);
         return hasRequiredRoles && noRestrictedRoles && notRestrictedMember;
     }
     /**

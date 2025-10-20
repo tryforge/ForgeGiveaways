@@ -9,6 +9,7 @@ const __1 = require("../..");
 const array_1 = __importDefault(require("../../functions/array"));
 exports.default = new forgescript_1.NativeFunction({
     name: "$getAllGiveaways",
+    version: "1.0.0",
     description: "Gets all existing giveaways from the database",
     unwrap: true,
     brackets: false,

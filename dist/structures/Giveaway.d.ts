@@ -1,4 +1,4 @@
-import { GuildMember, Snowflake } from "discord.js";
+import { APIInteractionGuildMember, GuildMember, Snowflake } from "discord.js";
 import { IGiveawayStartOptions } from "../managers/GiveawaysManager";
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake;
@@ -92,7 +92,7 @@ export declare class Giveaway implements IGiveaway {
      * @param member The guild member to check for requirements.
      * @returns
      */
-    canEnter(member: GuildMember): boolean;
+    canEnter(member: GuildMember | APIInteractionGuildMember): boolean;
     /**
      * Clones this giveaway.
      * @returns

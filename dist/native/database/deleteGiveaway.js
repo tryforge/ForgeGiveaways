@@ -4,7 +4,8 @@ const forgescript_1 = require("@tryforge/forgescript");
 const __1 = require("../..");
 exports.default = new forgescript_1.NativeFunction({
     name: "$deleteGiveaway",
-    description: "Deletes an existing giveaway from the database permanently",
+    version: "1.0.0",
+    description: "Deletes an existing giveaway from the database permanently, returns bool",
     unwrap: true,
     brackets: true,
     args: [
@@ -16,10 +17,10 @@ exports.default = new forgescript_1.NativeFunction({
             type: forgescript_1.ArgType.String,
         },
     ],
-    output: forgescript_1.ArgType.Json,
+    output: forgescript_1.ArgType.Boolean,
     async execute(ctx, [id]) {
-        const giveaway = await __1.Database.delete(id);
-        return this.successJSON(giveaway);
+        const result = await __1.Database.delete(id);
+        return this.success(result.affected === 1);
     }
 });
 //# sourceMappingURL=deleteGiveaway.js.map

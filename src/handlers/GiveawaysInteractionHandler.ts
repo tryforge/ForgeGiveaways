@@ -1,7 +1,9 @@
 import { ForgeClient } from "@tryforge/forgescript"
-import { GuildMember, MessageFlags } from "discord.js"
+import { MessageFlags } from "discord.js"
 import { ForgeGiveaways } from ".."
 import { Database } from "../structures"
+import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
+import noop from "../functions/noop"
 
 export class GiveawaysInteractionHandler {
     public constructor(private readonly client: ForgeClient) {
@@ -10,33 +12,46 @@ export class GiveawaysInteractionHandler {
 
     private async _register() {
         this.client.on("interactionCreate", async (interaction) => {
-            if (!interaction.isButton() || !interaction.customId.startsWith("giveawayEntry-")) return
-            const [, id] = interaction.customId.split("-")
+            if (!interaction.isButton() || !interaction.inGuild()) return
+
+            const [action, id] = interaction.customId.split("-")
+            if (action !== "giveawayEntry") return
 
             const client = this.client.getExtension(ForgeGiveaways, true)
             const giveaway = await Database.get(id)
-            if (!giveaway) return
+            if (!giveaway) {
+                throwGiveawaysError(GiveawaysErrorType.UnknownGiveaway, id)
+                return
+            }
 
             const member = interaction.member
-            if (!(member instanceof GuildMember && giveaway.canEnter(member))) return
+
+            if (!giveaway.canEnter(member)) {
+                await interaction.reply({
+                    content: `You do not meet the requirements to enter this giveaway!`,
+                    flags: MessageFlags.Ephemeral,
+                }).catch(noop)
+                client.emitter.emit("giveawayEntryRevoked", giveaway)
+                return
+            }
 
             const oldGiveaway = giveaway.clone()
-            const entered = giveaway.hasEntered(member.id)
+            const entered = giveaway.hasEntered(member.user.id)
 
             if (entered) {
-                giveaway.removeEntry(member.id)
-                await Database.set(giveaway)
+                giveaway.removeEntry(member.user.id)
+                await Database.set(giveaway).catch(noop)
                 client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway)
             } else {
-                giveaway.addEntry(member.id)
-                await Database.set(giveaway)
+                giveaway.addEntry(member.user.id)
+                await Database.set(giveaway).catch(noop)
                 client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway)
             }
 
-            interaction.reply({
-                content: `You have successfully ${entered ? "left" : "entered"} the giveaway.`,
+            await interaction.reply({
+                content: `You have successfully ${entered ? "left" : "joined"} this giveaway.`,
                 flags: MessageFlags.Ephemeral,
-            })
+            }).catch(noop)
         })
     }
 }

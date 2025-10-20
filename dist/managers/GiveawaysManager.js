@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GiveawaysManager = void 0;
 const discord_js_1 = require("discord.js");
+const forgescript_1 = require("@tryforge/forgescript");
 const structures_1 = require("../structures");
 const error_1 = require("../functions/error");
 const noop_1 = __importDefault(require("../functions/noop"));
@@ -21,9 +22,10 @@ class GiveawaysManager {
      * @param options The start options for the giveaway.
      * @returns
      */
-    async start(options) {
+    async start(ctx, options) {
         const giveaway = new structures_1.Database.entities.Giveaway(options);
         const chan = this.client.channels.cache.get(giveaway.channelID);
+        let msg;
         if (this.giveaways.options.useDefault) {
             const embed = new discord_js_1.EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
@@ -37,20 +39,31 @@ class GiveawaysManager {
                 .setCustomId(`giveawayEntry-${giveaway.id}`)
                 .setLabel("Join")
                 .setEmoji("🎉")
-                .setStyle(discord_js_1.ButtonStyle.Success), new discord_js_1.ButtonBuilder()
-                .setCustomId(`giveawayEnd-${giveaway.id}`)
-                .setLabel("End")
-                .setStyle(discord_js_1.ButtonStyle.Danger));
-            const msg = await chan?.send({
+                .setStyle(discord_js_1.ButtonStyle.Success));
+            msg = await chan?.send({
                 embeds: [embed],
                 components: [comps.toJSON()]
             }).catch(noop_1.default);
-            if (!msg) {
-                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotDetermined, giveaway.id);
-                return;
-            }
-            giveaway.messageID = msg.id;
         }
+        else if (this.giveaways.options.startMessage) {
+            const result = await forgescript_1.Interpreter.run({
+                ...ctx.runtime,
+                environment: { giveaway },
+                data: forgescript_1.Compiler.compile(this.giveaways.options.startMessage),
+                allowTopLevelReturn: true,
+                doNotSend: true,
+            });
+            msg = await this._fetchMessage(giveaway.channelID, result?.trim());
+        }
+        else {
+            (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.NoStartMessage);
+            return;
+        }
+        if (!msg) {
+            (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotDetermined, giveaway.id);
+            return;
+        }
+        giveaway.messageID = msg.id;
         await structures_1.Database.set(giveaway).catch(noop_1.default);
         this.giveaways.emitter.emit("giveawayStart", giveaway);
         setTimeout(async () => await this.end(giveaway.id).catch(noop_1.default), giveaway.duration);
@@ -74,7 +87,7 @@ class GiveawaysManager {
         const winners = this._pickWinners(eligibleEntries, giveaway.winnersCount);
         giveaway.winners = winners;
         if (this.giveaways.options.useDefault) {
-            const msg = await this._fetchMessage(giveaway);
+            const msg = await this._fetchMessage(giveaway.channelID, giveaway.messageID);
             if (msg) {
                 const plural = winners.length === 1 ? "" : "s";
                 const mentions = this._parseMentions(winners);
@@ -85,15 +98,9 @@ class GiveawaysManager {
                     .setFooter({ text: "Thanks for participating!" })
                     .setTimestamp(giveaway.timestamp)
                     .setColor("Red");
-                const comps = new discord_js_1.ActionRowBuilder()
-                    .addComponents(new discord_js_1.ButtonBuilder()
-                    .setCustomId(`giveawayReroll-${giveaway.id}`)
-                    .setLabel("Reroll")
-                    .setEmoji("🔁")
-                    .setStyle(discord_js_1.ButtonStyle.Primary));
                 msg.edit({
                     embeds: [embed],
-                    components: [comps.toJSON()]
+                    components: []
                 }).catch(noop_1.default);
                 msg.reply({
                     content: winners.length
@@ -134,7 +141,7 @@ class GiveawaysManager {
             newWinners = this._pickWinners(entries, amount);
         giveaway.winners = newWinners;
         if (this.giveaways.options.useDefault) {
-            const msg = await this._fetchMessage(giveaway);
+            const msg = await this._fetchMessage(giveaway.channelID, giveaway.messageID);
             if (msg) {
                 const plural = newWinners.length === 1 ? "" : "s";
                 msg.reply({
@@ -202,9 +209,11 @@ class GiveawaysManager {
      * @param data The giveaway data to use.
      * @returns
      */
-    async _fetchMessage(data) {
-        const chan = this.client.channels.cache.get(data.channelID);
-        return (data.messageID ? await chan?.messages.fetch(data.messageID).catch(noop_1.default) : undefined);
+    async _fetchMessage(channelID, messageID) {
+        if (!messageID)
+            return;
+        const chan = this.client.channels.cache.get(channelID);
+        return await chan?.messages.fetch(messageID).catch(() => { });
     }
     /**
      * Restores all active giveaways on startup.
