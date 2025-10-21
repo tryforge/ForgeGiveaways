@@ -8,7 +8,7 @@ var GiveawaysErrorType;
     GiveawaysErrorType["MessageNotFound"] = "Could not find and update the message for giveaway with ID \"$1\"";
     GiveawaysErrorType["MessageNotDetermined"] = "Could not determine the messageID for giveaway with ID \"$1\", giveaway terminated";
     GiveawaysErrorType["UnknownGiveaway"] = "Could not find the giveaway with ID \"$1\"";
-    GiveawaysErrorType["NoStartMessage"] = "No start message for giveaways has been configured, giveaway terminated";
+    GiveawaysErrorType["NoStartEvent"] = "The giveawayStart event must be defined to start giveaways, but none was detected";
     GiveawaysErrorType["MultipleStartEvents"] = "Detected multiple giveawayStart events, only one is allowed per client instance";
     GiveawaysErrorType["GiveawayNotActive"] = "Giveaway with ID \"$1\" has already ended and can no longer be entered";
 })(GiveawaysErrorType || (exports.GiveawaysErrorType = GiveawaysErrorType = {}));

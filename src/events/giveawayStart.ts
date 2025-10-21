@@ -16,7 +16,7 @@ export default new GiveawaysEventHandler({
         if (commands.length > 1) throw new Error(GiveawaysErrorType.MultipleStartEvents)
         if (!command && !client.options.useDefault) {
             await Database.delete(gw.id)
-            throw new Error(GiveawaysErrorType.NoStartMessage)
+            throw new Error(GiveawaysErrorType.NoStartEvent)
         }
 
         if (commands) {

@@ -17,7 +17,7 @@ exports.default = new handlers_1.GiveawaysEventHandler({
             throw new Error(error_1.GiveawaysErrorType.MultipleStartEvents);
         if (!command && !client.options.useDefault) {
             await structures_1.Database.delete(gw.id);
-            throw new Error(error_1.GiveawaysErrorType.NoStartMessage);
+            throw new Error(error_1.GiveawaysErrorType.NoStartEvent);
         }
         if (commands) {
             const ctx = new structures_1.Context({

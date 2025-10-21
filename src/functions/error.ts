@@ -5,7 +5,7 @@ export enum GiveawaysErrorType {
     MessageNotFound = `Could not find and update the message for giveaway with ID "$1"`,
     MessageNotDetermined = `Could not determine the messageID for giveaway with ID "$1", giveaway terminated`,
     UnknownGiveaway = `Could not find the giveaway with ID "$1"`,
-    NoStartMessage = `No start message for giveaways has been configured, giveaway terminated`,
+    NoStartEvent = `The giveawayStart event must be defined to start giveaways, but none was detected`,
     MultipleStartEvents = `Detected multiple giveawayStart events, only one is allowed per client instance`,
     GiveawayNotActive = `Giveaway with ID "$1" has already ended and can no longer be entered`,
 }

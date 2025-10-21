@@ -46,7 +46,7 @@ export class ForgeGiveaways extends ForgeExtension {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
 
             if (!this.options.useDefault && !this.options.events.includes("giveawayStart")) {
-                throw new Error(GiveawaysErrorType.NoStartMessage)
+                throw new Error(GiveawaysErrorType.NoStartEvent)
             }
         }
 

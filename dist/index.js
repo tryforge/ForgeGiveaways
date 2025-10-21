@@ -43,7 +43,7 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
         if (this.options.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
             if (!this.options.useDefault && !this.options.events.includes("giveawayStart")) {
-                throw new Error(error_1.GiveawaysErrorType.NoStartMessage);
+                throw new Error(error_1.GiveawaysErrorType.NoStartEvent);
             }
         }
         await new structures_1.Database(this.emitter).init();
