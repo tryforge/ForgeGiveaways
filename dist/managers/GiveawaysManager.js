@@ -46,13 +46,14 @@ class GiveawaysManager {
             }).catch(noop_1.default);
         }
         else if (this.giveaways.options.startMessage) {
-            const result = await forgescript_1.Interpreter.run(ctx.clone({
+            const result = await forgescript_1.Interpreter.run({
+                ...ctx.runtime,
                 environment: { giveaway },
                 data: forgescript_1.Compiler.compile(this.giveaways.options.startMessage),
+                redirectErrorsToConsole: true,
                 doNotSend: true,
-            }));
+            });
             const res = result?.trim();
-            console.log(res);
             msg = await this._fetchMessage(giveaway.channelID, res);
         }
         else {

@@ -31,7 +31,7 @@ export class GiveawaysInteractionHandler {
                     content: `❌ You do not meet the requirements to enter this giveaway!`,
                     flags: MessageFlags.Ephemeral,
                 }).catch(noop)
-                client.emitter.emit("giveawayEntryRevoked", giveaway)
+                client.emitter.emit("giveawayEntryRevoked", interaction, giveaway)
                 return
             }
 
@@ -41,11 +41,11 @@ export class GiveawaysInteractionHandler {
             if (entered) {
                 giveaway.removeEntry(member.user.id)
                 await Database.set(giveaway).catch(noop)
-                client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway)
+                client.emitter.emit("giveawayEntryRemove", interaction, oldGiveaway, giveaway)
             } else {
                 giveaway.addEntry(member.user.id)
                 await Database.set(giveaway).catch(noop)
-                client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway)
+                client.emitter.emit("giveawayEntryAdd", interaction, oldGiveaway, giveaway)
             }
 
             await interaction.reply({

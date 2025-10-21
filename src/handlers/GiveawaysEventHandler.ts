@@ -1,6 +1,7 @@
 import { BaseEventHandler, ForgeClient } from "@tryforge/forgescript"
 import { Giveaway } from "../structures"
 import { ForgeGiveaways } from ".."
+import { Interaction } from "discord.js"
 
 export interface IGiveawayEvents {
     databaseConnect: []
@@ -8,9 +9,9 @@ export interface IGiveawayEvents {
     giveawayEnd: [Giveaway]
     giveawayEdit: [Giveaway, Giveaway]
     giveawayReroll: [Giveaway, Giveaway]
-    giveawayEntryAdd: [Giveaway, Giveaway]
-    giveawayEntryRemove: [Giveaway, Giveaway]
-    giveawayEntryRevoked: [Giveaway]
+    giveawayEntryAdd: [Interaction, Giveaway, Giveaway]
+    giveawayEntryRemove: [Interaction, Giveaway, Giveaway]
+    giveawayEntryRevoked: [Interaction, Giveaway]
 }
 
 export class GiveawaysEventHandler<T extends keyof IGiveawayEvents> extends BaseEventHandler<IGiveawayEvents, T> {

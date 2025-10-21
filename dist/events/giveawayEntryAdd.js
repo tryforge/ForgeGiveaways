@@ -8,11 +8,14 @@ exports.default = new handlers_1.GiveawaysEventHandler({
     name: "giveawayEntryAdd",
     version: "1.0.0",
     description: "This event is fired when a giveaway entry is added",
-    listener: async function (old, newer) {
+    listener: async function (int, old, newer) {
         const commands = this.getExtension(__1.ForgeGiveaways, true).commands.get("giveawayEntryAdd");
         for (const command of commands) {
             const ctx = new structures_1.Context({
-                obj: newer,
+                obj: {
+                    interaction: int,
+                    giveaway: newer
+                },
                 command,
                 client: this,
                 states: {

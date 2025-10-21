@@ -61,14 +61,15 @@ export class GiveawaysManager {
                 components: [comps.toJSON()]
             }).catch(noop)
         } else if (this.giveaways.options.startMessage) {
-            const result = await Interpreter.run(ctx.clone({
+            const result = await Interpreter.run({
+                ...ctx.runtime,
                 environment: { giveaway },
                 data: Compiler.compile(this.giveaways.options.startMessage),
+                redirectErrorsToConsole: true,
                 doNotSend: true,
-            }))
+            })
 
             const res = result?.trim()
-            console.log(res)
             msg = await this._fetchMessage(giveaway.channelID, res)
         } else {
             throwGiveawaysError(GiveawaysErrorType.NoStartMessage)

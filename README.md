@@ -1,5 +1,7 @@
 <div align="center">
 
+<img height="150" width="150" src="https://github.com/user-attachments/assets/9969c07b-2608-4ddd-930b-487485c07d80" alt="ForgeGiveaways">
+
 # ForgeGiveaways
 ForgeGiveaways is a lightweight, flexible, and reliable extension for managing giveaways. Fully customizable features let you automate, track, and control every giveaway seamlessly.
 
@@ -14,7 +16,9 @@ ForgeGiveaways is a lightweight, flexible, and reliable extension for managing g
 ## Contents
 
 1. [Installation](#installation)
-2. [Documentation](https://docs.botforge.org/p/ForgeGiveaways/)
+2. [Custom Messages](#custom-messages)
+3. [Handling Interactions](#handling-interactions)
+4. [Documentation](https://docs.botforge.org/p/ForgeGiveaways/)
 
 <h3 align="center">Installation</h3><hr>
 
@@ -53,3 +57,27 @@ ForgeGiveaways is a lightweight, flexible, and reliable extension for managing g
 
     client.login("YourToken")
     ```
+
+> [!INFO]
+> View all available client options [here](https://github.com/tryforge/ForgeGiveaways/blob/main/src/index.ts#L8).
+
+<h3 align="center">Custom Messages</h3><hr>
+
+You can disable the default messages by setting `useDefault: false` in the client options, and override them with custom messages emitted through events. Use desired functions to retrieve information about the current giveaway.
+
+##### Example
+```js
+module.exports = {
+  type: "giveawayEnd",
+  code: `
+  $sendMessage[$giveawayChannelID;
+      $reply[$giveawayChannelID;$giveawayMessageID;true]
+      🏆 **Winners:** <@$newGiveaway[winners;>, <@]>
+  ]
+  `
+}
+```
+
+<h3 align="center">Handling Interactions</h3><hr>
+
+ 
