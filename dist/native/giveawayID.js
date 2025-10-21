@@ -8,7 +8,8 @@ exports.default = new forgescript_1.NativeFunction({
     unwrap: false,
     output: forgescript_1.ArgType.String,
     execute(ctx) {
-        return this.success(ctx.giveaway?.id);
+        const giveaway = ctx.giveaway ?? ctx.extendedStates?.giveaway?.new;
+        return this.success(giveaway?.id);
     }
 });
 //# sourceMappingURL=giveawayID.js.map

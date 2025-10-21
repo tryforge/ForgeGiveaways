@@ -66,11 +66,11 @@ export class GiveawaysManager {
                 environment: { giveaway },
                 data: Compiler.compile(this.giveaways.options.startMessage),
                 redirectErrorsToConsole: true,
+                allowTopLevelReturn: true,
                 doNotSend: true,
             })
 
-            const res = result?.trim()
-            msg = await this._fetchMessage(giveaway.channelID, res)
+            msg = await this._fetchMessage(giveaway.channelID, result?.trim())
         } else {
             throwGiveawaysError(GiveawaysErrorType.NoStartMessage)
             return

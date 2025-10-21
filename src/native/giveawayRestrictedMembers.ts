@@ -1,5 +1,5 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
-import { Database } from "../structures"
+import pullGiveaway from "../functions/pullGiveaway"
 import array from "../functions/array"
 
 export default new NativeFunction({
@@ -25,7 +25,7 @@ export default new NativeFunction({
     ],
     output: array<ArgType.Member>(),
     async execute(ctx, [id, sep]) {
-        const giveaway = this.hasFields ? await Database.get(id) : ctx.giveaway
+        const giveaway = await pullGiveaway(ctx, id)
         return this.success(giveaway?.requirements?.restrictedMembers?.join(sep ?? ", "))
     }
 })
