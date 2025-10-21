@@ -22,7 +22,8 @@ exports.default = new handlers_1.GiveawaysEventHandler({
                 },
                 data: command.compiled.code
             });
-            forgescript_1.Interpreter.run(ctx);
+            const result = await forgescript_1.Interpreter.run(ctx);
+            console.log(result);
         }
     }
 });

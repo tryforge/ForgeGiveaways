@@ -23,7 +23,8 @@ export default new GiveawaysEventHandler({
                 data: command.compiled.code
             })
 
-            Interpreter.run(ctx)
+            const result = await Interpreter.run(ctx)
+            console.log(result)
         }
     }
 })
