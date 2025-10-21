@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { Context, ForgeClient } from "@tryforge/forgescript";
+import { ForgeClient } from "@tryforge/forgescript";
 import { IGiveawayRequirements } from "../structures";
 import { ForgeGiveaways } from "..";
 export interface IGiveawayStartOptions {
@@ -21,7 +21,7 @@ export declare class GiveawaysManager {
      * @param options The start options for the giveaway.
      * @returns
      */
-    start(ctx: Context, options: IGiveawayStartOptions): Promise<import("..").Giveaway | undefined>;
+    start(options: IGiveawayStartOptions): Promise<import("..").Giveaway | undefined>;
     /**
      * Ends an existing giveaway.
      * @param id The id of the giveaway to end.
@@ -43,6 +43,13 @@ export declare class GiveawaysManager {
      */
     edit(id: Snowflake, options: IGiveawayEditOptions): Promise<import("..").Giveaway | null>;
     /**
+     * Fetches the message of a giveaway.
+     * @param channelID The id of the channel to pull message from.
+     * @param messageID The id of the message to fetch.
+     * @returns
+     */
+    fetchMessage(channelID: Snowflake, messageID?: Snowflake): Promise<void | import("discord.js").Message<true>>;
+    /**
      * Randomly picks X amount of winners from the provided entries.
      * @param entries The entries to pick winners from.
      * @param amount The amount of winners to pick.
@@ -55,13 +62,6 @@ export declare class GiveawaysManager {
      * @returns
      */
     private _parseMentions;
-    /**
-     * Fetches the message of a giveaway.
-     * @param channelID The id of the channel to pull message from.
-     * @param messageID The id of the message to fetch.
-     * @returns
-     */
-    private _fetchMessage;
     /**
      * Restores all active giveaways on startup.
      * @returns

@@ -12,10 +12,6 @@ export interface IForgeGiveawaysOptions {
      * Whether to use the default giveaway messages. Defaults to `true`.
      */
     useDefault?: boolean;
-    /**
-     * The code to use as start message for giveaways. Only works if default messages are disabled.
-     */
-    startMessage?: string;
 }
 export declare class ForgeGiveaways extends ForgeExtension {
     readonly options: IForgeGiveawaysOptions;

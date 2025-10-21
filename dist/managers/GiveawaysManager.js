@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GiveawaysManager = void 0;
 const discord_js_1 = require("discord.js");
-const forgescript_1 = require("@tryforge/forgescript");
 const structures_1 = require("../structures");
 const error_1 = require("../functions/error");
 const noop_1 = __importDefault(require("../functions/noop"));
@@ -22,11 +21,10 @@ class GiveawaysManager {
      * @param options The start options for the giveaway.
      * @returns
      */
-    async start(ctx, options) {
+    async start(options) {
         const giveaway = new structures_1.Database.entities.Giveaway(options);
-        const chan = this.client.channels.cache.get(giveaway.channelID);
-        let msg;
         if (this.giveaways.options.useDefault) {
+            const chan = this.client.channels.cache.get(giveaway.channelID);
             const embed = new discord_js_1.EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}`)
@@ -40,31 +38,16 @@ class GiveawaysManager {
                 .setLabel("Join")
                 .setEmoji("🎉")
                 .setStyle(discord_js_1.ButtonStyle.Success));
-            msg = await chan?.send({
+            const msg = await chan?.send({
                 embeds: [embed],
                 components: [comps.toJSON()]
             }).catch(noop_1.default);
+            if (!msg) {
+                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotDetermined, giveaway.id);
+                return;
+            }
+            giveaway.messageID = msg.id;
         }
-        else if (this.giveaways.options.startMessage) {
-            const result = await forgescript_1.Interpreter.run({
-                ...ctx.runtime,
-                environment: { giveaway },
-                data: forgescript_1.Compiler.compile(this.giveaways.options.startMessage),
-                redirectErrorsToConsole: true,
-                allowTopLevelReturn: true,
-                doNotSend: true,
-            });
-            msg = await this._fetchMessage(giveaway.channelID, result?.trim());
-        }
-        else {
-            (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.NoStartMessage);
-            return;
-        }
-        if (!msg) {
-            (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotDetermined, giveaway.id);
-            return;
-        }
-        giveaway.messageID = msg.id;
         await structures_1.Database.set(giveaway).catch(noop_1.default);
         this.giveaways.emitter.emit("giveawayStart", giveaway);
         setTimeout(async () => await this.end(giveaway.id).catch(noop_1.default), giveaway.duration);
@@ -88,7 +71,7 @@ class GiveawaysManager {
         const winners = this._pickWinners(eligibleEntries, giveaway.winnersCount);
         giveaway.winners = winners;
         if (this.giveaways.options.useDefault) {
-            const msg = await this._fetchMessage(giveaway.channelID, giveaway.messageID);
+            const msg = await this.fetchMessage(giveaway.channelID, giveaway.messageID);
             if (msg) {
                 const plural = winners.length === 1 ? "" : "s";
                 const mentions = this._parseMentions(winners);
@@ -142,7 +125,7 @@ class GiveawaysManager {
             newWinners = this._pickWinners(entries, amount);
         giveaway.winners = newWinners;
         if (this.giveaways.options.useDefault) {
-            const msg = await this._fetchMessage(giveaway.channelID, giveaway.messageID);
+            const msg = await this.fetchMessage(giveaway.channelID, giveaway.messageID);
             if (msg) {
                 const plural = newWinners.length === 1 ? "" : "s";
                 msg.reply({
@@ -188,6 +171,18 @@ class GiveawaysManager {
         return giveaway;
     }
     /**
+     * Fetches the message of a giveaway.
+     * @param channelID The id of the channel to pull message from.
+     * @param messageID The id of the message to fetch.
+     * @returns
+     */
+    async fetchMessage(channelID, messageID) {
+        if (!messageID)
+            return;
+        const chan = this.client.channels.cache.get(channelID);
+        return chan?.messages.cache.get(messageID) ?? await chan?.messages.fetch(messageID).catch(() => { });
+    }
+    /**
      * Randomly picks X amount of winners from the provided entries.
      * @param entries The entries to pick winners from.
      * @param amount The amount of winners to pick.
@@ -204,18 +199,6 @@ class GiveawaysManager {
      */
     _parseMentions(winners) {
         return winners.map((id) => `<@${id}>`).join(", ");
-    }
-    /**
-     * Fetches the message of a giveaway.
-     * @param channelID The id of the channel to pull message from.
-     * @param messageID The id of the message to fetch.
-     * @returns
-     */
-    async _fetchMessage(channelID, messageID) {
-        if (!messageID)
-            return;
-        const chan = this.client.channels.cache.get(channelID);
-        return chan?.messages.cache.get(messageID) ?? await chan?.messages.fetch(messageID).catch(() => { });
     }
     /**
      * Restores all active giveaways on startup.

@@ -6,6 +6,7 @@ export enum GiveawaysErrorType {
     MessageNotDetermined = `Could not determine the messageID for giveaway with ID "$1", giveaway terminated`,
     UnknownGiveaway = `Could not find the giveaway with ID "$1"`,
     NoStartMessage = `No start message for giveaways has been configured, giveaway terminated`,
+    MultipleStartEvents = `Detected multiple giveawayStart events, only one is allowed per client instance`,
 }
 
 /**

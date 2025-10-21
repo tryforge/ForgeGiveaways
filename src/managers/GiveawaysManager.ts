@@ -1,5 +1,5 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Message, Snowflake, TextChannel, time } from "discord.js"
-import { Compiler, Context, ForgeClient, Interpreter } from "@tryforge/forgescript"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Snowflake, TextChannel, time } from "discord.js"
+import { ForgeClient } from "@tryforge/forgescript"
 import { Database, IGiveawayRequirements } from "../structures"
 import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
 import { ForgeGiveaways } from ".."
@@ -30,12 +30,12 @@ export class GiveawaysManager {
      * @param options The start options for the giveaway.
      * @returns 
      */
-    public async start(ctx: Context, options: IGiveawayStartOptions) {
+    public async start(options: IGiveawayStartOptions) {
         const giveaway = new Database.entities.Giveaway(options)
-        const chan = this.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
-        let msg: Message | undefined | void
 
         if (this.giveaways.options.useDefault) {
+            const chan = this.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
+
             const embed = new EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}`)
@@ -56,31 +56,17 @@ export class GiveawaysManager {
                         .setStyle(ButtonStyle.Success)
                 )
 
-            msg = await chan?.send({
+            const msg = await chan?.send({
                 embeds: [embed],
                 components: [comps.toJSON()]
             }).catch(noop)
-        } else if (this.giveaways.options.startMessage) {
-            const result = await Interpreter.run({
-                ...ctx.runtime,
-                environment: { giveaway },
-                data: Compiler.compile(this.giveaways.options.startMessage),
-                redirectErrorsToConsole: true,
-                allowTopLevelReturn: true,
-                doNotSend: true,
-            })
 
-            msg = await this._fetchMessage(giveaway.channelID, result?.trim())
-        } else {
-            throwGiveawaysError(GiveawaysErrorType.NoStartMessage)
-            return
+            if (!msg) {
+                throwGiveawaysError(GiveawaysErrorType.MessageNotDetermined, giveaway.id)
+                return
+            }
+            giveaway.messageID = msg.id
         }
-
-        if (!msg) {
-            throwGiveawaysError(GiveawaysErrorType.MessageNotDetermined, giveaway.id)
-            return
-        }
-        giveaway.messageID = msg.id
 
         await Database.set(giveaway).catch(noop)
         this.giveaways.emitter.emit("giveawayStart", giveaway)
@@ -108,7 +94,7 @@ export class GiveawaysManager {
         giveaway.winners = winners
 
         if (this.giveaways.options.useDefault) {
-            const msg = await this._fetchMessage(giveaway.channelID, giveaway.messageID)
+            const msg = await this.fetchMessage(giveaway.channelID, giveaway.messageID)
 
             if (msg) {
                 const plural = winners.length === 1 ? "" : "s"
@@ -172,7 +158,7 @@ export class GiveawaysManager {
         giveaway.winners = newWinners
 
         if (this.giveaways.options.useDefault) {
-            const msg = await this._fetchMessage(giveaway.channelID, giveaway.messageID)
+            const msg = await this.fetchMessage(giveaway.channelID, giveaway.messageID)
 
             if (msg) {
                 const plural = newWinners.length === 1 ? "" : "s"
@@ -221,6 +207,18 @@ export class GiveawaysManager {
     }
 
     /**
+     * Fetches the message of a giveaway.
+     * @param channelID The id of the channel to pull message from.
+     * @param messageID The id of the message to fetch.
+     * @returns 
+     */
+    public async fetchMessage(channelID: Snowflake, messageID?: Snowflake) {
+        if (!messageID) return
+        const chan = this.client.channels.cache.get(channelID) as TextChannel | undefined
+        return chan?.messages.cache.get(messageID) ?? await chan?.messages.fetch(messageID).catch(() => { })
+    }
+
+    /**
      * Randomly picks X amount of winners from the provided entries.
      * @param entries The entries to pick winners from.
      * @param amount The amount of winners to pick.
@@ -238,18 +236,6 @@ export class GiveawaysManager {
      */
     private _parseMentions(winners: Snowflake[]) {
         return winners.map((id) => `<@${id}>`).join(", ")
-    }
-
-    /**
-     * Fetches the message of a giveaway.
-     * @param channelID The id of the channel to pull message from.
-     * @param messageID The id of the message to fetch.
-     * @returns 
-     */
-    private async _fetchMessage(channelID: Snowflake, messageID?: Snowflake) {
-        if (!messageID) return
-        const chan = this.client.channels.cache.get(channelID) as TextChannel | undefined
-        return chan?.messages.cache.get(messageID) ?? await chan?.messages.fetch(messageID).catch(() => {})
     }
 
     /**

@@ -1,16 +1,25 @@
 import { Interpreter } from "@tryforge/forgescript"
 import { GiveawaysEventHandler } from "../handlers"
-import { Context } from "../structures"
+import { Context, Database } from "../structures"
 import { ForgeGiveaways } from ".."
+import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
 
 export default new GiveawaysEventHandler({
     name: "giveawayStart",
     version: "1.0.0",
     description: "This event is fired when a giveaway started",
-    listener: async function(gw) {
-        const commands = this.getExtension(ForgeGiveaways, true).commands.get("giveawayStart")
+    listener: async function (gw) {
+        const client = this.getExtension(ForgeGiveaways, true)
+        const commands = client.commands.get("giveawayStart")
+        const command = commands[0]
 
-        for (const command of commands) {
+        if (commands.length > 1) throw new Error(GiveawaysErrorType.MultipleStartEvents)
+        if (!command && client.options.useDefault === false) {
+            await Database.delete(gw.id)
+            throw new Error(GiveawaysErrorType.NoStartMessage)
+        }
+
+        if (command) {
             const ctx = new Context({
                 obj: gw,
                 command,
@@ -20,11 +29,24 @@ export default new GiveawaysEventHandler({
                         new: gw,
                     }
                 },
-                data: command.compiled.code
+                data: command.compiled.code,
+                allowTopLevelReturn: true
             })
 
             const result = await Interpreter.run(ctx)
-            console.log(result)
+
+            if (client.options.useDefault === false) {
+                const res = result?.trim()
+                const msg = await client.giveawaysManager.fetchMessage(gw.channelID, res)
+
+                if (msg) {
+                    gw.messageID = msg.id
+                    await Database.set(gw)
+                } else {
+                    throwGiveawaysError(GiveawaysErrorType.MessageNotDetermined, gw.id)
+                    await Database.delete(gw.id)
+                }
+            }
         }
     }
 })

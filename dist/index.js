@@ -20,6 +20,7 @@ const managers_1 = require("./managers");
 const handlers_1 = require("./handlers");
 const tiny_typed_emitter_1 = require("tiny-typed-emitter");
 const structures_1 = require("./structures");
+const error_1 = require("./functions/error");
 class ForgeGiveaways extends forgescript_1.ForgeExtension {
     options;
     name = "forge.giveaways";
@@ -41,6 +42,9 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
         new handlers_1.GiveawaysInteractionHandler(client);
         if (this.options.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
+            const commands = this.commands.get("giveawayStart");
+            if (commands.length > 1)
+                throw new Error(error_1.GiveawaysErrorType.MultipleStartEvents);
         }
         await new structures_1.Database(this.emitter).init();
         this.giveawaysManager = new managers_1.GiveawaysManager(this, client);

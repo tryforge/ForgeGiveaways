@@ -4,6 +4,7 @@ import { GiveawaysInteractionHandler, IGiveawayEvents } from "./handlers"
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
 import { Database } from "./structures"
+import { GiveawaysErrorType } from "./functions/error"
 
 export interface IForgeGiveawaysOptions {
     /**
@@ -15,11 +16,6 @@ export interface IForgeGiveawaysOptions {
      * Whether to use the default giveaway messages. Defaults to `true`.
      */
     useDefault?: boolean
-
-    /**
-     * The code to use as start message for giveaways. Only works if default messages are disabled.
-     */
-    startMessage?: string
 }
 
 export class ForgeGiveaways extends ForgeExtension {
@@ -48,6 +44,8 @@ export class ForgeGiveaways extends ForgeExtension {
 
         if (this.options.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
+            const commands = this.commands.get("giveawayStart")
+            if (commands.length > 1) throw new Error(GiveawaysErrorType.MultipleStartEvents)
         }
 
         await new Database(this.emitter).init()
