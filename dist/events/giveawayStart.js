@@ -12,14 +12,14 @@ exports.default = new handlers_1.GiveawaysEventHandler({
     listener: async function (gw) {
         const client = this.getExtension(__1.ForgeGiveaways, true);
         const commands = client.commands.get("giveawayStart");
+        const command = commands[0];
         if (commands.length > 1)
             throw new Error(error_1.GiveawaysErrorType.MultipleStartEvents);
-        if (!commands.length && client.options.useDefault === false) {
+        if (!command && !client.options.useDefault) {
             await structures_1.Database.delete(gw.id);
             throw new Error(error_1.GiveawaysErrorType.NoStartMessage);
         }
-        if (commands.length) {
-            const command = commands[0];
+        if (commands) {
             const ctx = new structures_1.Context({
                 obj: gw,
                 command,
@@ -33,7 +33,7 @@ exports.default = new handlers_1.GiveawaysEventHandler({
                 allowTopLevelReturn: true
             });
             const result = await forgescript_1.Interpreter.run(ctx);
-            if (client.options.useDefault === false) {
+            if (!client.options.useDefault) {
                 const res = result?.trim();
                 const msg = await client.giveawaysManager.fetchMessage(gw.channelID, res);
                 if (msg) {

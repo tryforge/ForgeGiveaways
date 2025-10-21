@@ -42,9 +42,9 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
         new handlers_1.GiveawaysInteractionHandler(client);
         if (this.options.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
-            const commands = this.commands.get("giveawayStart");
-            if (commands.length > 1)
-                throw new Error(error_1.GiveawaysErrorType.MultipleStartEvents);
+            if (!this.options.useDefault && !this.options.events.includes("giveawayStart")) {
+                throw new Error(error_1.GiveawaysErrorType.NoStartMessage);
+            }
         }
         await new structures_1.Database(this.emitter).init();
         this.giveawaysManager = new managers_1.GiveawaysManager(this, client);

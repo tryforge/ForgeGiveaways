@@ -11,15 +11,15 @@ export default new GiveawaysEventHandler({
     listener: async function (gw) {
         const client = this.getExtension(ForgeGiveaways, true)
         const commands = client.commands.get("giveawayStart")
+        const command = commands[0]
 
         if (commands.length > 1) throw new Error(GiveawaysErrorType.MultipleStartEvents)
-        if (!commands.length && client.options.useDefault === false) {
+        if (!command && !client.options.useDefault) {
             await Database.delete(gw.id)
             throw new Error(GiveawaysErrorType.NoStartMessage)
         }
 
-        if (commands.length) {
-            const command = commands[0]
+        if (commands) {
             const ctx = new Context({
                 obj: gw,
                 command,
@@ -35,7 +35,7 @@ export default new GiveawaysEventHandler({
 
             const result = await Interpreter.run(ctx)
 
-            if (client.options.useDefault === false) {
+            if (!client.options.useDefault) {
                 const res = result?.trim()
                 const msg = await client.giveawaysManager.fetchMessage(gw.channelID, res)
 

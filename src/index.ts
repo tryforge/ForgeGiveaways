@@ -44,8 +44,10 @@ export class ForgeGiveaways extends ForgeExtension {
 
         if (this.options.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
-            const commands = this.commands.get("giveawayStart")
-            if (commands.length > 1) throw new Error(GiveawaysErrorType.MultipleStartEvents)
+
+            if (!this.options.useDefault && !this.options.events.includes("giveawayStart")) {
+                throw new Error(GiveawaysErrorType.NoStartMessage)
+            }
         }
 
         await new Database(this.emitter).init()
