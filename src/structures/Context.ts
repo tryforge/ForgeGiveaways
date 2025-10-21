@@ -1,10 +1,10 @@
 import { Context as BaseContext, IContextCache } from "@tryforge/forgescript"
 import { ExtendedStates, IExtendedRunnable } from "../types"
-import { Snowflake } from "discord.js"
-import { Giveaway } from "./Giveaway"
+import { BaseInteraction, Interaction, Snowflake } from "discord.js"
+import { Giveaway, MongoGiveaway } from "./Giveaway"
 
 export interface IExtendedContextCache extends IContextCache {
-    giveaway: Giveaway | null
+    giveaway: Giveaway | MongoGiveaway | null
 }
 
 export interface IGiveawayRequirements {
@@ -31,13 +31,28 @@ export class Context extends BaseContext {
     }
 
     public get giveaway() {
-        return this.#cache.giveaway ??= this.obj instanceof Giveaway ? this.obj : null
+        return (this.#cache.giveaway ??=
+            "giveaway" in this.obj
+                ? this.obj.giveaway as Giveaway
+                : this.obj instanceof Giveaway
+                    ? this.obj
+                    : null)
+    }
+
+    public get interaction() {
+        return (this.#cache.interaction ??=
+            "baseInteraction" in this.obj
+                ? this.obj.baseInteraction as Interaction
+                : this.obj instanceof BaseInteraction
+                    ? this.obj as Interaction
+                    : null)
     }
 }
 
 declare module "@tryforge/forgescript" {
     interface Context {
-        giveaway?: Giveaway | null
+        giveaway: Giveaway | MongoGiveaway | null
+        interaction: Interaction | null
         extendedStates?: ExtendedStates
         requirements?: Partial<IGiveawayRequirements>
     }
