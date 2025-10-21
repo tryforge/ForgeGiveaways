@@ -12,14 +12,14 @@ exports.default = new handlers_1.GiveawaysEventHandler({
     listener: async function (gw) {
         const client = this.getExtension(__1.ForgeGiveaways, true);
         const commands = client.commands.get("giveawayStart");
-        const command = commands[0];
         if (commands.length > 1)
             throw new Error(error_1.GiveawaysErrorType.MultipleStartEvents);
-        if (!command && client.options.useDefault === false) {
+        if (!commands.length && client.options.useDefault === false) {
             await structures_1.Database.delete(gw.id);
             throw new Error(error_1.GiveawaysErrorType.NoStartMessage);
         }
-        if (command) {
+        if (commands.length) {
+            const command = commands[0];
             const ctx = new structures_1.Context({
                 obj: gw,
                 command,
