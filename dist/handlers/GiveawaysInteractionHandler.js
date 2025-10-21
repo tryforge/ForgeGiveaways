@@ -34,7 +34,7 @@ class GiveawaysInteractionHandler {
                     content: `❌ You do not meet the requirements to enter this giveaway!`,
                     flags: discord_js_1.MessageFlags.Ephemeral,
                 }).catch(noop_1.default);
-                client.emitter.emit("giveawayEntryRevoked", interaction, giveaway);
+                client.emitter.emit("giveawayEntryRevoked", giveaway, interaction);
                 return;
             }
             const oldGiveaway = giveaway.clone();
@@ -42,12 +42,12 @@ class GiveawaysInteractionHandler {
             if (entered) {
                 giveaway.removeEntry(member.user.id);
                 await structures_1.Database.set(giveaway).catch(noop_1.default);
-                client.emitter.emit("giveawayEntryRemove", interaction, oldGiveaway, giveaway);
+                client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway, interaction);
             }
             else {
                 giveaway.addEntry(member.user.id);
                 await structures_1.Database.set(giveaway).catch(noop_1.default);
-                client.emitter.emit("giveawayEntryAdd", interaction, oldGiveaway, giveaway);
+                client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, interaction);
             }
             await interaction.reply({
                 content: `✅ You have successfully ${entered ? "left" : "joined"} this giveaway.`,

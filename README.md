@@ -58,7 +58,7 @@ ForgeGiveaways is a lightweight, flexible, and reliable extension for managing g
     client.login("YourToken")
     ```
 
-> [!INFO]
+> [!NOTE]
 > View all available client options [here](https://github.com/tryforge/ForgeGiveaways/blob/main/src/index.ts#L8).
 
 <h3 align="center">Custom Messages</h3><hr>
@@ -71,8 +71,8 @@ module.exports = {
   type: "giveawayEnd",
   code: `
   $sendMessage[$giveawayChannelID;
-      $reply[$giveawayChannelID;$giveawayMessageID;true]
-      🏆 **Winners:** <@$newGiveaway[winners;>, <@]>
+    $reply[$giveawayChannelID;$giveawayMessageID;true]
+    🏆 **Winners:** <@$newGiveaway[winners;>, <@]>
   ]
   `
 }

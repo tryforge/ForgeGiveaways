@@ -8,14 +8,11 @@ exports.default = new handlers_1.GiveawaysEventHandler({
     name: "giveawayEntryRevoked",
     version: "1.0.0",
     description: "This event is fired when a giveaway entry is revoked",
-    listener: async function (int, gw) {
+    listener: async function (gw, int) {
         const commands = this.getExtension(__1.ForgeGiveaways, true).commands.get("giveawayEntryRevoked");
         for (const command of commands) {
             const ctx = new structures_1.Context({
-                obj: {
-                    interaction: int,
-                    giveaway: gw
-                },
+                obj: int,
                 command,
                 client: this,
                 states: {
