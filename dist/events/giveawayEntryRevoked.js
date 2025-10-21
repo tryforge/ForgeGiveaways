@@ -13,7 +13,7 @@ exports.default = new handlers_1.GiveawaysEventHandler({
         for (const command of commands) {
             const ctx = new structures_1.Context({
                 obj: {
-                    baseInteraction: int,
+                    interaction: int,
                     giveaway: gw
                 },
                 command,
