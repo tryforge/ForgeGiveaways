@@ -65,7 +65,30 @@ ForgeGiveaways is a lightweight, flexible, and reliable extension for managing g
 
 You can disable the default messages by setting `useDefault: false` in the client options, and override them with custom messages emitted through events. Use desired functions to retrieve information about the current giveaway.
 
-##### Example
+> [!WARNING]
+> Only **one** `giveawayStart` event is allowed per client instance!
+
+##### Examples
+```js
+module.exports = {
+  type: "giveawayStart",
+  code: `
+  $return[
+    $sendMessage[$giveawayChannelID;
+      $addContainer[
+        $addTextDisplay[### 🎉 Giveaway 🎉]
+        $addSeparator
+        $addTextDisplay[**Prize:** $giveawayPrize\n**Winners:** $giveawayWinnersCount]
+        $addSeparator
+        $addActionRow
+        $addButton[giveawayEntry-$giveawayID;Join;Secondary;🎉]
+      ;Green]
+    ;true]
+  ]
+  `
+}
+```
+
 ```js
 module.exports = {
   type: "giveawayEnd",
@@ -80,4 +103,14 @@ module.exports = {
 
 <h3 align="center">Handling Interactions</h3><hr>
 
- 
+ ```js
+module.exports = {
+  type: "giveawayEntryAdd",
+  code: `
+  $interactionReply[
+    $ephemeral
+    You have joined this giveaway as **$ordinal[$@[,]giveawayEntries]** participant! 
+  ]
+  `
+}
+```

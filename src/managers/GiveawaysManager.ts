@@ -35,10 +35,11 @@ export class GiveawaysManager {
 
         if (this.giveaways.options.useDefault) {
             const chan = this.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
+            const roles = giveaway.requirements?.requiredRoles?.map((id) => `<@&${id}>`).join(", ")
 
             const embed = new EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
-                .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}`)
+                .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}${roles ? `\n\n📌 **Required Roles:** ${roles}` : ""}`)
                 .setFields(
                     { name: "Ends", value: `${time(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true },
                     { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true },
@@ -182,6 +183,7 @@ export class GiveawaysManager {
         return giveaway
     }
 
+    // WIP
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
@@ -201,7 +203,7 @@ export class GiveawaysManager {
         if (this.giveaways.options.useDefault) { }
 
         await Database.set(giveaway).catch(noop)
-        this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
+        // this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
 
         return giveaway
     }

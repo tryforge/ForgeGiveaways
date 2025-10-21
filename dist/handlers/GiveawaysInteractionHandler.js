@@ -28,13 +28,19 @@ class GiveawaysInteractionHandler {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.UnknownGiveaway, id);
                 return;
             }
+            if (giveaway.hasEnded) {
+                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.GiveawayNotActive, id);
+                return;
+            }
             const member = interaction.member;
             if (!giveaway.canEnter(member)) {
-                await interaction.reply({
-                    content: `❌ You do not meet the requirements to enter this giveaway!`,
-                    flags: discord_js_1.MessageFlags.Ephemeral,
-                }).catch(noop_1.default);
                 client.emitter.emit("giveawayEntryRevoked", giveaway, interaction);
+                if (client.options.useDefault) {
+                    await interaction.reply({
+                        content: `❌ You do not meet the requirements to enter this giveaway!`,
+                        flags: discord_js_1.MessageFlags.Ephemeral,
+                    }).catch(noop_1.default);
+                }
                 return;
             }
             const oldGiveaway = giveaway.clone();
@@ -49,10 +55,12 @@ class GiveawaysInteractionHandler {
                 await structures_1.Database.set(giveaway).catch(noop_1.default);
                 client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, interaction);
             }
-            await interaction.reply({
-                content: `✅ You have successfully ${entered ? "left" : "joined"} this giveaway.`,
-                flags: discord_js_1.MessageFlags.Ephemeral,
-            }).catch(noop_1.default);
+            if (client.options.useDefault) {
+                await interaction.reply({
+                    content: `✅ You have successfully ${entered ? "left" : "joined"} this giveaway.`,
+                    flags: discord_js_1.MessageFlags.Ephemeral,
+                }).catch(noop_1.default);
+            }
         });
     }
 }

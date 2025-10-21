@@ -25,9 +25,10 @@ class GiveawaysManager {
         const giveaway = new structures_1.Database.entities.Giveaway(options);
         if (this.giveaways.options.useDefault) {
             const chan = this.client.channels.cache.get(giveaway.channelID);
+            const roles = giveaway.requirements?.requiredRoles?.map((id) => `<@&${id}>`).join(", ");
             const embed = new discord_js_1.EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
-                .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}`)
+                .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}${roles ? `\n\n📌 **Required Roles:** ${roles}` : ""}`)
                 .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
                 .setFooter({ text: "Click the button below to join!" })
                 .setTimestamp()
@@ -145,6 +146,7 @@ class GiveawaysManager {
         this.giveaways.emitter.emit("giveawayReroll", oldGiveaway, giveaway);
         return giveaway;
     }
+    // WIP
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
@@ -167,7 +169,7 @@ class GiveawaysManager {
             giveaway.requirements = options.requirements;
         if (this.giveaways.options.useDefault) { }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
-        this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway);
+        // this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
         return giveaway;
     }
     /**

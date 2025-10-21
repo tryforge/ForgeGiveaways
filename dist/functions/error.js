@@ -10,6 +10,7 @@ var GiveawaysErrorType;
     GiveawaysErrorType["UnknownGiveaway"] = "Could not find the giveaway with ID \"$1\"";
     GiveawaysErrorType["NoStartMessage"] = "No start message for giveaways has been configured, giveaway terminated";
     GiveawaysErrorType["MultipleStartEvents"] = "Detected multiple giveawayStart events, only one is allowed per client instance";
+    GiveawaysErrorType["GiveawayNotActive"] = "Giveaway with ID \"$1\" has already ended and can no longer be entered";
 })(GiveawaysErrorType || (exports.GiveawaysErrorType = GiveawaysErrorType = {}));
 /**
  * Throws a giveaways error in the console.

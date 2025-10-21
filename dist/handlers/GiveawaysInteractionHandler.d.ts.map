@@ -1,1 +1,1 @@
-{"version":3,"file":"GiveawaysInteractionHandler.d.ts","sourceRoot":"","sources":["../../src/handlers/GiveawaysInteractionHandler.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,uBAAuB,CAAA;AAOnD,qBAAa,2BAA2B;IACjB,OAAO,CAAC,QAAQ,CAAC,MAAM;gBAAN,MAAM,EAAE,WAAW;YAIzC,SAAS;CA4C1B"}
+{"version":3,"file":"GiveawaysInteractionHandler.d.ts","sourceRoot":"","sources":["../../src/handlers/GiveawaysInteractionHandler.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,uBAAuB,CAAA;AAOnD,qBAAa,2BAA2B;IACjB,OAAO,CAAC,QAAQ,CAAC,MAAM;gBAAN,MAAM,EAAE,WAAW;YAIzC,SAAS;CAsD1B"}

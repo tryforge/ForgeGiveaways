@@ -7,6 +7,7 @@ export enum GiveawaysErrorType {
     UnknownGiveaway = `Could not find the giveaway with ID "$1"`,
     NoStartMessage = `No start message for giveaways has been configured, giveaway terminated`,
     MultipleStartEvents = `Detected multiple giveawayStart events, only one is allowed per client instance`,
+    GiveawayNotActive = `Giveaway with ID "$1" has already ended and can no longer be entered`,
 }
 
 /**

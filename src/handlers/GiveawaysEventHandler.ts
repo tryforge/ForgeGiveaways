@@ -7,7 +7,6 @@ export interface IGiveawayEvents {
     databaseConnect: []
     giveawayStart: [Giveaway]
     giveawayEnd: [Giveaway]
-    giveawayEdit: [Giveaway, Giveaway]
     giveawayReroll: [Giveaway, Giveaway]
     giveawayEntryAdd: [Giveaway, Giveaway, Interaction]
     giveawayEntryRemove: [Giveaway, Giveaway, Interaction]

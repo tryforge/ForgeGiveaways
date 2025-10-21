@@ -19,19 +19,27 @@ export class GiveawaysInteractionHandler {
 
             const client = this.client.getExtension(ForgeGiveaways, true)
             const giveaway = await Database.get(id)
+
             if (!giveaway) {
                 throwGiveawaysError(GiveawaysErrorType.UnknownGiveaway, id)
+                return
+            }
+
+            if (giveaway.hasEnded) {
+                throwGiveawaysError(GiveawaysErrorType.GiveawayNotActive, id)
                 return
             }
 
             const member = interaction.member
 
             if (!giveaway.canEnter(member)) {
-                await interaction.reply({
-                    content: `❌ You do not meet the requirements to enter this giveaway!`,
-                    flags: MessageFlags.Ephemeral,
-                }).catch(noop)
                 client.emitter.emit("giveawayEntryRevoked", giveaway, interaction)
+                if (client.options.useDefault) {
+                    await interaction.reply({
+                        content: `❌ You do not meet the requirements to enter this giveaway!`,
+                        flags: MessageFlags.Ephemeral,
+                    }).catch(noop)
+                }
                 return
             }
 
@@ -48,10 +56,12 @@ export class GiveawaysInteractionHandler {
                 client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, interaction)
             }
 
-            await interaction.reply({
-                content: `✅ You have successfully ${entered ? "left" : "joined"} this giveaway.`,
-                flags: MessageFlags.Ephemeral,
-            }).catch(noop)
+            if (client.options.useDefault) {
+                await interaction.reply({
+                    content: `✅ You have successfully ${entered ? "left" : "joined"} this giveaway.`,
+                    flags: MessageFlags.Ephemeral,
+                }).catch(noop)
+            }
         })
     }
 }
