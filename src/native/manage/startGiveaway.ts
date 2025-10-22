@@ -35,7 +35,7 @@ export default new NativeFunction({
         },
         {
             name: "duration",
-            description: "The duration for this giveaway.",
+            description: "The duration for this giveaway",
             rest: false,
             required: true,
             type: ArgType.Time

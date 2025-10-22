@@ -200,7 +200,7 @@ export class GiveawaysManager {
         if (options.hostID) giveaway.hostID = options.hostID
         if (options.requirements) giveaway.requirements = options.requirements
 
-        if (this.giveaways.options.useDefault) { }
+        if (this.giveaways.options.useDefault) {}
 
         await Database.set(giveaway).catch(noop)
         // this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
@@ -217,7 +217,7 @@ export class GiveawaysManager {
     public async fetchMessage(channelID: Snowflake, messageID?: Snowflake) {
         if (!messageID) return
         const chan = this.client.channels.cache.get(channelID) as TextChannel | undefined
-        return chan?.messages.cache.get(messageID) ?? await chan?.messages.fetch(messageID).catch(() => { })
+        return chan?.messages.cache.get(messageID) ?? await chan?.messages.fetch(messageID).catch(() => {})
     }
 
     /**

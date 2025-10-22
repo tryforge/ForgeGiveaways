@@ -1,5 +1,5 @@
 <!DOCTYPE html><html class="default" lang="en"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@tryforge/forge.giveaways</title><meta name="description" content="Documentation for @tryforge/forge.giveaways"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div><div class="field"><div id="tsd-toolbar-links"></div></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@tryforge/forge.giveaways</a></div><div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>@tryforge/forge.giveaways</h1></div><div class="tsd-panel tsd-typography"><div align="center">
-<img height="150" width="150" src="https://github.com/user-attachments/assets/9969c07b-2608-4ddd-930b-487485c07d80" alt="ForgeGiveaways">
+<img height="150" width="150" src="https://github.com/user-attachments/assets/79444067-4435-42de-b913-0a36ab66fe64" alt="ForgeGiveaways">
 <a id="md:forgegiveaways" class="tsd-anchor"></a><h1 class="tsd-anchor-link">ForgeGiveaways<a href="#md:forgegiveaways" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1><p>ForgeGiveaways is a lightweight, flexible, and reliable extension for managing giveaways. Fully customizable features let you automate, track, and control every giveaway seamlessly.</p>
 <p><a href="https://github.com/tryforge/ForgeGiveaways/"><img src="https://img.shields.io/github/package-json/v/tryforge/ForgeGiveaways/main?label=@tryforge/forge.giveaways&color=5c16d4" alt="@tryforge/forge.giveaways"></a>
 <a href="https://github.com/tryforge/ForgeScript/"><img src="https://img.shields.io/github/package-json/v/tryforge/ForgeScript/main?label=@tryforge/forgescript&color=5c16d4" alt="@tryforge/forgescript"></a>
@@ -14,7 +14,7 @@
 </ol>
 <h3 align="center">Installation</h3><hr>
 <blockquote>
-<p>[!WARNING]
+<p>⚠️ <strong>Warning</strong><br>
 <strong>ForgeGiveaways</strong> requires the extension <a href="https://docs.botforge.org/p/ForgeDB/" target="_blank" class="external"><strong>ForgeDB</strong></a> installed in order to operate.</p>
 </blockquote>
 <ol>
@@ -32,13 +32,13 @@
 </li>
 </ol>
 <blockquote>
-<p>[!NOTE]
-View all available client options <a href="https://github.com/tryforge/ForgeGiveaways/blob/main/src/index.ts#L8" target="_blank" class="external">here</a>.</p>
+<p>ℹ️ <strong>Note</strong><br>
+View all available client options <a href="https://tryforge.github.io/ForgeGiveaways/interfaces/IForgeGiveawaysOptions.html" target="_blank" class="external">here</a>.</p>
 </blockquote>
 <h3 align="center">Custom Messages</h3><hr>
 <p>You can disable the default messages by setting <code>useDefault: false</code> in the client options, and override them with custom messages emitted through events. Use desired functions to retrieve information about the current giveaway.</p>
 <blockquote>
-<p>[!WARNING]
+<p>⚠️ <strong>Warning</strong><br>
 Only <strong>one</strong> <code>giveawayStart</code> event is allowed per client instance!</p>
 </blockquote>
 <a id="md:examples" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Examples<a href="#md:examples" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p>When using custom start messages, your event <strong>must return the message ID</strong> of the sent giveaway message. To ensure that only the message ID is returned (and no additional text), use the <code>$return[]</code> function.</p>
