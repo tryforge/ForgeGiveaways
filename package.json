@@ -1,5 +1,5 @@
 {
-  "name": "forge.giveaways",
+  "name": "@tryforge/forge.giveaways",
   "version": "1.0.0",
   "description": "ForgeGiveaways is a lightweight, flexible, and reliable extension for managing giveaways. Fully customizable features let you automate, track, and control every giveaway seamlessly.",
   "main": "dist/index.js",
