@@ -1,0 +1,29 @@
+{
+  "name": "@tryforge/forge.giveaways",
+  "version": "1.0.1",
+  "description": "ForgeGiveaways is a lightweight, flexible, and reliable extension for managing giveaways. Fully customizable features let you automate, track, and control every giveaway seamlessly.",
+  "main": "dist/index.js",
+  "scripts": {
+    "docgen": "tsc && typedoc src/index.ts && node dist/docgen",
+    "commit": "npm run docgen && node dist/commit",
+    "test": "tsc && node dist/__tests__/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tryforge/ForgeGiveaways.git"
+  },
+  "keywords": [],
+  "author": "itsnicky.",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@tryforge/forge.db": "^2.1.1",
+    "@tryforge/forgescript": "^2.5.0",
+    "discord.js": "^14.23.2",
+    "typedoc": "^0.26.11",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "tiny-typed-emitter": "^2.1.0",
+    "typeorm": "^0.3.27"
+  }
+}
