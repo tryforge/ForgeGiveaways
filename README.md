@@ -68,7 +68,9 @@ You can disable the default messages by setting `useDefault: false` in the clien
 > [!WARNING]
 > Only **one** `giveawayStart` event is allowed per client instance!
 
-##### Examples
+#### Examples
+When using custom start messages, your event **must return the message ID** of the sent giveaway message. To ensure that only the message ID is returned (and no additional text), use the `$return[]` function.
+
 ```js
 module.exports = {
   type: "giveawayStart",
@@ -103,13 +105,35 @@ module.exports = {
 
 <h3 align="center">Handling Interactions</h3><hr>
 
- ```js
+The custom ID for giveaway entry buttons must follow this exact format:
+```
+giveawayEntry-GIVEAWAY_ID  
+```
+<sub>*Replace "GIVEAWAY_ID" with the actual ID of the giveaway. See the `giveawayStart` example above for reference.*</sub>
+
+\
+Through the entry-related events, you can send custom responses directly to the current interaction context.
+
+#### Examples
+```js
 module.exports = {
   type: "giveawayEntryAdd",
   code: `
   $interactionReply[
     $ephemeral
     You have joined this giveaway as **$ordinal[$@[,]giveawayEntries]** participant! 
+  ]
+  `
+}
+```
+
+```js
+module.exports = {
+  type: "giveawayEntryRemove",
+  code: `
+  $interactionReply[
+    $ephemeral
+    You have left this giveaway! 
   ]
   `
 }
