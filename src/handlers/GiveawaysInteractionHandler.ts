@@ -33,7 +33,7 @@ export class GiveawaysInteractionHandler {
             const member = interaction.member
 
             if (!giveaway.canEnter(member)) {
-                client.emitter.emit("giveawayEntryRevoked", giveaway, interaction)
+                client.emitter.emit("giveawayEntryRevoke", giveaway, interaction)
                 if (client.options.useDefault) {
                     await interaction.reply({
                         content: `❌ You do not meet the requirements to enter this giveaway!`,

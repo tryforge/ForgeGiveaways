@@ -13,8 +13,10 @@ exports.default = new handlers_1.GiveawaysEventHandler({
         const client = this.getExtension(__1.ForgeGiveaways, true);
         const commands = client.commands.get("giveawayStart");
         const command = commands[0];
-        if (commands.length > 1)
+        if (commands.length > 1) {
+            await structures_1.Database.delete(gw.id);
             throw new Error(error_1.GiveawaysErrorType.MultipleStartEvents);
+        }
         if (!command && !client.options.useDefault) {
             await structures_1.Database.delete(gw.id);
             throw new Error(error_1.GiveawaysErrorType.NoStartEvent);
