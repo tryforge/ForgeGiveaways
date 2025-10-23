@@ -1,6 +1,6 @@
 <div align="center">
 
-<img height="150" width="150" src="https://github.com/user-attachments/assets/79444067-4435-42de-b913-0a36ab66fe64" alt="ForgeGiveaways">
+<img height="150" width="150" src="https://raw.githubusercontent.com/tryforge/ForgeGiveaways/main/assets/ForgeGiveaways.png" alt="ForgeGiveaways">
 
 # ForgeGiveaways
 ForgeGiveaways is a lightweight, flexible, and reliable extension for managing giveaways. Fully customizable features let you automate, track, and control every giveaway seamlessly.
