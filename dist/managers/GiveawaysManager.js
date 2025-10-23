@@ -119,8 +119,9 @@ class GiveawaysManager {
             return;
         const oldGiveaway = giveaway.clone();
         amount ??= giveaway.winnersCount;
-        const { entries, winners } = giveaway;
-        const eligibleEntries = unique ? entries.filter((e) => !winners.includes(e)) : entries;
+        const { entries, winners, previousWinners } = giveaway;
+        giveaway.previousWinners = [...new Set([...previousWinners || [], ...winners])];
+        const eligibleEntries = unique ? entries.filter((e) => !giveaway.previousWinners.includes(e)) : entries;
         let newWinners = this._pickWinners(eligibleEntries, amount);
         if (!newWinners.length)
             newWinners = this._pickWinners(entries, amount);

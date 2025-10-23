@@ -7,6 +7,7 @@ export interface IGiveaway extends IGiveawayStartOptions {
     messageID?: Snowflake;
     entries: Snowflake[];
     winners: Snowflake[];
+    previousWinners?: Snowflake[];
 }
 export declare class Giveaway implements IGiveaway {
     /**
@@ -46,6 +47,10 @@ export declare class Giveaway implements IGiveaway {
      */
     channelID: Snowflake;
     /**
+     * The id of the message this giveaway is associated with.
+     */
+    messageID?: Snowflake;
+    /**
      * The user entries for this giveaway.
      */
     entries: Snowflake[];
@@ -54,13 +59,13 @@ export declare class Giveaway implements IGiveaway {
      */
     winners: Snowflake[];
     /**
+     * The previous winners of this giveaway.
+     */
+    previousWinners?: Snowflake[];
+    /**
      * The requirements all participants have to meet for entering this giveaway.
      */
     requirements?: IGiveawayStartOptions["requirements"];
-    /**
-     * The id of the message this giveaway is associated with.
-     */
-    messageID?: Snowflake;
     constructor(options?: Partial<IGiveawayStartOptions> & {
         id?: Snowflake;
     });

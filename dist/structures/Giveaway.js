@@ -50,6 +50,10 @@ let Giveaway = class Giveaway {
      */
     channelID;
     /**
+     * The id of the message this giveaway is associated with.
+     */
+    messageID;
+    /**
      * The user entries for this giveaway.
      */
     entries;
@@ -58,13 +62,13 @@ let Giveaway = class Giveaway {
      */
     winners;
     /**
+     * The previous winners of this giveaway.
+     */
+    previousWinners;
+    /**
      * The requirements all participants have to meet for entering this giveaway.
      */
     requirements;
-    /**
-     * The id of the message this giveaway is associated with.
-     */
-    messageID;
     constructor(options) {
         this.id = options?.id ?? discord_js_1.SnowflakeUtil.generate().toString();
         this.prize = options?.prize ?? "";
@@ -177,6 +181,10 @@ __decorate([
     __metadata("design:type", String)
 ], Giveaway.prototype, "channelID", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Giveaway.prototype, "messageID", void 0);
+__decorate([
     (0, typeorm_1.Column)("simple-array"),
     __metadata("design:type", Array)
 ], Giveaway.prototype, "entries", void 0);
@@ -185,13 +193,13 @@ __decorate([
     __metadata("design:type", Array)
 ], Giveaway.prototype, "winners", void 0);
 __decorate([
+    (0, typeorm_1.Column)("simple-array"),
+    __metadata("design:type", Array)
+], Giveaway.prototype, "previousWinners", void 0);
+__decorate([
     (0, typeorm_1.Column)("simple-json", { nullable: true }),
     __metadata("design:type", Object)
 ], Giveaway.prototype, "requirements", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Giveaway.prototype, "messageID", void 0);
 exports.Giveaway = Giveaway = __decorate([
     (0, typeorm_1.Entity)(),
     __metadata("design:paramtypes", [Object])

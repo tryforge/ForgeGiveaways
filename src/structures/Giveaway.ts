@@ -9,6 +9,7 @@ export interface IGiveaway extends IGiveawayStartOptions {
     messageID?: Snowflake
     entries: Snowflake[]
     winners: Snowflake[]
+    previousWinners?: Snowflake[]
 }
 
 @Entity()
@@ -68,6 +69,12 @@ export class Giveaway implements IGiveaway {
     public channelID: Snowflake
 
     /**
+     * The id of the message this giveaway is associated with.
+     */
+    @Column({ nullable: true })
+    public messageID?: Snowflake
+
+    /**
      * The user entries for this giveaway.
      */
     @Column("simple-array")
@@ -80,16 +87,16 @@ export class Giveaway implements IGiveaway {
     public winners: Snowflake[]
 
     /**
+     * The previous winners of this giveaway.
+     */
+    @Column("simple-array")
+    public previousWinners?: Snowflake[]
+
+    /**
      * The requirements all participants have to meet for entering this giveaway.
      */
     @Column("simple-json", { nullable: true })
     public requirements?: IGiveawayStartOptions["requirements"]
-
-    /**
-     * The id of the message this giveaway is associated with.
-     */
-    @Column({ nullable: true })
-    public messageID?: Snowflake
 
     constructor(options?: Partial<IGiveawayStartOptions> & { id?: Snowflake }) {
         this.id = options?.id ?? SnowflakeUtil.generate().toString()
