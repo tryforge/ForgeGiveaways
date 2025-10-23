@@ -89,7 +89,7 @@ export class Giveaway implements IGiveaway {
     /**
      * The previous winners of this giveaway.
      */
-    @Column("simple-array")
+    @Column("simple-array", { nullable: true })
     public previousWinners?: Snowflake[]
 
     /**

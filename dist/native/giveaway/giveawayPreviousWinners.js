@@ -8,6 +8,7 @@ const pullGiveaway_1 = __importDefault(require("../../functions/pullGiveaway"));
 const array_1 = __importDefault(require("../../functions/array"));
 exports.default = new forgescript_1.NativeFunction({
     name: "$giveawayPreviousWinners",
+    version: "1.1.0",
     description: "Returns the previous winners of a giveaway",
     unwrap: true,
     brackets: false,

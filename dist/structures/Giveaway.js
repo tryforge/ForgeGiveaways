@@ -193,7 +193,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Giveaway.prototype, "winners", void 0);
 __decorate([
-    (0, typeorm_1.Column)("simple-array"),
+    (0, typeorm_1.Column)("simple-array", { nullable: true }),
     __metadata("design:type", Array)
 ], Giveaway.prototype, "previousWinners", void 0);
 __decorate([
