@@ -46,7 +46,7 @@ export class GiveawaysManager {
                     { name: "Ends", value: `${time(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true },
                     { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true },
                 )
-                .setFooter({ text: "Click the button below to join!" })
+                .setFooter({ text: `Click the ${useReactions ? "reaction" : "button"} below to join!` })
                 .setTimestamp()
                 .setColor("Green")
 

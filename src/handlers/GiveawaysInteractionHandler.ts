@@ -13,24 +13,23 @@ export class GiveawaysInteractionHandler {
     private async _register() {
         this.client.on("interactionCreate", async (interaction) => {
             if (!interaction.isButton() || !interaction.inGuild()) return
+            const { customId, channelId, message, member } = interaction
 
-            const [action, id] = interaction.customId.split("-")
+            const [action] = customId.split("-")
             if (action !== "giveawayEntry") return
 
             const client = this.client.getExtension(ForgeGiveaways, true)
-            const giveaway = await Database.get(id)
+            const giveaway = await Database.find({ channelID: channelId, messageID: message.id }, 1).then((x) => x[0])
 
             if (!giveaway) {
-                throwGiveawaysError(GiveawaysErrorType.UnknownGiveaway, id)
+                throwGiveawaysError(GiveawaysErrorType.UnknownGiveaway, message.id)
                 return
             }
 
             if (giveaway.hasEnded) {
-                throwGiveawaysError(GiveawaysErrorType.GiveawayNotActive, id)
+                throwGiveawaysError(GiveawaysErrorType.GiveawayNotActive, giveaway.id)
                 return
             }
-
-            const member = interaction.member
 
             if (!giveaway.canEnter(member)) {
                 client.emitter.emit("giveawayEntryRevoke", giveaway, interaction)

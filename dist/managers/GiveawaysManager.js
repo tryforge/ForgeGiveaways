@@ -33,7 +33,7 @@ class GiveawaysManager {
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}${roles ? `\n\n📌 **Required Roles:** ${roles}` : ""}`)
                 .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
-                .setFooter({ text: "Click the button below to join!" })
+                .setFooter({ text: `Click the ${useReactions ? "reaction" : "button"} below to join!` })
                 .setTimestamp()
                 .setColor("Green");
             if (!useReactions) {

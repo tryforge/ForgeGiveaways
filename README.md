@@ -83,7 +83,7 @@ module.exports = {
         $addTextDisplay[**Prize:** $giveawayPrize\n**Winners:** $giveawayWinnersCount]
         $addSeparator
         $addActionRow
-        $addButton[giveawayEntry-$giveawayID;Join;Secondary;🎉]
+        $addButton[giveawayEntry;Join;Secondary;🎉]
       ;Green]
     ;true]
   ]
@@ -107,9 +107,9 @@ module.exports = {
 
 The custom ID for giveaway entry buttons must follow this exact format:
 ```
-giveawayEntry-GIVEAWAY_ID  
+giveawayEntry  
 ```
-<sub>*Replace "GIVEAWAY_ID" with the actual ID of the giveaway. See the `giveawayStart` example above for reference.*</sub>
+<sub>*See the `giveawayStart` example above for reference.*</sub>
 
 \
 Through the entry-related events, you can send custom responses directly to the current interaction context.

@@ -19,20 +19,20 @@ class GiveawaysInteractionHandler {
         this.client.on("interactionCreate", async (interaction) => {
             if (!interaction.isButton() || !interaction.inGuild())
                 return;
-            const [action, id] = interaction.customId.split("-");
+            const { customId, channelId, message, member } = interaction;
+            const [action] = customId.split("-");
             if (action !== "giveawayEntry")
                 return;
             const client = this.client.getExtension(__1.ForgeGiveaways, true);
-            const giveaway = await structures_1.Database.get(id);
+            const giveaway = await structures_1.Database.find({ channelID: channelId, messageID: message.id }, 1).then((x) => x[0]);
             if (!giveaway) {
-                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.UnknownGiveaway, id);
+                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.UnknownGiveaway, message.id);
                 return;
             }
             if (giveaway.hasEnded) {
-                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.GiveawayNotActive, id);
+                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.GiveawayNotActive, giveaway.id);
                 return;
             }
-            const member = interaction.member;
             if (!giveaway.canEnter(member)) {
                 client.emitter.emit("giveawayEntryRevoke", giveaway, interaction);
                 if (client.options.useDefault) {
