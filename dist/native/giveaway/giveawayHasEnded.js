@@ -8,7 +8,7 @@ const pullGiveaway_1 = __importDefault(require("../../functions/pullGiveaway"));
 exports.default = new forgescript_1.NativeFunction({
     name: "$giveawayHasEnded",
     version: "1.0.0",
-    description: "Returns whether the giveaway has ended",
+    description: "Returns whether a giveaway has ended",
     unwrap: true,
     brackets: false,
     args: [

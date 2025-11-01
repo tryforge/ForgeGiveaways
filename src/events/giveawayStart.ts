@@ -7,7 +7,7 @@ import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
 export default new GiveawaysEventHandler({
     name: "giveawayStart",
     version: "1.0.0",
-    description: "This event is fired when a giveaway started",
+    description: "This event is fired when a giveaway has started",
     listener: async function (gw) {
         const client = this.getExtension(ForgeGiveaways, true)
         const commands = client.commands.get("giveawayStart")

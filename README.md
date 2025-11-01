@@ -58,8 +58,8 @@ ForgeGiveaways is a lightweight, flexible, and reliable extension for managing g
     client.login("YourToken")
     ```
 
-> ℹ️ **Note**\
-> View all available client options [here](https://tryforge.github.io/ForgeGiveaways/interfaces/IForgeGiveawaysOptions.html).
+    > ℹ️ **Note**\
+    > View all available client options [here](https://tryforge.github.io/ForgeGiveaways/interfaces/IForgeGiveawaysOptions.html).
 
 <h3 align="center">Custom Messages</h3><hr>
 

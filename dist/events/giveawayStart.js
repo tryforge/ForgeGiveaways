@@ -8,7 +8,7 @@ const error_1 = require("../functions/error");
 exports.default = new handlers_1.GiveawaysEventHandler({
     name: "giveawayStart",
     version: "1.0.0",
-    description: "This event is fired when a giveaway started",
+    description: "This event is fired when a giveaway has started",
     listener: async function (gw) {
         const client = this.getExtension(__1.ForgeGiveaways, true);
         const commands = client.commands.get("giveawayStart");

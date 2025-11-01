@@ -21,11 +21,12 @@ const handlers_1 = require("./handlers");
 const tiny_typed_emitter_1 = require("tiny-typed-emitter");
 const structures_1 = require("./structures");
 const error_1 = require("./functions/error");
+const package_json_1 = require("../package.json");
 class ForgeGiveaways extends forgescript_1.ForgeExtension {
     options;
     name = "forge.giveaways";
-    description = require("../package.json").description;
-    version = require("../package.json").version;
+    description = package_json_1.description;
+    version = package_json_1.version;
     requireExtensions = ["forge.db"];
     emitter = new tiny_typed_emitter_1.TypedEmitter();
     giveawaysManager;
@@ -39,7 +40,10 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
         this.commands = new managers_1.GiveawaysCommandManager(client);
         forgescript_1.EventManager.load("ForgeGiveawaysEvents", __dirname + "/events");
         this.load(__dirname + "/native");
-        new handlers_1.GiveawaysInteractionHandler(client);
+        if (this.options.useReactions)
+            new handlers_1.GiveawaysReactionHandler(client);
+        else
+            new handlers_1.GiveawaysInteractionHandler(client);
         if (this.options.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
             if (!this.options.useDefault && !this.options.events.includes("giveawayStart")) {
@@ -47,7 +51,7 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
             }
         }
         await new structures_1.Database(this.emitter).init();
-        this.giveawaysManager = new managers_1.GiveawaysManager(this, client);
+        this.giveawaysManager = new managers_1.GiveawaysManager(client);
     }
 }
 exports.ForgeGiveaways = ForgeGiveaways;

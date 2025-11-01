@@ -12,12 +12,16 @@ export interface IForgeGiveawaysOptions {
      * Whether to use the default giveaway messages. Defaults to `true`.
      */
     useDefault?: boolean;
+    /**
+     * Whether to use reactions for entering the giveaways. Defaults to `false`.
+     */
+    useReactions?: boolean;
 }
 export declare class ForgeGiveaways extends ForgeExtension {
     readonly options: IForgeGiveawaysOptions;
     name: string;
-    description: any;
-    version: any;
+    description: string;
+    version: string;
     requireExtensions: string[];
     emitter: TypedEmitter<TransformEvents<IGiveawayEvents>>;
     giveawaysManager: GiveawaysManager;

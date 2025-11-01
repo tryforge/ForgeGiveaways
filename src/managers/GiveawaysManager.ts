@@ -18,10 +18,10 @@ export interface IGiveawayStartOptions {
 export type IGiveawayEditOptions = Omit<IGiveawayStartOptions, "guildID" | "channelID">
 
 export class GiveawaysManager {
-    public constructor(
-        private readonly giveaways: ForgeGiveaways,
-        private readonly client: ForgeClient
-    ) {
+    private readonly giveaways: ForgeGiveaways
+
+    public constructor(private readonly client: ForgeClient) {
+        this.giveaways = client.getExtension(ForgeGiveaways, true)
         client.once("clientReady", () => this._restoreGiveaways())
     }
 
@@ -32,10 +32,12 @@ export class GiveawaysManager {
      */
     public async start(options: IGiveawayStartOptions) {
         const giveaway = new Database.entities.Giveaway(options)
+        const { useDefault, useReactions } = this.giveaways.options
 
-        if (this.giveaways.options.useDefault) {
+        if (useDefault) {
             const chan = this.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
             const roles = giveaway.requirements?.requiredRoles?.map((id) => `<@&${id}>`).join(", ")
+            let comps
 
             const embed = new EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
@@ -48,24 +50,29 @@ export class GiveawaysManager {
                 .setTimestamp()
                 .setColor("Green")
 
-            const comps = new ActionRowBuilder()
-                .addComponents(
-                    new ButtonBuilder()
-                        .setCustomId(`giveawayEntry-${giveaway.id}`)
-                        .setLabel("Join")
-                        .setEmoji("🎉")
-                        .setStyle(ButtonStyle.Success)
-                )
+            if (!useReactions) {
+                comps = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId(`giveawayEntry-${giveaway.id}`)
+                            .setLabel("Join")
+                            .setEmoji("🎉")
+                            .setStyle(ButtonStyle.Success)
+                    )
+            }
 
             const msg = await chan?.send({
                 embeds: [embed],
-                components: [comps.toJSON()]
+                components: comps ? [comps.toJSON()] : []
             }).catch(noop)
 
             if (!msg) {
                 throwGiveawaysError(GiveawaysErrorType.MessageNotDetermined, giveaway.id)
                 return
             }
+
+            if (useReactions) msg.react("🎉").catch(noop)
+
             giveaway.messageID = msg.id
         }
 

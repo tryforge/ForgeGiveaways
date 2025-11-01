@@ -4,9 +4,10 @@ import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
 import { Snowflake } from "discord.js"
 import { DataSource } from "typeorm"
-import { Giveaway, MongoGiveaway } from "./Giveaway"
+import { Giveaway, IGiveaway, MongoGiveaway } from "./Giveaway"
 
 export type AnyGiveaway = typeof Giveaway | typeof MongoGiveaway
+export type IGiveawayFindOptions = Omit<IGiveaway, "entries" | "winners" | "previousWinners">
 
 export class Database extends GiveawaysDatabaseManager {
     public database = "giveaways.db"
@@ -59,11 +60,21 @@ export class Database extends GiveawaysDatabaseManager {
     }
 
     /**
+     * Finds existing giveaways matching the provided data.
+     * @param data The data to use for searching.
+     * @param amount The amount of results to return.
+     * @returns 
+     */
+    public static async find(data?: Partial<IGiveawayFindOptions>, amount?: number) {
+        return await this.db.getRepository(this.entities.Giveaway).find({ where: data, take: amount })
+    }
+
+    /**
      * Saves a giveaway in the database.
      * @param data The giveaway data to save.
      */
     public static async set(data: Giveaway | MongoGiveaway) {
-        const oldData = await this.db.getRepository(this.entities.Giveaway).findOneBy({ id: data.id })
+        const oldData = await this.get(data.id)
 
         if (oldData && this.type === "mongodb") {
             await this.db.getRepository(this.entities.Giveaway).update(oldData.id, data)

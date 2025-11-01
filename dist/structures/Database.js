@@ -46,11 +46,20 @@ class Database extends managers_1.GiveawaysDatabaseManager {
         return await this.db.getRepository(this.entities.Giveaway).find();
     }
     /**
+     * Finds existing giveaways matching the provided data.
+     * @param data The data to use for searching.
+     * @param amount The amount of results to return.
+     * @returns
+     */
+    static async find(data, amount) {
+        return await this.db.getRepository(this.entities.Giveaway).find({ where: data, take: amount });
+    }
+    /**
      * Saves a giveaway in the database.
      * @param data The giveaway data to save.
      */
     static async set(data) {
-        const oldData = await this.db.getRepository(this.entities.Giveaway).findOneBy({ id: data.id });
+        const oldData = await this.get(data.id);
         if (oldData && this.type === "mongodb") {
             await this.db.getRepository(this.entities.Giveaway).update(oldData.id, data);
         }

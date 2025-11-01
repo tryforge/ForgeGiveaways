@@ -7,13 +7,14 @@ exports.GiveawaysManager = void 0;
 const discord_js_1 = require("discord.js");
 const structures_1 = require("../structures");
 const error_1 = require("../functions/error");
+const __1 = require("..");
 const noop_1 = __importDefault(require("../functions/noop"));
 class GiveawaysManager {
-    giveaways;
     client;
-    constructor(giveaways, client) {
-        this.giveaways = giveaways;
+    giveaways;
+    constructor(client) {
         this.client = client;
+        this.giveaways = client.getExtension(__1.ForgeGiveaways, true);
         client.once("clientReady", () => this._restoreGiveaways());
     }
     /**
@@ -23,9 +24,11 @@ class GiveawaysManager {
      */
     async start(options) {
         const giveaway = new structures_1.Database.entities.Giveaway(options);
-        if (this.giveaways.options.useDefault) {
+        const { useDefault, useReactions } = this.giveaways.options;
+        if (useDefault) {
             const chan = this.client.channels.cache.get(giveaway.channelID);
             const roles = giveaway.requirements?.requiredRoles?.map((id) => `<@&${id}>`).join(", ");
+            let comps;
             const embed = new discord_js_1.EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}${roles ? `\n\n📌 **Required Roles:** ${roles}` : ""}`)
@@ -33,20 +36,24 @@ class GiveawaysManager {
                 .setFooter({ text: "Click the button below to join!" })
                 .setTimestamp()
                 .setColor("Green");
-            const comps = new discord_js_1.ActionRowBuilder()
-                .addComponents(new discord_js_1.ButtonBuilder()
-                .setCustomId(`giveawayEntry-${giveaway.id}`)
-                .setLabel("Join")
-                .setEmoji("🎉")
-                .setStyle(discord_js_1.ButtonStyle.Success));
+            if (!useReactions) {
+                comps = new discord_js_1.ActionRowBuilder()
+                    .addComponents(new discord_js_1.ButtonBuilder()
+                    .setCustomId(`giveawayEntry-${giveaway.id}`)
+                    .setLabel("Join")
+                    .setEmoji("🎉")
+                    .setStyle(discord_js_1.ButtonStyle.Success));
+            }
             const msg = await chan?.send({
                 embeds: [embed],
-                components: [comps.toJSON()]
+                components: comps ? [comps.toJSON()] : []
             }).catch(noop_1.default);
             if (!msg) {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotDetermined, giveaway.id);
                 return;
             }
+            if (useReactions)
+                msg.react("🎉").catch(noop_1.default);
             giveaway.messageID = msg.id;
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);

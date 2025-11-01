@@ -4,7 +4,7 @@ import pullGiveaway from "../../functions/pullGiveaway"
 export default new NativeFunction({
     name: "$giveawayHasEnded",
     version: "1.0.0",
-    description: "Returns whether the giveaway has ended",
+    description: "Returns whether a giveaway has ended",
     unwrap: true,
     brackets: false,
     args: [
