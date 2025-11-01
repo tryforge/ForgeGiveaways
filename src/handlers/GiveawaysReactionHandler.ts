@@ -17,6 +17,8 @@ export class GiveawaysReactionHandler {
     private async _register() {
         // Add Entry
         this.client.on("messageReactionAdd", async (reaction, user) => {
+            if (user.bot) return
+
             const { message, users, emoji } = reaction
             if (emoji.name !== "🎉") return
 
@@ -40,6 +42,8 @@ export class GiveawaysReactionHandler {
 
         // Remove Entry
         this.client.on("messageReactionRemove", async (reaction, user) => {
+            if (user.bot) return
+
             const { message, emoji } = reaction
             if (emoji.name !== "🎉") return
 
