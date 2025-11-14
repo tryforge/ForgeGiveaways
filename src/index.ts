@@ -1,4 +1,4 @@
-import { EventManager, ForgeClient, ForgeExtension } from "@tryforge/forgescript"
+import { EventManager, ForgeClient, ForgeExtension, Logger } from "@tryforge/forgescript"
 import { GiveawaysCommandManager, GiveawaysManager } from "./managers"
 import { GiveawaysInteractionHandler, GiveawaysReactionHandler, IGiveawayEvents } from "./handlers"
 import { TypedEmitter } from "tiny-typed-emitter"
@@ -11,7 +11,7 @@ export interface IForgeGiveawaysOptions {
     /**
      * The giveaway events to use.
      */
-    events?: keyof IGiveawayEvents
+    events?: Array<keyof IGiveawayEvents>
 
     /**
      * Whether to use the default giveaway messages. Defaults to `true`.
@@ -53,7 +53,11 @@ export class ForgeGiveaways extends ForgeExtension {
             client.events.load("ForgeGiveawaysEvents", this.options.events)
 
             if (!this.options.useDefault && !this.options.events.includes("giveawayStart")) {
-                throw new Error(GiveawaysErrorType.NoStartEvent)
+                throw new Error(GiveawaysErrorType.MissingStartEvent)
+            }
+
+            if (this.options.useReactions && !client.options.intents.has("GuildMessageReactions")) {
+                Logger.warn(`[ForgeGiveaways] Intent "GuildMessageReactions" must be defined for reactions to function`)
             }
         }
 

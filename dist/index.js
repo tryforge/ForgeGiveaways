@@ -47,7 +47,10 @@ class ForgeGiveaways extends forgescript_1.ForgeExtension {
         if (this.options.events?.length) {
             client.events.load("ForgeGiveawaysEvents", this.options.events);
             if (!this.options.useDefault && !this.options.events.includes("giveawayStart")) {
-                throw new Error(error_1.GiveawaysErrorType.NoStartEvent);
+                throw new Error(error_1.GiveawaysErrorType.MissingStartEvent);
+            }
+            if (this.options.useReactions && !client.options.intents.has("GuildMessageReactions")) {
+                forgescript_1.Logger.warn(`[ForgeGiveaways] Intent "GuildMessageReactions" must be defined for reactions to function`);
             }
         }
         await new structures_1.Database(this.emitter).init();

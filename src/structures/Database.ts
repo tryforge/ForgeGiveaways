@@ -7,7 +7,7 @@ import { DataSource } from "typeorm"
 import { Giveaway, IGiveaway, MongoGiveaway } from "./Giveaway"
 
 export type AnyGiveaway = typeof Giveaway | typeof MongoGiveaway
-export type IGiveawayFindOptions = Omit<IGiveaway, "entries" | "winners" | "previousWinners">
+export type IGiveawayFindOptions = Partial<Omit<IGiveaway, "entries" | "winners" | "previousWinners">>
 
 export class Database extends GiveawaysDatabaseManager {
     public database = "giveaways.db"
@@ -65,7 +65,7 @@ export class Database extends GiveawaysDatabaseManager {
      * @param amount The amount of results to return.
      * @returns 
      */
-    public static async find(data?: Partial<IGiveawayFindOptions>, amount?: number) {
+    public static async find(data?: IGiveawayFindOptions, amount?: number) {
         return await this.db.getRepository(this.entities.Giveaway).find({ where: data, take: amount })
     }
 

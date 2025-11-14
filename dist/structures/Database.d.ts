@@ -5,7 +5,7 @@ import { TransformEvents } from "@tryforge/forge.db";
 import { Snowflake } from "discord.js";
 import { Giveaway, IGiveaway, MongoGiveaway } from "./Giveaway";
 export type AnyGiveaway = typeof Giveaway | typeof MongoGiveaway;
-export type IGiveawayFindOptions = Omit<IGiveaway, "entries" | "winners" | "previousWinners">;
+export type IGiveawayFindOptions = Partial<Omit<IGiveaway, "entries" | "winners" | "previousWinners">>;
 export declare class Database extends GiveawaysDatabaseManager {
     private readonly emitter;
     database: string;
@@ -40,7 +40,7 @@ export declare class Database extends GiveawaysDatabaseManager {
      * @param amount The amount of results to return.
      * @returns
      */
-    static find(data?: Partial<IGiveawayFindOptions>, amount?: number): Promise<Giveaway[]>;
+    static find(data?: IGiveawayFindOptions, amount?: number): Promise<Giveaway[]>;
     /**
      * Saves a giveaway in the database.
      * @param data The giveaway data to save.

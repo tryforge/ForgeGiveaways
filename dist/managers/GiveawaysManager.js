@@ -39,7 +39,7 @@ class GiveawaysManager {
             if (!useReactions) {
                 comps = new discord_js_1.ActionRowBuilder()
                     .addComponents(new discord_js_1.ButtonBuilder()
-                    .setCustomId(`giveawayEntry-${giveaway.id}`)
+                    .setCustomId(`giveawayEntry`)
                     .setLabel("Join")
                     .setEmoji("🎉")
                     .setStyle(discord_js_1.ButtonStyle.Success));
@@ -159,23 +159,42 @@ class GiveawaysManager {
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
      * @param options The options used to edit this giveaway.
+     * @returns
      */
     async edit(id, options) {
         const giveaway = await structures_1.Database.get(id);
         if (!giveaway || giveaway.hasEnded)
             return null;
+        const { useDefault, useReactions } = this.giveaways.options;
         const oldGiveaway = giveaway.clone();
         if (options.prize)
             giveaway.prize = options.prize;
-        if (options.duration)
-            giveaway.duration = options.duration;
         if (options.winnersCount)
             giveaway.winnersCount = options.winnersCount;
         if (options.hostID)
             giveaway.hostID = options.hostID;
         if (options.requirements)
             giveaway.requirements = options.requirements;
-        if (this.giveaways.options.useDefault) { }
+        if (useDefault) {
+            const msg = await this.fetchMessage(giveaway.channelID, giveaway.messageID);
+            const roles = giveaway.requirements?.requiredRoles?.map((id) => `<@&${id}>`).join(", ");
+            if (msg) {
+                const embed = new discord_js_1.EmbedBuilder()
+                    .setTitle("🎉 GIVEAWAY 🎉")
+                    .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}${roles ? `\n\n📌 **Required Roles:** ${roles}` : ""}`)
+                    .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
+                    .setFooter({ text: `Click the ${useReactions ? "reaction" : "button"} below to join!` })
+                    .setTimestamp(giveaway.timestamp)
+                    .setColor("Green");
+                msg.edit({
+                    embeds: [embed]
+                }).catch(noop_1.default);
+            }
+            else {
+                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
+                return;
+            }
+        }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
         // this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
         return giveaway;

@@ -15,7 +15,7 @@ export interface IGiveawayStartOptions {
     requirements?: IGiveawayRequirements
 }
 
-export type IGiveawayEditOptions = Omit<IGiveawayStartOptions, "guildID" | "channelID">
+export type IGiveawayEditOptions = Partial<Omit<IGiveawayStartOptions, "duration" | "guildID" | "channelID">>
 
 export class GiveawaysManager {
     private readonly giveaways: ForgeGiveaways
@@ -54,7 +54,7 @@ export class GiveawaysManager {
                 comps = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
-                            .setCustomId(`giveawayEntry-${giveaway.id}`)
+                            .setCustomId(`giveawayEntry`)
                             .setLabel("Join")
                             .setEmoji("🎉")
                             .setStyle(ButtonStyle.Success)
@@ -197,19 +197,44 @@ export class GiveawaysManager {
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
      * @param options The options used to edit this giveaway.
+     * @returns
      */
     public async edit(id: Snowflake, options: IGiveawayEditOptions) {
         const giveaway = await Database.get(id)
         if (!giveaway || giveaway.hasEnded) return null
+
+        const { useDefault, useReactions } = this.giveaways.options
         const oldGiveaway = giveaway.clone()
 
         if (options.prize) giveaway.prize = options.prize
-        if (options.duration) giveaway.duration = options.duration
         if (options.winnersCount) giveaway.winnersCount = options.winnersCount
         if (options.hostID) giveaway.hostID = options.hostID
         if (options.requirements) giveaway.requirements = options.requirements
 
-        if (this.giveaways.options.useDefault) {}
+        if (useDefault) {
+            const msg = await this.fetchMessage(giveaway.channelID, giveaway.messageID)
+            const roles = giveaway.requirements?.requiredRoles?.map((id) => `<@&${id}>`).join(", ")
+
+            if (msg) {
+                const embed = new EmbedBuilder()
+                    .setTitle("🎉 GIVEAWAY 🎉")
+                    .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}${roles ? `\n\n📌 **Required Roles:** ${roles}` : ""}`)
+                    .setFields(
+                        { name: "Ends", value: `${time(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true },
+                        { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true },
+                    )
+                    .setFooter({ text: `Click the ${useReactions ? "reaction" : "button"} below to join!` })
+                    .setTimestamp(giveaway.timestamp)
+                    .setColor("Green")
+
+                msg.edit({
+                    embeds: [embed]
+                }).catch(noop)
+            } else {
+                throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
+                return
+            }
+        }
 
         await Database.set(giveaway).catch(noop)
         // this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)

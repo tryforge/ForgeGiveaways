@@ -1,5 +1,5 @@
 import { APIInteractionGuildMember, GuildMember, Snowflake } from "discord.js";
-import { IGiveawayStartOptions } from "../managers/GiveawaysManager";
+import { IGiveawayStartOptions } from "../managers";
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake;
     timestamp: number;

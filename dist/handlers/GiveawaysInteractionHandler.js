@@ -33,8 +33,9 @@ class GiveawaysInteractionHandler {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.GiveawayNotActive, giveaway.id);
                 return;
             }
+            const user = member.user;
             if (!giveaway.canEnter(member)) {
-                client.emitter.emit("giveawayEntryRevoke", giveaway, interaction);
+                client.emitter.emit("giveawayEntryRevoke", giveaway, interaction, user);
                 if (client.options.useDefault) {
                     await interaction.reply({
                         content: `❌ You do not meet the requirements to enter this giveaway!`,
@@ -48,12 +49,12 @@ class GiveawaysInteractionHandler {
             if (entered) {
                 giveaway.removeEntry(member.user.id);
                 await structures_1.Database.set(giveaway).catch(noop_1.default);
-                client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway, interaction);
+                client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway, interaction, user);
             }
             else {
                 giveaway.addEntry(member.user.id);
                 await structures_1.Database.set(giveaway).catch(noop_1.default);
-                client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, interaction);
+                client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, interaction, user);
             }
             if (client.options.useDefault) {
                 await interaction.reply({

@@ -18,7 +18,7 @@ exports.default = new handlers_1.GiveawaysEventHandler({
         }
         if (!commands.length && !client.options.useDefault) {
             await structures_1.Database.delete(gw.id);
-            throw new Error(error_1.GiveawaysErrorType.NoStartEvent);
+            throw new Error(error_1.GiveawaysErrorType.MissingStartEvent);
         }
         if (commands.length) {
             const command = commands[0];

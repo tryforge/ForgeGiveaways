@@ -10,7 +10,7 @@ export interface IGiveawayStartOptions {
     channelID: Snowflake;
     requirements?: IGiveawayRequirements;
 }
-export type IGiveawayEditOptions = Omit<IGiveawayStartOptions, "guildID" | "channelID">;
+export type IGiveawayEditOptions = Partial<Omit<IGiveawayStartOptions, "duration" | "guildID" | "channelID">>;
 export declare class GiveawaysManager {
     private readonly client;
     private readonly giveaways;
@@ -39,8 +39,9 @@ export declare class GiveawaysManager {
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
      * @param options The options used to edit this giveaway.
+     * @returns
      */
-    edit(id: Snowflake, options: IGiveawayEditOptions): Promise<import("..").Giveaway | null>;
+    edit(id: Snowflake, options: IGiveawayEditOptions): Promise<import("..").Giveaway | null | undefined>;
     /**
      * Fetches the message of a giveaway.
      * @param channelID The id of the channel to pull message from.

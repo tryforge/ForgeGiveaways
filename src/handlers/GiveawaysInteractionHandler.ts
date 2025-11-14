@@ -1,5 +1,5 @@
 import { ForgeClient } from "@tryforge/forgescript"
-import { MessageFlags } from "discord.js"
+import { MessageFlags, User } from "discord.js"
 import { ForgeGiveaways } from ".."
 import { Database } from "../structures"
 import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
@@ -30,9 +30,10 @@ export class GiveawaysInteractionHandler {
                 throwGiveawaysError(GiveawaysErrorType.GiveawayNotActive, giveaway.id)
                 return
             }
+            const user = member.user as User
 
             if (!giveaway.canEnter(member)) {
-                client.emitter.emit("giveawayEntryRevoke", giveaway, interaction)
+                client.emitter.emit("giveawayEntryRevoke", giveaway, interaction, user)
                 if (client.options.useDefault) {
                     await interaction.reply({
                         content: `❌ You do not meet the requirements to enter this giveaway!`,
@@ -48,11 +49,11 @@ export class GiveawaysInteractionHandler {
             if (entered) {
                 giveaway.removeEntry(member.user.id)
                 await Database.set(giveaway).catch(noop)
-                client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway, interaction)
+                client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway, interaction, user)
             } else {
                 giveaway.addEntry(member.user.id)
                 await Database.set(giveaway).catch(noop)
-                client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, interaction)
+                client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, interaction, user)
             }
 
             if (client.options.useDefault) {

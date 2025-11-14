@@ -19,7 +19,7 @@ export default new GiveawaysEventHandler({
 
         if (!commands.length && !client.options.useDefault) {
             await Database.delete(gw.id)
-            throw new Error(GiveawaysErrorType.NoStartEvent)
+            throw new Error(GiveawaysErrorType.MissingStartEvent)
         }
 
         if (commands.length) {

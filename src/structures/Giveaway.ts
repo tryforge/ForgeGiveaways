@@ -1,6 +1,6 @@
 import { APIInteractionGuildMember, GuildMember, Snowflake, SnowflakeUtil } from "discord.js"
-import { IGiveawayStartOptions } from "../managers/GiveawaysManager"
 import { Column, Entity, ObjectIdColumn, PrimaryColumn } from "typeorm"
+import { IGiveawayStartOptions } from "../managers"
 
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake

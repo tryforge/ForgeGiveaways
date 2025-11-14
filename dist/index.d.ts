@@ -7,7 +7,7 @@ export interface IForgeGiveawaysOptions {
     /**
      * The giveaway events to use.
      */
-    events?: keyof IGiveawayEvents;
+    events?: Array<keyof IGiveawayEvents>;
     /**
      * Whether to use the default giveaway messages. Defaults to `true`.
      */

@@ -26,16 +26,18 @@ class GiveawaysReactionHandler {
             const giveaway = await this._find(message.channelId, message.id);
             if (!giveaway || giveaway.hasEnded)
                 return;
-            const member = this.client.guilds.cache.get(giveaway.guildID)?.members.cache.get(user.id);
+            const members = this.client.guilds.cache.get(giveaway.guildID)?.members;
+            const member = members?.cache.get(user.id) ?? await members?.fetch(user.id).catch(noop_1.default);
+            user = user;
             if (!member || !giveaway.canEnter(member)) {
                 users.remove(user.id).catch(noop_1.default);
-                this.emitter.emit("giveawayEntryRevoke", giveaway, reaction);
+                this.emitter.emit("giveawayEntryRevoke", giveaway, reaction, user);
                 return;
             }
             const oldGiveaway = giveaway.clone();
             giveaway.addEntry(user.id);
             await structures_1.Database.set(giveaway).catch(noop_1.default);
-            this.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, reaction);
+            this.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, reaction, user);
         });
         // Remove Entry
         this.client.on("messageReactionRemove", async (reaction, user) => {
@@ -50,7 +52,7 @@ class GiveawaysReactionHandler {
             const oldGiveaway = giveaway.clone();
             giveaway.removeEntry(user.id);
             await structures_1.Database.set(giveaway).catch(noop_1.default);
-            this.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway, reaction);
+            this.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway, reaction, user);
         });
     }
     /**

@@ -1,18 +1,18 @@
-import { Interaction, MessageReaction, PartialMessageReaction } from "discord.js"
+import { Interaction, MessageReaction, PartialMessageReaction, User } from "discord.js"
 import { BaseEventHandler, ForgeClient } from "@tryforge/forgescript"
 import { Giveaway } from "../structures"
 import { ForgeGiveaways } from ".."
 
-export type EntryContext = Interaction | MessageReaction | PartialMessageReaction 
+export type EntryContext = Interaction | MessageReaction | PartialMessageReaction
 
 export interface IGiveawayEvents {
     databaseConnect: []
     giveawayStart: [Giveaway]
     giveawayEnd: [Giveaway]
     giveawayReroll: [Giveaway, Giveaway]
-    giveawayEntryAdd: [Giveaway, Giveaway, EntryContext]
-    giveawayEntryRemove: [Giveaway, Giveaway, EntryContext]
-    giveawayEntryRevoke: [Giveaway, EntryContext]
+    giveawayEntryAdd: [Giveaway, Giveaway, EntryContext, User]
+    giveawayEntryRemove: [Giveaway, Giveaway, EntryContext, User]
+    giveawayEntryRevoke: [Giveaway, EntryContext, User]
 }
 
 export class GiveawaysEventHandler<T extends keyof IGiveawayEvents> extends BaseEventHandler<IGiveawayEvents, T> {

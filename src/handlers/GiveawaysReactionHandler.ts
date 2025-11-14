@@ -1,6 +1,6 @@
 import { ForgeClient } from "@tryforge/forgescript"
 import { Database } from "../structures"
-import { Snowflake } from "discord.js"
+import { Snowflake, User } from "discord.js"
 import { ForgeGiveaways, IGiveawayEvents } from ".."
 import { TypedEmitter } from "tiny-typed-emitter"
 import { TransformEvents } from "@tryforge/forge.db"
@@ -25,11 +25,13 @@ export class GiveawaysReactionHandler {
             const giveaway = await this._find(message.channelId, message.id)
             if (!giveaway || giveaway.hasEnded) return
 
-            const member = this.client.guilds.cache.get(giveaway.guildID)?.members.cache.get(user.id)
+            const members = this.client.guilds.cache.get(giveaway.guildID)?.members
+            const member = members?.cache.get(user.id) ?? await members?.fetch(user.id).catch(noop)
+            user = user as User
 
             if (!member || !giveaway.canEnter(member)) {
                 users.remove(user.id).catch(noop)
-                this.emitter.emit("giveawayEntryRevoke", giveaway, reaction)
+                this.emitter.emit("giveawayEntryRevoke", giveaway, reaction, user)
                 return
             }
 
@@ -37,7 +39,7 @@ export class GiveawaysReactionHandler {
 
             giveaway.addEntry(user.id)
             await Database.set(giveaway).catch(noop)
-            this.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, reaction)
+            this.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, reaction, user)
         })
 
         // Remove Entry
@@ -54,7 +56,7 @@ export class GiveawaysReactionHandler {
 
             giveaway.removeEntry(user.id)
             await Database.set(giveaway).catch(noop)
-            this.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway, reaction)
+            this.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway, reaction, user as User)
         })
     }
 
