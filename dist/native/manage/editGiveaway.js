@@ -4,6 +4,7 @@ const forgescript_1 = require("@tryforge/forgescript");
 const __1 = require("../..");
 exports.default = new forgescript_1.NativeFunction({
     name: "$editGiveaway",
+    version: "1.1.0",
     description: "Edits an existing giveaway on a guild, returns bool",
     unwrap: true,
     brackets: true,
