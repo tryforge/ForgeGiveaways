@@ -12,6 +12,7 @@ export declare enum GiveawayProperty {
     messageID = "messageID",
     entries = "entries",
     winners = "winners",
+    previousWinners = "previousWinners",
     requiredRoles = "requiredRoles",
     restrictedRoles = "restrictedRoles",
     restrictedMembers = "restrictedMembers"

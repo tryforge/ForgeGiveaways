@@ -1,6 +1,6 @@
 import { APIInteractionGuildMember, GuildMember, Snowflake, SnowflakeUtil } from "discord.js"
-import { IGiveawayStartOptions } from "../managers/GiveawaysManager"
 import { Column, Entity, ObjectIdColumn, PrimaryColumn } from "typeorm"
+import { IGiveawayStartOptions } from "../managers"
 
 export interface IGiveaway extends IGiveawayStartOptions {
     id: Snowflake
@@ -9,6 +9,7 @@ export interface IGiveaway extends IGiveawayStartOptions {
     messageID?: Snowflake
     entries: Snowflake[]
     winners: Snowflake[]
+    previousWinners?: Snowflake[]
 }
 
 @Entity()
@@ -68,6 +69,12 @@ export class Giveaway implements IGiveaway {
     public channelID: Snowflake
 
     /**
+     * The id of the message this giveaway is associated with.
+     */
+    @Column({ nullable: true })
+    public messageID?: Snowflake
+
+    /**
      * The user entries for this giveaway.
      */
     @Column("simple-array")
@@ -80,16 +87,16 @@ export class Giveaway implements IGiveaway {
     public winners: Snowflake[]
 
     /**
+     * The previous winners of this giveaway.
+     */
+    @Column("simple-array", { nullable: true })
+    public previousWinners?: Snowflake[]
+
+    /**
      * The requirements all participants have to meet for entering this giveaway.
      */
     @Column("simple-json", { nullable: true })
     public requirements?: IGiveawayStartOptions["requirements"]
-
-    /**
-     * The id of the message this giveaway is associated with.
-     */
-    @Column({ nullable: true })
-    public messageID?: Snowflake
 
     constructor(options?: Partial<IGiveawayStartOptions> & { id?: Snowflake }) {
         this.id = options?.id ?? SnowflakeUtil.generate().toString()
@@ -107,11 +114,19 @@ export class Giveaway implements IGiveaway {
     }
 
     /**
+     * Returns the end timestamp of this giveaway.
+     * @returns
+     */
+    public endTimestamp() {
+        return this.timestamp + this.duration
+    }
+
+    /**
      * Returns the time left for this giveaway.
      * @returns 
      */
     public timeLeft() {
-        return Math.max(this.duration - (Date.now() - this.timestamp), 0)
+        return Math.max(this.endTimestamp() - Date.now(), 0)
     }
 
     /**

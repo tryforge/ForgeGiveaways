@@ -6,7 +6,7 @@ import { Context } from "../structures"
 export default new GiveawaysEventHandler({
     name: "giveawayEnd",
     version: "1.0.0",
-    description: "This event is fired when a giveaway ended",
+    description: "This event is fired when a giveaway has ended",
     listener: async function(gw) {
         const commands = this.getExtension(ForgeGiveaways, true).commands.get("giveawayEnd")
 

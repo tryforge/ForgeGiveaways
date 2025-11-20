@@ -8,20 +8,20 @@ const error_1 = require("../functions/error");
 exports.default = new handlers_1.GiveawaysEventHandler({
     name: "giveawayStart",
     version: "1.0.0",
-    description: "This event is fired when a giveaway started",
+    description: "This event is fired when a giveaway has started",
     listener: async function (gw) {
         const client = this.getExtension(__1.ForgeGiveaways, true);
         const commands = client.commands.get("giveawayStart");
-        const command = commands[0];
         if (commands.length > 1) {
             await structures_1.Database.delete(gw.id);
             throw new Error(error_1.GiveawaysErrorType.MultipleStartEvents);
         }
-        if (!command && !client.options.useDefault) {
+        if (!commands.length && !client.options.useDefault) {
             await structures_1.Database.delete(gw.id);
-            throw new Error(error_1.GiveawaysErrorType.NoStartEvent);
+            throw new Error(error_1.GiveawaysErrorType.MissingStartEvent);
         }
-        if (commands) {
+        if (commands.length) {
+            const command = commands[0];
             const ctx = new structures_1.Context({
                 obj: gw,
                 command,

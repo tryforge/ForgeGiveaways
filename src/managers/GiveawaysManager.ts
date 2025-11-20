@@ -15,14 +15,14 @@ export interface IGiveawayStartOptions {
     requirements?: IGiveawayRequirements
 }
 
-export type IGiveawayEditOptions = Omit<IGiveawayStartOptions, "guildID" | "channelID">
+export type IGiveawayEditOptions = Partial<Omit<IGiveawayStartOptions, "duration" | "guildID" | "channelID">>
 
 export class GiveawaysManager {
-    public constructor(
-        private readonly giveaways: ForgeGiveaways,
-        private readonly client: ForgeClient
-    ) {
-        client.once("clientReady", () => this._restoreGiveaways())
+    private readonly giveaways: ForgeGiveaways
+
+    public constructor(private readonly client: ForgeClient) {
+        this.giveaways = client.getExtension(ForgeGiveaways, true)
+        client.once("clientReady", async () => await this._restoreGiveaways())
     }
 
     /**
@@ -32,10 +32,12 @@ export class GiveawaysManager {
      */
     public async start(options: IGiveawayStartOptions) {
         const giveaway = new Database.entities.Giveaway(options)
+        const { useDefault, useReactions } = this.giveaways.options
 
-        if (this.giveaways.options.useDefault) {
+        if (useDefault) {
             const chan = this.client.channels.cache.get(giveaway.channelID) as TextChannel | undefined
             const roles = giveaway.requirements?.requiredRoles?.map((id) => `<@&${id}>`).join(", ")
+            let comps
 
             const embed = new EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
@@ -44,28 +46,33 @@ export class GiveawaysManager {
                     { name: "Ends", value: `${time(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true },
                     { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true },
                 )
-                .setFooter({ text: "Click the button below to join!" })
+                .setFooter({ text: `Click the ${useReactions ? "reaction" : "button"} below to join!` })
                 .setTimestamp()
                 .setColor("Green")
 
-            const comps = new ActionRowBuilder()
-                .addComponents(
-                    new ButtonBuilder()
-                        .setCustomId(`giveawayEntry-${giveaway.id}`)
-                        .setLabel("Join")
-                        .setEmoji("🎉")
-                        .setStyle(ButtonStyle.Success)
-                )
+            if (!useReactions) {
+                comps = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId(`giveawayEntry`)
+                            .setLabel("Join")
+                            .setEmoji("🎉")
+                            .setStyle(ButtonStyle.Success)
+                    )
+            }
 
             const msg = await chan?.send({
                 embeds: [embed],
-                components: [comps.toJSON()]
+                components: comps ? [comps.toJSON()] : []
             }).catch(noop)
 
             if (!msg) {
                 throwGiveawaysError(GiveawaysErrorType.MessageNotDetermined, giveaway.id)
-                return
+                return null
             }
+
+            if (useReactions) msg.react("🎉").catch(noop)
+
             giveaway.messageID = msg.id
         }
 
@@ -83,7 +90,7 @@ export class GiveawaysManager {
      */
     public async end(id: Snowflake) {
         const giveaway = await Database.get(id)
-        if (!giveaway || giveaway.hasEnded) return
+        if (!giveaway || giveaway.hasEnded) return null
         giveaway.hasEnded = true
 
         const guild = this.client.guilds.cache.get(giveaway.guildID)
@@ -128,7 +135,7 @@ export class GiveawaysManager {
                 }).catch(noop)
             } else {
                 throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
-                return
+                return null
             }
         }
 
@@ -147,12 +154,14 @@ export class GiveawaysManager {
      */
     public async reroll(id: Snowflake, unique: boolean = false, amount?: number) {
         const giveaway = await Database.get(id)
-        if (!giveaway || !giveaway.hasEnded || !giveaway.winners.length) return
+        if (!giveaway || !giveaway.hasEnded || !giveaway.winners.length) return null
         const oldGiveaway = giveaway.clone()
         amount ??= giveaway.winnersCount
 
-        const { entries, winners } = giveaway
-        const eligibleEntries = unique ? entries.filter((e) => !winners.includes(e)) : entries
+        const { entries, winners, previousWinners } = giveaway
+        giveaway.previousWinners = [...new Set([...previousWinners || [], ...winners])]
+
+        const eligibleEntries = unique ? entries.filter((e) => !giveaway.previousWinners!.includes(e)) : entries
         let newWinners = this._pickWinners(eligibleEntries, amount)
 
         if (!newWinners.length) newWinners = this._pickWinners(entries, amount)
@@ -173,7 +182,7 @@ export class GiveawaysManager {
                 }).catch(noop)
             } else {
                 throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
-                return
+                return null
             }
         }
 
@@ -183,27 +192,51 @@ export class GiveawaysManager {
         return giveaway
     }
 
-    // WIP
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
      * @param options The options used to edit this giveaway.
+     * @returns
      */
     public async edit(id: Snowflake, options: IGiveawayEditOptions) {
         const giveaway = await Database.get(id)
         if (!giveaway || giveaway.hasEnded) return null
+
+        const { useDefault, useReactions } = this.giveaways.options
         const oldGiveaway = giveaway.clone()
 
         if (options.prize) giveaway.prize = options.prize
-        if (options.duration) giveaway.duration = options.duration
         if (options.winnersCount) giveaway.winnersCount = options.winnersCount
         if (options.hostID) giveaway.hostID = options.hostID
         if (options.requirements) giveaway.requirements = options.requirements
 
-        if (this.giveaways.options.useDefault) { }
+        if (useDefault) {
+            const msg = await this.fetchMessage(giveaway.channelID, giveaway.messageID)
+            const roles = giveaway.requirements?.requiredRoles?.map((id) => `<@&${id}>`).join(", ")
+
+            if (msg) {
+                const embed = new EmbedBuilder()
+                    .setTitle("🎉 GIVEAWAY 🎉")
+                    .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}${roles ? `\n\n📌 **Required Roles:** ${roles}` : ""}`)
+                    .setFields(
+                        { name: "Ends", value: `${time(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true },
+                        { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true },
+                    )
+                    .setFooter({ text: `Click the ${useReactions ? "reaction" : "button"} below to join!` })
+                    .setTimestamp(giveaway.timestamp)
+                    .setColor("Green")
+
+                msg.edit({
+                    embeds: [embed]
+                }).catch(noop)
+            } else {
+                throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
+                return null
+            }
+        }
 
         await Database.set(giveaway).catch(noop)
-        // this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
+        this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
 
         return giveaway
     }
@@ -217,7 +250,7 @@ export class GiveawaysManager {
     public async fetchMessage(channelID: Snowflake, messageID?: Snowflake) {
         if (!messageID) return
         const chan = this.client.channels.cache.get(channelID) as TextChannel | undefined
-        return chan?.messages.cache.get(messageID) ?? await chan?.messages.fetch(messageID).catch(() => { })
+        return chan?.messages.cache.get(messageID) ?? await chan?.messages.fetch(messageID).catch(() => {})
     }
 
     /**

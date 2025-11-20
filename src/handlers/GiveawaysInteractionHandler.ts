@@ -1,5 +1,5 @@
 import { ForgeClient } from "@tryforge/forgescript"
-import { MessageFlags } from "discord.js"
+import { MessageFlags, User } from "discord.js"
 import { ForgeGiveaways } from ".."
 import { Database } from "../structures"
 import { GiveawaysErrorType, throwGiveawaysError } from "../functions/error"
@@ -13,27 +13,27 @@ export class GiveawaysInteractionHandler {
     private async _register() {
         this.client.on("interactionCreate", async (interaction) => {
             if (!interaction.isButton() || !interaction.inGuild()) return
+            const { customId, channelId, message, member } = interaction
 
-            const [action, id] = interaction.customId.split("-")
+            const [action] = customId.split("-")
             if (action !== "giveawayEntry") return
 
             const client = this.client.getExtension(ForgeGiveaways, true)
-            const giveaway = await Database.get(id)
+            const giveaway = await Database.find({ channelID: channelId, messageID: message.id }, 1).then((x) => x[0])
 
             if (!giveaway) {
-                throwGiveawaysError(GiveawaysErrorType.UnknownGiveaway, id)
+                throwGiveawaysError(GiveawaysErrorType.UnknownGiveaway, message.id)
                 return
             }
 
             if (giveaway.hasEnded) {
-                throwGiveawaysError(GiveawaysErrorType.GiveawayNotActive, id)
+                throwGiveawaysError(GiveawaysErrorType.GiveawayNotActive, giveaway.id)
                 return
             }
-
-            const member = interaction.member
+            const user = member.user as User
 
             if (!giveaway.canEnter(member)) {
-                client.emitter.emit("giveawayEntryRevoke", giveaway, interaction)
+                client.emitter.emit("giveawayEntryRevoke", giveaway, interaction, user)
                 if (client.options.useDefault) {
                     await interaction.reply({
                         content: `❌ You do not meet the requirements to enter this giveaway!`,
@@ -49,11 +49,11 @@ export class GiveawaysInteractionHandler {
             if (entered) {
                 giveaway.removeEntry(member.user.id)
                 await Database.set(giveaway).catch(noop)
-                client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway, interaction)
+                client.emitter.emit("giveawayEntryRemove", oldGiveaway, giveaway, interaction, user)
             } else {
                 giveaway.addEntry(member.user.id)
                 await Database.set(giveaway).catch(noop)
-                client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, interaction)
+                client.emitter.emit("giveawayEntryAdd", oldGiveaway, giveaway, interaction, user)
             }
 
             if (client.options.useDefault) {

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img height="150" width="150" src="https://github.com/user-attachments/assets/9969c07b-2608-4ddd-930b-487485c07d80" alt="ForgeGiveaways">
+<img height="150" width="150" src="https://raw.githubusercontent.com/tryforge/ForgeGiveaways/main/assets/ForgeGiveaways.png" alt="ForgeGiveaways">
 
 # ForgeGiveaways
 ForgeGiveaways is a lightweight, flexible, and reliable extension for managing giveaways. Fully customizable features let you automate, track, and control every giveaway seamlessly.
@@ -22,7 +22,7 @@ ForgeGiveaways is a lightweight, flexible, and reliable extension for managing g
 
 <h3 align="center">Installation</h3><hr>
 
-> [!WARNING]
+> ⚠️ **Warning**\
 > **ForgeGiveaways** requires the extension [**ForgeDB**](https://docs.botforge.org/p/ForgeDB/) installed in order to operate.
 
 1. Run the following command to install the required `npm` packages:
@@ -58,14 +58,14 @@ ForgeGiveaways is a lightweight, flexible, and reliable extension for managing g
     client.login("YourToken")
     ```
 
-> [!NOTE]
-> View all available client options [here](https://github.com/tryforge/ForgeGiveaways/blob/main/src/index.ts#L8).
+    > ℹ️ **Note**\
+    > View all available client options [here](https://tryforge.github.io/ForgeGiveaways/interfaces/IForgeGiveawaysOptions.html).
 
 <h3 align="center">Custom Messages</h3><hr>
 
 You can disable the default messages by setting `useDefault: false` in the client options, and override them with custom messages emitted through events. Use desired functions to retrieve information about the current giveaway.
 
-> [!WARNING]
+> ⚠️ **Warning**\
 > Only **one** `giveawayStart` event is allowed per client instance!
 
 #### Examples
@@ -83,7 +83,7 @@ module.exports = {
         $addTextDisplay[**Prize:** $giveawayPrize\n**Winners:** $giveawayWinnersCount]
         $addSeparator
         $addActionRow
-        $addButton[giveawayEntry-$giveawayID;Join;Secondary;🎉]
+        $addButton[giveawayEntry;Join;Secondary;🎉]
       ;Green]
     ;true]
   ]
@@ -107,9 +107,9 @@ module.exports = {
 
 The custom ID for giveaway entry buttons must follow this exact format:
 ```
-giveawayEntry-GIVEAWAY_ID  
+giveawayEntry  
 ```
-<sub>*Replace "GIVEAWAY_ID" with the actual ID of the giveaway. See the `giveawayStart` example above for reference.*</sub>
+<sub>*See the `giveawayStart` example above for reference.*</sub>
 
 \
 Through the entry-related events, you can send custom responses directly to the current interaction context.

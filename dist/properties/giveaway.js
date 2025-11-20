@@ -19,6 +19,7 @@ var GiveawayProperty;
     GiveawayProperty["messageID"] = "messageID";
     GiveawayProperty["entries"] = "entries";
     GiveawayProperty["winners"] = "winners";
+    GiveawayProperty["previousWinners"] = "previousWinners";
     GiveawayProperty["requiredRoles"] = "requiredRoles";
     GiveawayProperty["restrictedRoles"] = "restrictedRoles";
     GiveawayProperty["restrictedMembers"] = "restrictedMembers";
@@ -36,6 +37,7 @@ exports.GiveawayProperties = (0, defineProperties_1.default)({
     messageID: (i) => i?.messageID,
     entries: (i, sep) => i?.entries.join(sep ?? ", "),
     winners: (i, sep) => i?.winners.join(sep ?? ", "),
+    previousWinners: (i, sep) => i?.previousWinners?.join(sep ?? ", "),
     requiredRoles: (i, sep) => i?.requirements?.requiredRoles?.join(sep ?? ", "),
     restrictedRoles: (i, sep) => i?.requirements?.restrictedRoles?.join(sep ?? ", "),
     restrictedMembers: (i, sep) => i?.requirements?.restrictedMembers?.join(sep ?? ", "),

@@ -7,7 +7,7 @@ const structures_1 = require("../structures");
 exports.default = new handlers_1.GiveawaysEventHandler({
     name: "giveawayEnd",
     version: "1.0.0",
-    description: "This event is fired when a giveaway ended",
+    description: "This event is fired when a giveaway has ended",
     listener: async function (gw) {
         const commands = this.getExtension(__1.ForgeGiveaways, true).commands.get("giveawayEnd");
         for (const command of commands) {

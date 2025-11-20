@@ -1,7 +1,6 @@
 import { Snowflake } from "discord.js";
 import { ForgeClient } from "@tryforge/forgescript";
 import { IGiveawayRequirements } from "../structures";
-import { ForgeGiveaways } from "..";
 export interface IGiveawayStartOptions {
     prize: string;
     duration: number;
@@ -11,23 +10,23 @@ export interface IGiveawayStartOptions {
     channelID: Snowflake;
     requirements?: IGiveawayRequirements;
 }
-export type IGiveawayEditOptions = Omit<IGiveawayStartOptions, "guildID" | "channelID">;
+export type IGiveawayEditOptions = Partial<Omit<IGiveawayStartOptions, "duration" | "guildID" | "channelID">>;
 export declare class GiveawaysManager {
-    private readonly giveaways;
     private readonly client;
-    constructor(giveaways: ForgeGiveaways, client: ForgeClient);
+    private readonly giveaways;
+    constructor(client: ForgeClient);
     /**
      * Starts a new giveaway on a guild.
      * @param options The start options for the giveaway.
      * @returns
      */
-    start(options: IGiveawayStartOptions): Promise<import("..").Giveaway | undefined>;
+    start(options: IGiveawayStartOptions): Promise<import("..").Giveaway | null>;
     /**
      * Ends an existing giveaway.
      * @param id The id of the giveaway to end.
      * @returns
      */
-    end(id: Snowflake): Promise<import("..").Giveaway | undefined>;
+    end(id: Snowflake): Promise<import("..").Giveaway | null>;
     /**
      * Rerolls an existing giveaway.
      * @param id The id of the giveaway to reroll.
@@ -35,11 +34,12 @@ export declare class GiveawaysManager {
      * @param amount The amount of new winners.
      * @returns
      */
-    reroll(id: Snowflake, unique?: boolean, amount?: number): Promise<import("..").Giveaway | undefined>;
+    reroll(id: Snowflake, unique?: boolean, amount?: number): Promise<import("..").Giveaway | null>;
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
      * @param options The options used to edit this giveaway.
+     * @returns
      */
     edit(id: Snowflake, options: IGiveawayEditOptions): Promise<import("..").Giveaway | null>;
     /**

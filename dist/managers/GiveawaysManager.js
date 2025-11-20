@@ -7,14 +7,15 @@ exports.GiveawaysManager = void 0;
 const discord_js_1 = require("discord.js");
 const structures_1 = require("../structures");
 const error_1 = require("../functions/error");
+const __1 = require("..");
 const noop_1 = __importDefault(require("../functions/noop"));
 class GiveawaysManager {
-    giveaways;
     client;
-    constructor(giveaways, client) {
-        this.giveaways = giveaways;
+    giveaways;
+    constructor(client) {
         this.client = client;
-        client.once("clientReady", () => this._restoreGiveaways());
+        this.giveaways = client.getExtension(__1.ForgeGiveaways, true);
+        client.once("clientReady", async () => await this._restoreGiveaways());
     }
     /**
      * Starts a new giveaway on a guild.
@@ -23,30 +24,36 @@ class GiveawaysManager {
      */
     async start(options) {
         const giveaway = new structures_1.Database.entities.Giveaway(options);
-        if (this.giveaways.options.useDefault) {
+        const { useDefault, useReactions } = this.giveaways.options;
+        if (useDefault) {
             const chan = this.client.channels.cache.get(giveaway.channelID);
             const roles = giveaway.requirements?.requiredRoles?.map((id) => `<@&${id}>`).join(", ");
+            let comps;
             const embed = new discord_js_1.EmbedBuilder()
                 .setTitle("🎉 GIVEAWAY 🎉")
                 .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}${roles ? `\n\n📌 **Required Roles:** ${roles}` : ""}`)
                 .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
-                .setFooter({ text: "Click the button below to join!" })
+                .setFooter({ text: `Click the ${useReactions ? "reaction" : "button"} below to join!` })
                 .setTimestamp()
                 .setColor("Green");
-            const comps = new discord_js_1.ActionRowBuilder()
-                .addComponents(new discord_js_1.ButtonBuilder()
-                .setCustomId(`giveawayEntry-${giveaway.id}`)
-                .setLabel("Join")
-                .setEmoji("🎉")
-                .setStyle(discord_js_1.ButtonStyle.Success));
+            if (!useReactions) {
+                comps = new discord_js_1.ActionRowBuilder()
+                    .addComponents(new discord_js_1.ButtonBuilder()
+                    .setCustomId(`giveawayEntry`)
+                    .setLabel("Join")
+                    .setEmoji("🎉")
+                    .setStyle(discord_js_1.ButtonStyle.Success));
+            }
             const msg = await chan?.send({
                 embeds: [embed],
-                components: [comps.toJSON()]
+                components: comps ? [comps.toJSON()] : []
             }).catch(noop_1.default);
             if (!msg) {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotDetermined, giveaway.id);
-                return;
+                return null;
             }
+            if (useReactions)
+                msg.react("🎉").catch(noop_1.default);
             giveaway.messageID = msg.id;
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
@@ -62,7 +69,7 @@ class GiveawaysManager {
     async end(id) {
         const giveaway = await structures_1.Database.get(id);
         if (!giveaway || giveaway.hasEnded)
-            return;
+            return null;
         giveaway.hasEnded = true;
         const guild = this.client.guilds.cache.get(giveaway.guildID);
         const eligibleEntries = giveaway.entries.filter((e) => {
@@ -99,7 +106,7 @@ class GiveawaysManager {
             }
             else {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
-                return;
+                return null;
             }
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
@@ -116,11 +123,12 @@ class GiveawaysManager {
     async reroll(id, unique = false, amount) {
         const giveaway = await structures_1.Database.get(id);
         if (!giveaway || !giveaway.hasEnded || !giveaway.winners.length)
-            return;
+            return null;
         const oldGiveaway = giveaway.clone();
         amount ??= giveaway.winnersCount;
-        const { entries, winners } = giveaway;
-        const eligibleEntries = unique ? entries.filter((e) => !winners.includes(e)) : entries;
+        const { entries, winners, previousWinners } = giveaway;
+        giveaway.previousWinners = [...new Set([...previousWinners || [], ...winners])];
+        const eligibleEntries = unique ? entries.filter((e) => !giveaway.previousWinners.includes(e)) : entries;
         let newWinners = this._pickWinners(eligibleEntries, amount);
         if (!newWinners.length)
             newWinners = this._pickWinners(entries, amount);
@@ -139,37 +147,55 @@ class GiveawaysManager {
             }
             else {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
-                return;
+                return null;
             }
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
         this.giveaways.emitter.emit("giveawayReroll", oldGiveaway, giveaway);
         return giveaway;
     }
-    // WIP
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
      * @param options The options used to edit this giveaway.
+     * @returns
      */
     async edit(id, options) {
         const giveaway = await structures_1.Database.get(id);
         if (!giveaway || giveaway.hasEnded)
             return null;
+        const { useDefault, useReactions } = this.giveaways.options;
         const oldGiveaway = giveaway.clone();
         if (options.prize)
             giveaway.prize = options.prize;
-        if (options.duration)
-            giveaway.duration = options.duration;
         if (options.winnersCount)
             giveaway.winnersCount = options.winnersCount;
         if (options.hostID)
             giveaway.hostID = options.hostID;
         if (options.requirements)
             giveaway.requirements = options.requirements;
-        if (this.giveaways.options.useDefault) { }
+        if (useDefault) {
+            const msg = await this.fetchMessage(giveaway.channelID, giveaway.messageID);
+            const roles = giveaway.requirements?.requiredRoles?.map((id) => `<@&${id}>`).join(", ");
+            if (msg) {
+                const embed = new discord_js_1.EmbedBuilder()
+                    .setTitle("🎉 GIVEAWAY 🎉")
+                    .setDescription(`🎁 **Prize:** ${giveaway.prize}\n🏆 **Winners:** ${giveaway.winnersCount}${roles ? `\n\n📌 **Required Roles:** ${roles}` : ""}`)
+                    .setFields({ name: "Ends", value: `${(0, discord_js_1.time)(new Date(Date.now() + giveaway.timeLeft()), "R")}`, inline: true }, { name: "Hosted by", value: `<@${giveaway.hostID}>`, inline: true })
+                    .setFooter({ text: `Click the ${useReactions ? "reaction" : "button"} below to join!` })
+                    .setTimestamp(giveaway.timestamp)
+                    .setColor("Green");
+                msg.edit({
+                    embeds: [embed]
+                }).catch(noop_1.default);
+            }
+            else {
+                (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
+                return null;
+            }
+        }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
-        // this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
+        this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway);
         return giveaway;
     }
     /**

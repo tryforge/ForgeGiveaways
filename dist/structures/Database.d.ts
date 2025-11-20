@@ -3,8 +3,9 @@ import { IGiveawayEvents } from "../handlers";
 import { TypedEmitter } from "tiny-typed-emitter";
 import { TransformEvents } from "@tryforge/forge.db";
 import { Snowflake } from "discord.js";
-import { Giveaway, MongoGiveaway } from "./Giveaway";
+import { Giveaway, IGiveaway, MongoGiveaway } from "./Giveaway";
 export type AnyGiveaway = typeof Giveaway | typeof MongoGiveaway;
+export type IGiveawayFindOptions = Partial<Omit<IGiveaway, "entries" | "winners" | "previousWinners">>;
 export declare class Database extends GiveawaysDatabaseManager {
     private readonly emitter;
     database: string;
@@ -33,6 +34,13 @@ export declare class Database extends GiveawaysDatabaseManager {
      * @returns
      */
     static getAll(): Promise<Giveaway[]>;
+    /**
+     * Finds existing giveaways matching the provided data.
+     * @param data The data to use for searching.
+     * @param amount The amount of results to return.
+     * @returns
+     */
+    static find(data?: IGiveawayFindOptions, amount?: number): Promise<Giveaway[]>;
     /**
      * Saves a giveaway in the database.
      * @param data The giveaway data to save.

@@ -1,6 +1,6 @@
 {
   "name": "@tryforge/forge.giveaways",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "ForgeGiveaways is a lightweight, flexible, and reliable extension for managing giveaways. Fully customizable features let you automate, track, and control every giveaway seamlessly.",
   "main": "dist/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "devDependencies": {
     "@tryforge/forge.db": "^2.1.1",
     "@tryforge/forgescript": "^2.5.0",
-    "discord.js": "^14.23.2",
+    "discord.js": "^14.25.0",
     "typedoc": "^0.26.11",
     "typescript": "^5.6.3"
   },
