@@ -15,7 +15,7 @@ class GiveawaysManager {
     constructor(client) {
         this.client = client;
         this.giveaways = client.getExtension(__1.ForgeGiveaways, true);
-        client.once("clientReady", () => this._restoreGiveaways());
+        client.once("clientReady", async () => await this._restoreGiveaways());
     }
     /**
      * Starts a new giveaway on a guild.
@@ -50,7 +50,7 @@ class GiveawaysManager {
             }).catch(noop_1.default);
             if (!msg) {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotDetermined, giveaway.id);
-                return;
+                return null;
             }
             if (useReactions)
                 msg.react("🎉").catch(noop_1.default);
@@ -69,7 +69,7 @@ class GiveawaysManager {
     async end(id) {
         const giveaway = await structures_1.Database.get(id);
         if (!giveaway || giveaway.hasEnded)
-            return;
+            return null;
         giveaway.hasEnded = true;
         const guild = this.client.guilds.cache.get(giveaway.guildID);
         const eligibleEntries = giveaway.entries.filter((e) => {
@@ -106,7 +106,7 @@ class GiveawaysManager {
             }
             else {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
-                return;
+                return null;
             }
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
@@ -123,7 +123,7 @@ class GiveawaysManager {
     async reroll(id, unique = false, amount) {
         const giveaway = await structures_1.Database.get(id);
         if (!giveaway || !giveaway.hasEnded || !giveaway.winners.length)
-            return;
+            return null;
         const oldGiveaway = giveaway.clone();
         amount ??= giveaway.winnersCount;
         const { entries, winners, previousWinners } = giveaway;
@@ -147,14 +147,13 @@ class GiveawaysManager {
             }
             else {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
-                return;
+                return null;
             }
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
         this.giveaways.emitter.emit("giveawayReroll", oldGiveaway, giveaway);
         return giveaway;
     }
-    // WIP
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
@@ -192,11 +191,11 @@ class GiveawaysManager {
             }
             else {
                 (0, error_1.throwGiveawaysError)(error_1.GiveawaysErrorType.MessageNotFound, giveaway.id);
-                return;
+                return null;
             }
         }
         await structures_1.Database.set(giveaway).catch(noop_1.default);
-        // this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
+        this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway);
         return giveaway;
     }
     /**

@@ -10,6 +10,7 @@ export interface IGiveawayEvents {
     giveawayStart: [Giveaway]
     giveawayEnd: [Giveaway]
     giveawayReroll: [Giveaway, Giveaway]
+    giveawayEdit: [Giveaway, Giveaway]
     giveawayEntryAdd: [Giveaway, Giveaway, EntryContext, User]
     giveawayEntryRemove: [Giveaway, Giveaway, EntryContext, User]
     giveawayEntryRevoke: [Giveaway, EntryContext, User]

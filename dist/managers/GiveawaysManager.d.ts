@@ -20,13 +20,13 @@ export declare class GiveawaysManager {
      * @param options The start options for the giveaway.
      * @returns
      */
-    start(options: IGiveawayStartOptions): Promise<import("..").Giveaway | undefined>;
+    start(options: IGiveawayStartOptions): Promise<import("..").Giveaway | null>;
     /**
      * Ends an existing giveaway.
      * @param id The id of the giveaway to end.
      * @returns
      */
-    end(id: Snowflake): Promise<import("..").Giveaway | undefined>;
+    end(id: Snowflake): Promise<import("..").Giveaway | null>;
     /**
      * Rerolls an existing giveaway.
      * @param id The id of the giveaway to reroll.
@@ -34,14 +34,14 @@ export declare class GiveawaysManager {
      * @param amount The amount of new winners.
      * @returns
      */
-    reroll(id: Snowflake, unique?: boolean, amount?: number): Promise<import("..").Giveaway | undefined>;
+    reroll(id: Snowflake, unique?: boolean, amount?: number): Promise<import("..").Giveaway | null>;
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
      * @param options The options used to edit this giveaway.
      * @returns
      */
-    edit(id: Snowflake, options: IGiveawayEditOptions): Promise<import("..").Giveaway | null | undefined>;
+    edit(id: Snowflake, options: IGiveawayEditOptions): Promise<import("..").Giveaway | null>;
     /**
      * Fetches the message of a giveaway.
      * @param channelID The id of the channel to pull message from.

@@ -22,7 +22,7 @@ export class GiveawaysManager {
 
     public constructor(private readonly client: ForgeClient) {
         this.giveaways = client.getExtension(ForgeGiveaways, true)
-        client.once("clientReady", () => this._restoreGiveaways())
+        client.once("clientReady", async () => await this._restoreGiveaways())
     }
 
     /**
@@ -68,7 +68,7 @@ export class GiveawaysManager {
 
             if (!msg) {
                 throwGiveawaysError(GiveawaysErrorType.MessageNotDetermined, giveaway.id)
-                return
+                return null
             }
 
             if (useReactions) msg.react("🎉").catch(noop)
@@ -90,7 +90,7 @@ export class GiveawaysManager {
      */
     public async end(id: Snowflake) {
         const giveaway = await Database.get(id)
-        if (!giveaway || giveaway.hasEnded) return
+        if (!giveaway || giveaway.hasEnded) return null
         giveaway.hasEnded = true
 
         const guild = this.client.guilds.cache.get(giveaway.guildID)
@@ -135,7 +135,7 @@ export class GiveawaysManager {
                 }).catch(noop)
             } else {
                 throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
-                return
+                return null
             }
         }
 
@@ -154,7 +154,7 @@ export class GiveawaysManager {
      */
     public async reroll(id: Snowflake, unique: boolean = false, amount?: number) {
         const giveaway = await Database.get(id)
-        if (!giveaway || !giveaway.hasEnded || !giveaway.winners.length) return
+        if (!giveaway || !giveaway.hasEnded || !giveaway.winners.length) return null
         const oldGiveaway = giveaway.clone()
         amount ??= giveaway.winnersCount
 
@@ -182,7 +182,7 @@ export class GiveawaysManager {
                 }).catch(noop)
             } else {
                 throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
-                return
+                return null
             }
         }
 
@@ -192,7 +192,6 @@ export class GiveawaysManager {
         return giveaway
     }
 
-    // WIP
     /**
      * Edits an existing giveaway.
      * @param id The id of the giveaway to edit.
@@ -232,12 +231,12 @@ export class GiveawaysManager {
                 }).catch(noop)
             } else {
                 throwGiveawaysError(GiveawaysErrorType.MessageNotFound, giveaway.id)
-                return
+                return null
             }
         }
 
         await Database.set(giveaway).catch(noop)
-        // this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
+        this.giveaways.emitter.emit("giveawayEdit", oldGiveaway, giveaway)
 
         return giveaway
     }

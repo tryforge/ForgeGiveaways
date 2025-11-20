@@ -84,11 +84,18 @@ let Giveaway = class Giveaway {
         this.winners = [];
     }
     /**
+     * Returns the end timestamp of this giveaway.
+     * @returns
+     */
+    endTimestamp() {
+        return this.timestamp + this.duration;
+    }
+    /**
      * Returns the time left for this giveaway.
      * @returns
      */
     timeLeft() {
-        return Math.max(this.duration - (Date.now() - this.timestamp), 0);
+        return Math.max(this.endTimestamp() - Date.now(), 0);
     }
     /**
      * Returns whether a user has entered this giveaway.

@@ -114,11 +114,19 @@ export class Giveaway implements IGiveaway {
     }
 
     /**
+     * Returns the end timestamp of this giveaway.
+     * @returns
+     */
+    public endTimestamp() {
+        return this.timestamp + this.duration
+    }
+
+    /**
      * Returns the time left for this giveaway.
      * @returns 
      */
     public timeLeft() {
-        return Math.max(this.duration - (Date.now() - this.timestamp), 0)
+        return Math.max(this.endTimestamp() - Date.now(), 0)
     }
 
     /**

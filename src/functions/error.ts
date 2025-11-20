@@ -1,5 +1,4 @@
 import { Logger } from "@tryforge/forgescript"
-import { Snowflake } from "discord.js"
 
 export enum GiveawaysErrorType {
     MessageNotFound = `Could not find and update the message for giveaway with ID "$1"`,
@@ -12,11 +11,12 @@ export enum GiveawaysErrorType {
 
 /**
  * Throws a giveaways error in the console.
- * @param type The error type to log.
- * @param id The id of the referenced giveaway.
+ * @param type The type of error to log.
+ * @param value The value to provide in the error message.
+ * @returns
  */
-export function throwGiveawaysError(type: GiveawaysErrorType, id?: Snowflake) {
+export function throwGiveawaysError(type: GiveawaysErrorType, value?: string) {
     const key = Object.keys(GiveawaysErrorType).find((x) => GiveawaysErrorType[x as keyof typeof GiveawaysErrorType] === type)
-    const message = type.replace(/\$(\d+)/g, () => id ?? "")
+    const message = type.replace(/\$(\d+)/g, () => value ?? "")
     Logger.error(`[ForgeGiveaways] ${key}: ${message}`)
 }

@@ -14,12 +14,13 @@ var GiveawaysErrorType;
 })(GiveawaysErrorType || (exports.GiveawaysErrorType = GiveawaysErrorType = {}));
 /**
  * Throws a giveaways error in the console.
- * @param type The error type to log.
- * @param id The id of the referenced giveaway.
+ * @param type The type of error to log.
+ * @param value The value to provide in the error message.
+ * @returns
  */
-function throwGiveawaysError(type, id) {
+function throwGiveawaysError(type, value) {
     const key = Object.keys(GiveawaysErrorType).find((x) => GiveawaysErrorType[x] === type);
-    const message = type.replace(/\$(\d+)/g, () => id ?? "");
+    const message = type.replace(/\$(\d+)/g, () => value ?? "");
     forgescript_1.Logger.error(`[ForgeGiveaways] ${key}: ${message}`);
 }
 //# sourceMappingURL=error.js.map

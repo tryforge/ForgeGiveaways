@@ -70,6 +70,11 @@ export declare class Giveaway implements IGiveaway {
         id?: Snowflake;
     });
     /**
+     * Returns the end timestamp of this giveaway.
+     * @returns
+     */
+    endTimestamp(): number;
+    /**
      * Returns the time left for this giveaway.
      * @returns
      */
